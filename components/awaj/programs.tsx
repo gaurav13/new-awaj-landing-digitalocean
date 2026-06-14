@@ -11,6 +11,7 @@ import {
   Users,
   Award,
   ArrowRight,
+  ArrowUpRight,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { getAllPrograms } from "@/app/actions/programs"
@@ -41,33 +42,48 @@ export async function Programs() {
       <div className="grid grid-cols-1 gap-7 md:grid-cols-3">
         {programs.map((p) => {
           const Icon = ICONS[p.icon] ?? Rocket
+          const banner = p.bannerUrl || p.imageUrl
           return (
             <Link
               key={p.id}
               href={`/programs/${p.slug}`}
-              className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold/25 bg-white shadow-sm transition-shadow hover:shadow-lg"
+              className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm transition-shadow hover:shadow-lg"
             >
-              <div className="flex flex-1 flex-col p-7">
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-beige">
-                  <Icon className="h-6 w-6 text-gold" strokeWidth={1.5} />
-                </div>
+              {/* Banner */}
+              <div className="relative aspect-video overflow-hidden bg-beige">
+                {banner ? (
+                  <img
+                    src={banner || "/placeholder.svg"}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-gold/40">
+                    <Icon className="h-12 w-12" strokeWidth={1.25} />
+                  </div>
+                )}
+                <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gold shadow-sm">
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+              </div>
+
+              {/* Content */}
+              <div className="flex flex-1 flex-col p-6">
+                {p.regions ? (
+                  <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gold">
+                    <Globe2 className="h-3.5 w-3.5" />
+                    {p.regions}
+                  </span>
+                ) : null}
                 <h3 className="font-serif text-xl font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
                   {p.title}
                 </h3>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-navy-text/70">{p.excerpt}</p>
-                {p.regions && (
-                  <span className="mt-5 flex items-center gap-2 text-sm font-medium text-navy-text/70">
-                    <Globe2 className="h-4 w-4 text-gold" />
-                    {p.regions}
-                  </span>
-                )}
+                <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-navy-text/70">{p.excerpt}</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
+                  Learn more
+                  <ArrowUpRight className="h-4 w-4" />
+                </span>
               </div>
-              {p.imageUrl && (
-                <div className="relative h-24 w-full overflow-hidden">
-                  <img src={p.imageUrl || "/placeholder.svg"} alt="" className="h-full w-full object-cover opacity-80" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-white/0 to-white" />
-                </div>
-              )}
             </Link>
           )
         })}
