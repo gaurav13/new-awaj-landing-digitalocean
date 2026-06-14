@@ -220,48 +220,59 @@ export function EventDetail({ event }: { event: EventData }) {
           <section className="mt-12 lg:mt-14">
             <SectionHeading eyebrow="Backed by" title="Sponsors & Partners" icon={Trophy} />
             <div className="rounded-3xl border border-gold/25 bg-white px-4 py-8 shadow-sm md:px-8">
-              <div className="flex flex-col gap-7">
-                {tiers.map((group, gi) => (
-                  <div key={gi}>
-                    {group.tier ? (
-                      <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
-                        {group.tier}
-                      </p>
-                    ) : null}
-                    {/* Horizontal slider — saves vertical space, scrolls on overflow */}
-                    <div className="flex snap-x snap-mandatory items-center gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:justify-center md:flex-wrap md:gap-x-10 md:gap-y-6">
-                      {group.items.map((p, i) => {
-                        const inner = p.logoUrl ? (
-                          <img
-                            src={p.logoUrl || "/placeholder.svg"}
-                            alt={p.name}
-                            className="h-10 w-auto max-w-[150px] object-contain opacity-80 transition-opacity hover:opacity-100"
-                          />
-                        ) : (
-                          <span className="whitespace-nowrap rounded-xl border border-gold/20 bg-beige/50 px-5 py-2.5 text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/65 transition-colors hover:text-gold">
-                            {p.name}
-                          </span>
-                        )
-                        return p.linkUrl ? (
-                          <a
-                            key={i}
-                            href={p.linkUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex shrink-0 snap-center items-center"
-                            aria-label={p.name}
-                          >
-                            {inner}
-                          </a>
-                        ) : (
-                          <div key={i} className="flex shrink-0 snap-center items-center">
-                            {inner}
-                          </div>
-                        )
-                      })}
+              <div className="flex flex-col gap-8">
+                {tiers.map((group, gi) => {
+                  // Duplicate the items so the marquee loops seamlessly.
+                  const loop = [...group.items, ...group.items]
+                  return (
+                    <div key={gi}>
+                      {group.tier ? (
+                        <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
+                          {group.tier}
+                        </p>
+                      ) : null}
+                      {/* Auto-scrolling marquee slider — saves space, pauses on hover */}
+                      <div className="awaj-marquee-mask group relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+                        <div className="awaj-marquee-track items-center gap-10 pr-10">
+                          {loop.map((p, i) => {
+                            const inner = p.logoUrl ? (
+                              <img
+                                src={p.logoUrl || "/placeholder.svg"}
+                                alt={p.name}
+                                className="h-10 w-auto max-w-[150px] object-contain opacity-80 transition-opacity hover:opacity-100"
+                              />
+                            ) : (
+                              <span className="whitespace-nowrap rounded-xl border border-gold/20 bg-beige/50 px-5 py-2.5 text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/65 transition-colors hover:text-gold">
+                                {p.name}
+                              </span>
+                            )
+                            return p.linkUrl ? (
+                              <a
+                                key={i}
+                                href={p.linkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex shrink-0 items-center"
+                                aria-label={p.name}
+                                aria-hidden={i >= group.items.length}
+                              >
+                                {inner}
+                              </a>
+                            ) : (
+                              <div
+                                key={i}
+                                className="flex shrink-0 items-center"
+                                aria-hidden={i >= group.items.length}
+                              >
+                                {inner}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </section>

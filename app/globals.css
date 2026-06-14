@@ -274,3 +274,26 @@
 .rich-content strong {
   font-weight: 700;
 }
+
+/* Sponsor / partner logo marquee slider */
+@keyframes awaj-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.awaj-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: awaj-marquee 30s linear infinite;
+}
+.awaj-marquee-mask:hover .awaj-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .awaj-marquee-track {
+    animation: none;
+  }
+}
