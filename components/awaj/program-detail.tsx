@@ -59,23 +59,13 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
 
           {/* Right visual — fixed-ratio frame that flatters any banner shape */}
           <div className="relative">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-navy-text shadow-xl ring-1 ring-gold/15">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-beige shadow-xl ring-1 ring-gold/15">
               {banner ? (
-                <>
-                  {/* Blurred fill so portrait/wide banners never leave empty bars */}
-                  <img
-                    src={banner || "/placeholder.svg"}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                  />
-                  {/* Actual banner, fully visible */}
-                  <img
-                    src={banner || "/placeholder.svg"}
-                    alt={program.title}
-                    className="absolute inset-0 h-full w-full object-contain"
-                  />
-                </>
+                <img
+                  src={banner || "/placeholder.svg"}
+                  alt={program.title}
+                  className="absolute inset-0 h-full w-full object-contain"
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-beige">
                   <Globe2 className="h-16 w-16 text-gold/30" />

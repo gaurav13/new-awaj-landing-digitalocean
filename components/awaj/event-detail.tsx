@@ -107,24 +107,16 @@ export function EventDetail({ event }: { event: EventData }) {
         <section className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12">
           {/* Poster */}
           <div className="lg:sticky lg:top-6 lg:self-start">
-            <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-navy shadow-lg ring-1 ring-gold/15">
+            <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-beige shadow-lg ring-1 ring-gold/15">
               {poster ? (
-                <>
-                  <img
-                    src={poster || "/placeholder.svg"}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                  />
-                  <img
-                    src={poster || "/placeholder.svg"}
-                    alt={event.title}
-                    className="absolute inset-0 h-full w-full object-contain"
-                  />
-                </>
+                <img
+                  src={poster || "/placeholder.svg"}
+                  alt={event.title}
+                  className="absolute inset-0 h-full w-full object-contain"
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
-                  <Calendar className="h-16 w-16 text-white/20" />
+                  <Calendar className="h-16 w-16 text-gold/30" />
                 </div>
               )}
             </div>

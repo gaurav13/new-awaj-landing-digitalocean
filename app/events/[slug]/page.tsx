@@ -45,21 +45,13 @@ export default async function EventPage({ params }: Props) {
                     href={`/events/${e.slug}`}
                     className="group flex flex-col overflow-hidden rounded-2xl border border-gold/20 bg-ivory transition-shadow hover:shadow-md"
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-navy">
+                    <div className="relative aspect-[16/10] overflow-hidden bg-beige">
                       {cover ? (
-                        <>
-                          <img
-                            src={cover || "/placeholder.svg"}
-                            alt=""
-                            aria-hidden="true"
-                            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                          />
-                          <img
-                            src={cover || "/placeholder.svg"}
-                            alt=""
-                            className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                          />
-                        </>
+                        <img
+                          src={cover || "/placeholder.svg"}
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
                       ) : (
                         <img
                           src="/images/event-night.png"

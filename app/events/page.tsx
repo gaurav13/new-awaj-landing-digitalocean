@@ -47,13 +47,7 @@ export default async function EventsPage() {
                 href={`/events/${featured.slug}`}
                 className="group grid grid-cols-1 overflow-hidden rounded-3xl border border-gold/20 bg-navy text-white shadow-sm transition-shadow hover:shadow-md lg:grid-cols-2"
               >
-                <div className="relative aspect-[16/10] overflow-hidden bg-navy-text lg:aspect-auto lg:min-h-[340px]">
-                  <img
-                    src={featured.imageUrl || "/placeholder.svg?height=600&width=800&query=event"}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                  />
+                <div className="relative aspect-[16/10] overflow-hidden bg-beige lg:aspect-auto lg:min-h-[340px]">
                   <img
                     src={featured.imageUrl || "/placeholder.svg?height=600&width=800&query=event"}
                     alt=""
