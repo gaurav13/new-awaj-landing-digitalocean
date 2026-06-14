@@ -85,9 +85,9 @@ export default function ContactPage() {
           <div className="flex flex-col gap-6">
             <div className="overflow-hidden rounded-3xl border border-gold/25 bg-white shadow-sm">
               <img
-                src="/images/nihonbashi-office.png"
-                alt="Asia Web3 & AI Alliance Japan office building in Nihonbashi Muromachi, Tokyo"
-                className="aspect-[4/3] w-full object-cover"
+                src="/images/nihonbashi-office.jpg"
+                alt="Nihonbashi Daiei Building in Nihonbashi Muromachi, Chuo-ku, Tokyo — Asia Web3 Alliance Japan office"
+                className="aspect-[3/4] w-full object-cover"
               />
               <div className="p-6">
                 <div className="flex items-start gap-3">
