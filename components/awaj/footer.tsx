@@ -1,7 +1,18 @@
+import Link from "next/link"
 import { Mail, ArrowRight } from "lucide-react"
 import { LogoMark } from "./logo"
 
-const FOOTER_NAV = ["About Us", "Programs", "Venture Studio", "Partners", "Membership", "Events", "News", "Contact"]
+const FOOTER_NAV: { label: string; href: string }[] = [
+  { label: "About Us", href: "#" },
+  { label: "Programs", href: "#" },
+  { label: "Venture Studio", href: "#" },
+  { label: "Partners", href: "#" },
+  { label: "Membership", href: "#" },
+  { label: "Events", href: "#" },
+  { label: "News", href: "/news" },
+  { label: "Contact", href: "mailto:bm@asiaweb3alliance.jp" },
+  { label: "Admin", href: "/admin" },
+]
 
 function XIcon() {
   return (
@@ -104,9 +115,13 @@ export function Footer() {
         <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
           <nav className="flex flex-wrap gap-x-5 gap-y-2">
             {FOOTER_NAV.map((item) => (
-              <a key={item} href="#" className="text-xs text-white/60 transition-colors hover:text-gold">
-                {item}
-              </a>
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-xs text-white/60 transition-colors hover:text-gold"
+              >
+                {item.label}
+              </Link>
             ))}
           </nav>
           <p className="text-xs text-white/50">© 2026 Asia Web3 &amp; AI Alliance Japan. All rights reserved.</p>
