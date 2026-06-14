@@ -59,12 +59,12 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
 
           {/* Right visual — fixed-ratio frame that flatters any banner shape */}
           <div className="relative">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-beige ring-1 ring-gold/15">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-beige">
               {banner ? (
                 <img
                   src={banner || "/placeholder.svg"}
                   alt={program.title}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-beige">
