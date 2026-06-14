@@ -152,3 +152,15 @@ export const siteSettings = pgTable("site_settings", {
   value: text("value"),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 })
+
+export const contactMessages = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  organization: text("organization"),
+  inquiryType: text("inquiry_type").notNull().default("Other"),
+  subject: text("subject"),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})

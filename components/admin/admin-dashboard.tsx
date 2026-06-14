@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client"
 import { formatLongDate } from "@/lib/format-date"
 import { ResourceManager, type FieldDef } from "./resource-manager"
 import { SettingsPanel } from "./settings-panel"
+import { MessagesPanel } from "./messages-panel"
 import { createNews, updateNews, deleteNews } from "@/app/actions/news"
 import { createEvent, updateEvent, deleteEvent } from "@/app/actions/events"
 import { createProgram, updateProgram, deleteProgram } from "@/app/actions/programs"
@@ -86,6 +87,17 @@ type Media = {
   isFeatured: boolean
   publishedAt: Date | string
   sortOrder: number
+}
+type Message = {
+  id: number
+  name: string
+  email: string
+  organization: string | null
+  inquiryType: string
+  subject: string | null
+  message: string
+  isRead: boolean
+  createdAt: Date | string
 }
 
 const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements"]
@@ -195,6 +207,7 @@ export function AdminDashboard({
   team,
   partners,
   media,
+  messages,
   settings,
 }: {
   userName: string
@@ -204,6 +217,7 @@ export function AdminDashboard({
   team: Team[]
   partners: Partner[]
   media: Media[]
+  messages: Message[]
   settings: SiteSettings
 }) {
   const router = useRouter()
@@ -269,6 +283,9 @@ export function AdminDashboard({
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
             <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
+            <TabsTrigger value="messages">
+              Messages{messages.filter((m) => !m.isRead).length > 0 ? ` (${messages.filter((m) => !m.isRead).length})` : ""}
+            </TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -485,6 +502,10 @@ export function AdminDashboard({
               onUpdate={(id, d) => updateMedia(id, d)}
               onDelete={(id) => deleteMedia(id)}
             />
+          </TabsContent>
+
+          <TabsContent value="messages" className="mt-6">
+            <MessagesPanel messages={messages} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">

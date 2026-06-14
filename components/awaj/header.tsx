@@ -11,7 +11,7 @@ const NAV: { label: string; href: string }[] = [
   { label: "News", href: "/news" },
   { label: "Team", href: "/#team" },
   { label: "Partners", href: "/#partners" },
-  { label: "Contact", href: "mailto:bm@asiaweb3alliance.jp" },
+  { label: "Contact", href: "/contact" },
 ]
 
 export function Header({ logoUrl }: { logoUrl?: string }) {
