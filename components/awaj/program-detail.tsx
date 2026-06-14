@@ -35,7 +35,7 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
     <article>
       {/* Hero — heading left, banner right (like the main header) */}
       <section className="relative overflow-hidden border-b border-gold/15">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-stretch gap-8 px-5 pt-8 pb-10 lg:grid-cols-[1fr_1.05fr] lg:gap-12 lg:px-10 lg:pt-12 lg:pb-14">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-8 px-5 pt-8 pb-10 lg:grid-cols-2 lg:gap-12 lg:px-10 lg:pt-12 lg:pb-14">
           {/* Left */}
           <div className="relative z-10 flex flex-col justify-center lg:py-4">
             <Link
@@ -57,17 +57,27 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
             <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-navy-text/70">{program.excerpt}</p>
           </div>
 
-          {/* Right visual */}
-          <div className="relative min-h-[260px]">
-            <div className="relative h-full w-full overflow-hidden rounded-[1.75rem] bg-beige shadow-xl ring-1 ring-gold/15">
+          {/* Right visual — fixed-ratio frame that flatters any banner shape */}
+          <div className="relative">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-navy-text shadow-xl ring-1 ring-gold/15">
               {banner ? (
-                <img
-                  src={banner || "/placeholder.svg"}
-                  alt={program.title}
-                  className="h-full max-h-[460px] min-h-[260px] w-full object-cover"
-                />
+                <>
+                  {/* Blurred fill so portrait/wide banners never leave empty bars */}
+                  <img
+                    src={banner || "/placeholder.svg"}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+                  />
+                  {/* Actual banner, fully visible */}
+                  <img
+                    src={banner || "/placeholder.svg"}
+                    alt={program.title}
+                    className="absolute inset-0 h-full w-full object-contain"
+                  />
+                </>
               ) : (
-                <div className="flex h-full min-h-[260px] w-full items-center justify-center">
+                <div className="flex h-full w-full items-center justify-center bg-beige">
                   <Globe2 className="h-16 w-16 text-gold/30" />
                 </div>
               )}
