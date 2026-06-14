@@ -6,6 +6,7 @@ const FOOTER_NAV: { label: string; href: string }[] = [
   { label: "Programs", href: "/#programs" },
   { label: "Events", href: "/events" },
   { label: "News", href: "/news" },
+  { label: "Members", href: "/members" },
   { label: "Team", href: "/#team" },
   { label: "Partners", href: "/#partners" },
   { label: "Contact", href: "/contact" },

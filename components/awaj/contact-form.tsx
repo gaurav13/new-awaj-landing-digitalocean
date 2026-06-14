@@ -27,8 +27,17 @@ const EMPTY: FormState = {
   message: "",
 }
 
-export function ContactForm() {
-  const [form, setForm] = useState<FormState>(EMPTY)
+export function ContactForm({ member }: { member?: string }) {
+  const [form, setForm] = useState<FormState>(
+    member
+      ? {
+          ...EMPTY,
+          inquiryType: "Membership",
+          subject: `Request to contact ${member}`,
+          message: `I would like to get in touch with ${member}. Please help connect us.\n\n`,
+        }
+      : EMPTY,
+  )
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)

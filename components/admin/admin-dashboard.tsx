@@ -15,7 +15,9 @@ import { createEvent, updateEvent, deleteEvent } from "@/app/actions/events"
 import { createProgram, updateProgram, deleteProgram } from "@/app/actions/programs"
 import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/actions/team"
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
+import { createMember, updateMember, deleteMember } from "@/app/actions/members"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
+import { MEMBER_CATEGORIES, memberCategoryLabel } from "@/lib/member-categories"
 import type { SiteSettings } from "@/app/actions/settings"
 import type {
   ProgramPartner,
@@ -92,6 +94,17 @@ type Partner = {
   tier: string
   logoUrl: string | null
   linkUrl: string | null
+  sortOrder: number
+}
+type Member = {
+  id: number
+  companyName: string
+  founderName: string | null
+  websiteUrl: string | null
+  logoUrl: string | null
+  description: string | null
+  category: string
+  contactEmail: string | null
   sortOrder: number
 }
 type Media = {
@@ -310,6 +323,28 @@ const PARTNER_FIELDS: FieldDef[] = [
   { name: "sortOrder", label: "Sort order", type: "number" },
 ]
 
+const MEMBER_FIELDS: FieldDef[] = [
+  { name: "companyName", label: "Company name", type: "text", required: true, placeholder: "Acme Inc." },
+  {
+    name: "category",
+    label: "Membership category",
+    type: "select",
+    optionItems: MEMBER_CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
+  },
+  { name: "founderName", label: "Founder / representative (optional)", type: "text", placeholder: "Jane Doe" },
+  { name: "websiteUrl", label: "Website link (optional)", type: "text", placeholder: "https://example.com" },
+  {
+    name: "contactEmail",
+    label: "Contact email (optional)",
+    type: "text",
+    placeholder: "contact@example.com",
+    hint: "If set, the “Request to Contact” button emails this address directly. Otherwise it opens the contact form.",
+  },
+  { name: "logoUrl", label: "Company logo (optional)", type: "image" },
+  { name: "description", label: "Short description (optional)", type: "textarea", rows: 3 },
+  { name: "sortOrder", label: "Sort order", type: "number" },
+]
+
 export function AdminDashboard({
   userName,
   news,
@@ -317,6 +352,7 @@ export function AdminDashboard({
   programs,
   team,
   partners,
+  members,
   media,
   messages,
   settings,
@@ -327,6 +363,7 @@ export function AdminDashboard({
   programs: Program[]
   team: Team[]
   partners: Partner[]
+  members: Member[]
   media: Media[]
   messages: Message[]
   settings: SiteSettings
@@ -393,6 +430,7 @@ export function AdminDashboard({
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
+            <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
             <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
             <TabsTrigger value="messages">
               Messages{messages.filter((m) => !m.isRead).length > 0 ? ` (${messages.filter((m) => !m.isRead).length})` : ""}
@@ -594,6 +632,44 @@ export function AdminDashboard({
               onCreate={(d) => createPartner(d)}
               onUpdate={(id, d) => updatePartner(id, d)}
               onDelete={(id) => deletePartner(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="members" className="mt-6">
+            <ResourceManager<Member>
+              title="Members"
+              singular="Member"
+              items={members}
+              fields={MEMBER_FIELDS}
+              emptyForm={{
+                companyName: "",
+                category: "corporate",
+                founderName: "",
+                websiteUrl: "",
+                contactEmail: "",
+                logoUrl: "",
+                description: "",
+                sortOrder: 0,
+              }}
+              toForm={(m) => ({
+                companyName: m.companyName,
+                category: m.category,
+                founderName: m.founderName ?? "",
+                websiteUrl: m.websiteUrl ?? "",
+                contactEmail: m.contactEmail ?? "",
+                logoUrl: m.logoUrl ?? "",
+                description: m.description ?? "",
+                sortOrder: m.sortOrder,
+              })}
+              render={{
+                image: (m) => m.logoUrl,
+                badge: (m) => memberCategoryLabel(m.category),
+                meta: (m) => m.founderName ?? "",
+                title: (m) => m.companyName,
+              }}
+              onCreate={(d) => createMember(d)}
+              onUpdate={(id, d) => updateMember(id, d)}
+              onDelete={(id) => deleteMember(id)}
             />
           </TabsContent>
 

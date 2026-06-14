@@ -29,7 +29,12 @@ const LEGAL_ROWS: { label: string; value: string }[] = [
   },
 ]
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ member?: string }>
+}) {
+  const { member } = await searchParams
   return (
     <main className="min-h-screen bg-ivory">
       <SiteHeader />
@@ -78,7 +83,7 @@ export default function ContactPage() {
           {/* Form */}
           <div>
             <h2 className="mb-5 font-serif text-2xl font-bold text-navy-text">Send us a message</h2>
-            <ContactForm />
+            <ContactForm member={member} />
           </div>
 
           {/* Info + building image */}

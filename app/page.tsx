@@ -9,6 +9,7 @@ import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
 import { Partners } from "@/components/awaj/partners"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
+import { MembersPreview } from "@/components/awaj/members-preview"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getSiteSettings } from "@/app/actions/settings"
 
@@ -26,6 +27,7 @@ export default async function Page() {
       <Pathways />
       <Team />
       <FeaturedMedia />
+      <MembersPreview />
       <Partners />
       <SiteFooter />
     </main>

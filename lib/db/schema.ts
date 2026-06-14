@@ -171,6 +171,20 @@ export const partners = pgTable("partners", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const members = pgTable("members", {
+  id: serial("id").primaryKey(),
+  companyName: text("company_name").notNull(),
+  founderName: text("founder_name"),
+  websiteUrl: text("website_url"),
+  logoUrl: text("logo_url"),
+  description: text("description"),
+  category: text("category").notNull().default("corporate"),
+  contactEmail: text("contact_email"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
 export const siteSettings = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value"),
