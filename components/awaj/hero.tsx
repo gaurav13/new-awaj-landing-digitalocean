@@ -7,7 +7,7 @@ export function Hero({ bannerUrl = "/images/hero-tokyo.png" }: { bannerUrl?: str
         {/* Left */}
         <div className="relative z-10 max-w-xl">
           <h1 className="text-balance font-serif text-4xl font-bold leading-[1.12] tracking-tight text-navy-text md:text-5xl lg:text-[3.4rem]">
-            Connecting Asia&apos;s <span className="text-gold">Web3 &amp; AI </span>Ecosystem to Japan—and Taking
+            Connecting Asia&apos;s <span className="text-gold">AI &amp; Web3  </span>Ecosystem to Japan—and Taking
             Japan&apos;s Innovations to Asia.
           </h1>
           <p className="mt-6 max-w-md text-pretty leading-relaxed text-navy-text/70">
