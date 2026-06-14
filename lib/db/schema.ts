@@ -74,15 +74,21 @@ export const events = pgTable("events", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
+  subtitle: text("subtitle"),
   excerpt: text("excerpt").notNull(),
   content: text("content").notNull(),
   eventDate: date("event_date").notNull(),
   timeLabel: text("time_label"),
   location: text("location"),
+  venue: text("venue"),
   imageUrl: text("image_url"),
   bannerUrl: text("banner_url"),
   joinUrl: text("join_url"),
   joinLabel: text("join_label"),
+  secondaryUrl: text("secondary_url"),
+  secondaryLabel: text("secondary_label"),
+  highlights: jsonb("highlights").$type<EventHighlight[]>().notNull().default([]),
+  agenda: jsonb("agenda").$type<EventAgendaItem[]>().notNull().default([]),
   sponsors: jsonb("sponsors").$type<EventSponsor[]>().notNull().default([]),
   speakers: jsonb("speakers").$type<EventSpeaker[]>().notNull().default([]),
   isFeatured: boolean("is_featured").notNull().default(false),
@@ -90,8 +96,18 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
-export type EventSponsor = { name: string; logoUrl?: string; linkUrl?: string }
-export type EventSpeaker = { name: string; role?: string; company?: string; imageUrl?: string; linkUrl?: string }
+export type EventSponsor = { name: string; logoUrl?: string; linkUrl?: string; tier?: string }
+export type EventSpeaker = {
+  name: string
+  badge?: string
+  role?: string
+  company?: string
+  companyLogoUrl?: string
+  imageUrl?: string
+  linkUrl?: string
+}
+export type EventHighlight = { title: string; description?: string; icon?: string }
+export type EventAgendaItem = { time?: string; title: string; description?: string }
 
 export const programs = pgTable("programs", {
   id: serial("id").primaryKey(),

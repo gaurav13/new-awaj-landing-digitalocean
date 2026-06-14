@@ -1,42 +1,82 @@
 import Link from "next/link"
-import { ArrowLeft, MapPin, Calendar, Clock, ArrowUpRight, CalendarCheck } from "lucide-react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  MapPin,
+  Calendar,
+  Clock,
+  Rocket,
+  Users,
+  Trophy,
+  Handshake,
+  Mic,
+  Star,
+  Coffee,
+  Camera,
+  CalendarCheck,
+} from "lucide-react"
 import { RichContent } from "./rich-content"
-import { dateParts, formatLongDate } from "@/lib/format-date"
-import type { EventSponsor, EventSpeaker } from "@/lib/db/schema"
+import type { EventSponsor, EventSpeaker, EventHighlight, EventAgendaItem } from "@/lib/db/schema"
 
 type EventData = {
   title: string
+  subtitle: string | null
   excerpt: string
   content: string
   eventDate: string
   timeLabel: string | null
   location: string | null
+  venue: string | null
   imageUrl: string | null
   bannerUrl: string | null
   joinUrl: string | null
   joinLabel: string | null
+  secondaryUrl: string | null
+  secondaryLabel: string | null
+  highlights: EventHighlight[]
+  agenda: EventAgendaItem[]
   sponsors: EventSponsor[]
   speakers: EventSpeaker[]
 }
 
-function weekdayLabel(value: string) {
+const HIGHLIGHT_ICONS = [Rocket, Users, Trophy, Handshake, Star, Mic]
+const AGENDA_ICONS = [Users, Mic, Star, Handshake, Rocket, Coffee, Trophy, Camera]
+
+function dateBits(value: string) {
   const d = new Date(`${value}T00:00:00`)
-  if (Number.isNaN(d.getTime())) return ""
-  return d.toLocaleDateString("en-US", { weekday: "long" })
+  if (Number.isNaN(d.getTime())) return { weekday: "", day: value, month: "", year: "" }
+  return {
+    weekday: d.toLocaleDateString("en-US", { weekday: "long" }),
+    day: d.toLocaleDateString("en-US", { day: "2-digit" }),
+    month: d.toLocaleDateString("en-US", { month: "long" }),
+    year: d.toLocaleDateString("en-US", { year: "numeric" }),
+  }
 }
 
 export function EventDetail({ event }: { event: EventData }) {
   const poster = event.bannerUrl || event.imageUrl
-  const d = dateParts(event.eventDate)
+  const d = dateBits(event.eventDate)
   const mapHref = event.location
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
     : null
-  const joinLabel = event.joinLabel?.trim() || "Join the Event"
+  const primaryLabel = event.joinLabel?.trim() || "Register Now"
+
+  // Group sponsors by tier, preserving order of first appearance
+  const tiers: { tier: string; items: EventSponsor[] }[] = []
+  for (const s of event.sponsors) {
+    const key = s.tier?.trim() || ""
+    let group = tiers.find((t) => t.tier === key)
+    if (!group) {
+      group = { tier: key, items: [] }
+      tiers.push(group)
+    }
+    group.items.push(s)
+  }
 
   return (
     <article className="bg-ivory">
-      {/* Luma-style hero */}
-      <section className="mx-auto max-w-[1120px] px-5 pt-7 pb-12 lg:px-10 lg:pt-10 lg:pb-16">
+      <div className="mx-auto max-w-[1180px] px-5 py-7 lg:px-8 lg:py-10">
         <Link
           href="/events"
           className="inline-flex items-center gap-2 text-sm font-medium text-navy-text/60 transition-colors hover:text-gold"
@@ -45,8 +85,9 @@ export function EventDetail({ event }: { event: EventData }) {
           All Events
         </Link>
 
-        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12">
-          {/* Left: poster + hosted by */}
+        {/* ── Hero ── */}
+        <section className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12">
+          {/* Poster */}
           <div className="lg:sticky lg:top-6 lg:self-start">
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-navy shadow-lg ring-1 ring-gold/15">
               {poster ? (
@@ -69,118 +110,177 @@ export function EventDetail({ event }: { event: EventData }) {
                 </div>
               )}
             </div>
-
-            {/* Hosted by */}
-            <div className="mt-6 rounded-2xl border border-gold/20 bg-white p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-text/50">Hosted By</p>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-sm font-bold text-white">
-                  A
-                </div>
-                <span className="font-serif text-base font-bold text-navy-text">Asia Web3 Alliance Japan</span>
-              </div>
-            </div>
           </div>
 
-          {/* Right: details */}
+          {/* Details */}
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
+              <span className="h-1.5 w-1.5 rounded-full bg-awaj-red" />
               AWAJ Event
             </span>
 
             <h1 className="mt-4 text-balance font-serif text-4xl font-bold leading-[1.08] tracking-tight text-navy-text md:text-5xl">
               {event.title}
             </h1>
-
-            {/* Date + time row */}
-            <div className="mt-7 flex items-center gap-4">
-              <div className="flex w-14 flex-col overflow-hidden rounded-xl border border-gold/25 bg-white text-center shadow-sm">
-                <span className="bg-beige py-1 text-[11px] font-bold uppercase tracking-wide text-awaj-red">
-                  {d.month}
-                </span>
-                <span className="py-1.5 font-serif text-xl font-bold leading-none text-navy-text">{d.day}</span>
-              </div>
-              <div>
-                <p className="font-serif text-lg font-bold text-navy-text">
-                  {weekdayLabel(event.eventDate)} {d.day} {d.month}
-                </p>
-                {event.timeLabel ? (
-                  <p className="flex items-center gap-1.5 text-sm text-navy-text/65">
-                    <Clock className="h-3.5 w-3.5 text-gold" />
-                    {event.timeLabel}
-                  </p>
-                ) : (
-                  <p className="text-sm text-navy-text/65">{formatLongDate(event.eventDate)}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Location row */}
-            {event.location ? (
-              <a
-                href={mapHref ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 flex items-center gap-4 rounded-xl border border-transparent transition-colors hover:border-gold/20"
-              >
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white ring-1 ring-gold/20">
-                  <MapPin className="h-5 w-5 text-gold" />
-                </span>
-                <span className="flex flex-1 items-center justify-between gap-2">
-                  <span className="text-sm font-medium leading-snug text-navy-text">{event.location}</span>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-navy-text/40" />
-                </span>
-              </a>
+            {event.subtitle ? (
+              <p className="mt-3 text-pretty font-serif text-xl font-semibold text-awaj-red md:text-2xl">
+                {event.subtitle}
+              </p>
             ) : null}
 
-            {/* Registration card */}
-            <div className="mt-7 overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm">
-              <div className="border-b border-gold/15 bg-beige/50 px-5 py-3">
-                <p className="text-sm font-semibold uppercase tracking-wide text-navy-text/70">Registration</p>
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-navy-text/70">{event.excerpt}</p>
+
+            {/* Info cards */}
+            <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-gold/20 bg-white p-4">
+                <div className="flex items-center gap-2 text-gold">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-navy-text/50">Date</span>
+                </div>
+                <p className="mt-2 text-sm font-medium text-navy-text/70">{d.weekday}</p>
+                <p className="font-serif text-2xl font-bold leading-tight text-navy-text">{d.day}</p>
+                <p className="text-sm text-navy-text/60">
+                  {d.month} {d.year}
+                </p>
               </div>
-              <div className="p-5">
-                <p className="text-sm leading-relaxed text-navy-text/70">{event.excerpt}</p>
-                {event.joinUrl ? (
-                  <a
-                    href={event.joinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-awaj-red px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-awaj-red/90"
-                  >
-                    <CalendarCheck className="h-5 w-5" />
-                    {joinLabel}
-                  </a>
-                ) : (
-                  <div className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-beige px-6 py-3.5 text-base font-semibold text-navy-text/50">
-                    Registration details coming soon
-                  </div>
-                )}
+
+              <div className="rounded-2xl border border-gold/20 bg-white p-4">
+                <div className="flex items-center gap-2 text-gold">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-navy-text/50">Time</span>
+                </div>
+                <p className="mt-2 font-serif text-lg font-bold leading-tight text-navy-text">
+                  {event.timeLabel || "TBA"}
+                </p>
+                <p className="text-sm text-navy-text/60">Japan Standard Time</p>
               </div>
+
+              <div className="rounded-2xl border border-gold/20 bg-white p-4">
+                <div className="flex items-center gap-2 text-gold">
+                  <MapPin className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-navy-text/50">Venue</span>
+                </div>
+                <p className="mt-2 text-sm font-bold leading-tight text-navy-text">{event.venue || "To be announced"}</p>
+                {event.location ? <p className="mt-0.5 text-sm leading-snug text-navy-text/60">{event.location}</p> : null}
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              {event.joinUrl ? (
+                <a
+                  href={event.joinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-awaj-red px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-awaj-red/90"
+                >
+                  <CalendarCheck className="h-5 w-5" />
+                  {primaryLabel}
+                </a>
+              ) : (
+                <div className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-beige px-6 py-3.5 text-base font-semibold text-navy-text/50">
+                  Registration coming soon
+                </div>
+              )}
+              {event.secondaryUrl ? (
+                <a
+                  href={event.secondaryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-navy/20 bg-white px-6 py-3.5 text-base font-semibold text-navy-text transition-colors hover:border-gold/40 hover:text-gold"
+                >
+                  {event.secondaryLabel?.trim() || "Learn More"}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              ) : null}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* About */}
-      <section className="mx-auto max-w-[820px] px-5 pb-12 lg:px-10 lg:pb-16">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">About this Event</p>
-        <div className="mt-3 mb-8 h-px w-16 bg-gold/50" />
-        <RichContent html={event.content} className="text-base leading-relaxed" />
-      </section>
+        {/* ── About + Agenda ── */}
+        <section className="mt-12 grid grid-cols-1 gap-8 lg:mt-16 lg:grid-cols-2 lg:gap-10">
+          {/* About */}
+          <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-gold" />
+              <h2 className="font-serif text-xl font-bold uppercase tracking-wide text-navy-text">About the Event</h2>
+            </div>
+            <RichContent html={event.content} className="mt-5 text-[15px] leading-relaxed" />
 
-      {/* Speakers */}
+            {event.highlights.length > 0 ? (
+              <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-7">
+                {event.highlights.map((h, i) => {
+                  const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length]
+                  return (
+                    <div key={i} className="flex flex-col items-center text-center">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-beige text-gold">
+                        <Icon className="h-5 w-5" strokeWidth={1.75} />
+                      </span>
+                      <h3 className="mt-3 text-sm font-bold text-navy-text">{h.title}</h3>
+                      {h.description ? (
+                        <p className="mt-1 text-xs leading-relaxed text-navy-text/60">{h.description}</p>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Agenda */}
+          {event.agenda.length > 0 ? (
+            <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-gold" />
+                  <h2 className="font-serif text-xl font-bold uppercase tracking-wide text-navy-text">Agenda</h2>
+                </div>
+                <span className="text-sm text-navy-text/55">
+                  {d.weekday}, {d.day} {d.month} {d.year}
+                </span>
+              </div>
+
+              <ol className="mt-5">
+                {event.agenda.map((a, i) => {
+                  const Icon = AGENDA_ICONS[i % AGENDA_ICONS.length]
+                  return (
+                    <li key={i} className="flex gap-4 border-t border-gold/15 py-4 first:border-t-0 first:pt-0">
+                      {a.time ? (
+                        <span className="w-24 shrink-0 pt-0.5 text-sm font-semibold text-navy-text/70">{a.time}</span>
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold leading-snug text-navy-text">{a.title}</h3>
+                        {a.description ? (
+                          <p className="mt-0.5 text-sm leading-relaxed text-navy-text/60">{a.description}</p>
+                        ) : null}
+                      </div>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-full bg-beige text-gold">
+                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                      </span>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+          ) : null}
+        </section>
+      </div>
+
+      {/* ── Speakers ── */}
       {event.speakers.length > 0 ? (
         <section className="border-y border-gold/20 bg-beige/40 py-14 lg:py-16">
-          <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
-            <div className="mb-9 text-center">
-              <h2 className="font-serif text-2xl font-bold text-navy-text md:text-3xl">Speakers</h2>
-              <div className="mx-auto mt-3 h-px w-16 bg-gold/60" />
+          <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
+            <div className="mb-9 flex items-end justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-6 w-6 text-gold" />
+                <h2 className="font-serif text-2xl font-bold text-navy-text md:text-3xl">Speakers</h2>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
               {event.speakers.map((s, i) => {
                 const inner = (
-                  <div className="flex h-full flex-col items-center rounded-2xl border border-gold/20 bg-white p-5 text-center transition-shadow hover:shadow-md">
-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-beige ring-2 ring-gold/20">
+                  <div className="flex h-full flex-col items-center rounded-2xl border border-gold/20 bg-white p-4 text-center transition-shadow hover:shadow-md">
+                    <div className="h-20 w-20 overflow-hidden rounded-full bg-beige ring-2 ring-gold/20">
                       {s.imageUrl ? (
                         <img src={s.imageUrl || "/placeholder.svg"} alt={s.name} className="h-full w-full object-cover" />
                       ) : (
@@ -189,12 +289,24 @@ export function EventDetail({ event }: { event: EventData }) {
                         </div>
                       )}
                     </div>
-                    <h3 className="mt-4 flex items-center gap-1 font-serif text-base font-bold leading-snug text-navy-text">
+                    {s.badge ? (
+                      <span className="mt-3 rounded-full bg-beige px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-awaj-red">
+                        {s.badge}
+                      </span>
+                    ) : null}
+                    <h3 className="mt-2 flex items-center gap-1 font-serif text-sm font-bold leading-snug text-navy-text">
                       {s.name}
-                      {s.linkUrl ? <ArrowUpRight className="h-3.5 w-3.5 text-navy-text/40" /> : null}
+                      {s.linkUrl ? <ArrowUpRight className="h-3 w-3 text-navy-text/40" /> : null}
                     </h3>
-                    {s.role ? <p className="mt-0.5 text-sm font-medium text-awaj-red">{s.role}</p> : null}
-                    {s.company ? <p className="text-xs text-navy-text/60">{s.company}</p> : null}
+                    {s.role ? <p className="mt-0.5 text-xs leading-snug text-navy-text/60">{s.role}</p> : null}
+                    {s.company ? <p className="text-xs leading-snug text-navy-text/50">{s.company}</p> : null}
+                    {s.companyLogoUrl ? (
+                      <img
+                        src={s.companyLogoUrl || "/placeholder.svg"}
+                        alt={s.company || ""}
+                        className="mt-2 h-5 w-auto max-w-[90px] object-contain opacity-80"
+                      />
+                    ) : null}
                   </div>
                 )
                 return s.linkUrl ? (
@@ -212,44 +324,55 @@ export function EventDetail({ event }: { event: EventData }) {
         </section>
       ) : null}
 
-      {/* Sponsors & partners — matching the homepage partners card */}
+      {/* ── Sponsors & partners ── */}
       {event.sponsors.length > 0 ? (
-        <section className="mx-auto max-w-[1280px] px-5 py-14 lg:px-10 lg:py-16">
-          <div className="mb-8 text-center">
+        <section className="mx-auto max-w-[1180px] px-5 py-14 lg:px-8 lg:py-16">
+          <div className="mb-8 flex items-center gap-2">
+            <Trophy className="h-6 w-6 text-gold" />
             <h2 className="font-serif text-2xl font-bold text-navy-text md:text-3xl">Sponsors &amp; Partners</h2>
-            <div className="mx-auto mt-3 h-px w-16 bg-gold/60" />
           </div>
-          <div className="rounded-3xl border border-gold/25 bg-white px-6 py-12 shadow-sm md:px-10">
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
-              {event.sponsors.map((p, i) => {
-                const inner = p.logoUrl ? (
-                  <img
-                    src={p.logoUrl || "/placeholder.svg"}
-                    alt={p.name}
-                    className="h-10 w-auto max-w-[160px] object-contain opacity-80 transition-opacity hover:opacity-100"
-                  />
-                ) : (
-                  <span className="text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/55 transition-colors hover:text-gold">
-                    {p.name}
-                  </span>
-                )
-                return p.linkUrl ? (
-                  <a
-                    key={i}
-                    href={p.linkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center"
-                    aria-label={p.name}
-                  >
-                    {inner}
-                  </a>
-                ) : (
-                  <div key={i} className="flex items-center">
-                    {inner}
+          <div className="rounded-3xl border border-gold/25 bg-white px-6 py-10 shadow-sm md:px-10">
+            <div className="flex flex-col gap-9">
+              {tiers.map((group, gi) => (
+                <div key={gi}>
+                  {group.tier ? (
+                    <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
+                      {group.tier}
+                    </p>
+                  ) : null}
+                  <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+                    {group.items.map((p, i) => {
+                      const inner = p.logoUrl ? (
+                        <img
+                          src={p.logoUrl || "/placeholder.svg"}
+                          alt={p.name}
+                          className="h-10 w-auto max-w-[170px] object-contain opacity-80 transition-opacity hover:opacity-100"
+                        />
+                      ) : (
+                        <span className="text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/55 transition-colors hover:text-gold">
+                          {p.name}
+                        </span>
+                      )
+                      return p.linkUrl ? (
+                        <a
+                          key={i}
+                          href={p.linkUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center"
+                          aria-label={p.name}
+                        >
+                          {inner}
+                        </a>
+                      ) : (
+                        <div key={i} className="flex items-center">
+                          {inner}
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </section>

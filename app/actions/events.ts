@@ -1,7 +1,13 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { events, type EventSponsor, type EventSpeaker } from "@/lib/db/schema"
+import {
+  events,
+  type EventSponsor,
+  type EventSpeaker,
+  type EventHighlight,
+  type EventAgendaItem,
+} from "@/lib/db/schema"
 import { asc, eq, ne } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
@@ -49,15 +55,21 @@ export async function getMyEvents() {
 
 type EventInput = {
   title: string
+  subtitle?: string
   excerpt: string
   content: string
   eventDate: string
   timeLabel?: string
   location?: string
+  venue?: string
   imageUrl?: string
   bannerUrl?: string
   joinUrl?: string
   joinLabel?: string
+  secondaryUrl?: string
+  secondaryLabel?: string
+  highlights?: EventHighlight[]
+  agenda?: EventAgendaItem[]
   sponsors?: EventSponsor[]
   speakers?: EventSpeaker[]
   isFeatured?: boolean
@@ -67,7 +79,12 @@ function cleanSponsors(items?: EventSponsor[]): EventSponsor[] {
   if (!Array.isArray(items)) return []
   return items
     .filter((s) => s && s.name?.trim())
-    .map((s) => ({ name: s.name.trim(), logoUrl: s.logoUrl || undefined, linkUrl: s.linkUrl || undefined }))
+    .map((s) => ({
+      name: s.name.trim(),
+      logoUrl: s.logoUrl || undefined,
+      linkUrl: s.linkUrl || undefined,
+      tier: s.tier?.trim() || undefined,
+    }))
 }
 
 function cleanSpeakers(items?: EventSpeaker[]): EventSpeaker[] {
@@ -76,10 +93,30 @@ function cleanSpeakers(items?: EventSpeaker[]): EventSpeaker[] {
     .filter((s) => s && s.name?.trim())
     .map((s) => ({
       name: s.name.trim(),
+      badge: s.badge?.trim() || undefined,
       role: s.role || undefined,
       company: s.company || undefined,
+      companyLogoUrl: s.companyLogoUrl || undefined,
       imageUrl: s.imageUrl || undefined,
       linkUrl: s.linkUrl || undefined,
+    }))
+}
+
+function cleanHighlights(items?: EventHighlight[]): EventHighlight[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((h) => h && h.title?.trim())
+    .map((h) => ({ title: h.title.trim(), description: h.description?.trim() || undefined }))
+}
+
+function cleanAgenda(items?: EventAgendaItem[]): EventAgendaItem[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((a) => a && a.title?.trim())
+    .map((a) => ({
+      time: a.time?.trim() || undefined,
+      title: a.title.trim(),
+      description: a.description?.trim() || undefined,
     }))
 }
 
@@ -104,16 +141,22 @@ export async function createEvent(input: EventInput) {
   const slug = await uniqueSlug(slugify(input.title))
   await db.insert(events).values({
     title: input.title,
+    subtitle: input.subtitle || null,
     slug,
     excerpt: input.excerpt,
     content: input.content,
     eventDate: input.eventDate,
     timeLabel: input.timeLabel || null,
     location: input.location || null,
+    venue: input.venue || null,
     imageUrl: input.imageUrl || null,
     bannerUrl: input.bannerUrl || null,
     joinUrl: input.joinUrl || null,
     joinLabel: input.joinLabel || null,
+    secondaryUrl: input.secondaryUrl || null,
+    secondaryLabel: input.secondaryLabel || null,
+    highlights: cleanHighlights(input.highlights),
+    agenda: cleanAgenda(input.agenda),
     sponsors: cleanSponsors(input.sponsors),
     speakers: cleanSpeakers(input.speakers),
     isFeatured: input.isFeatured ?? false,
@@ -130,16 +173,22 @@ export async function updateEvent(id: number, input: EventInput) {
     .update(events)
     .set({
       title: input.title,
+      subtitle: input.subtitle || null,
       slug,
       excerpt: input.excerpt,
       content: input.content,
       eventDate: input.eventDate,
       timeLabel: input.timeLabel || null,
       location: input.location || null,
+      venue: input.venue || null,
       imageUrl: input.imageUrl || null,
       bannerUrl: input.bannerUrl || null,
       joinUrl: input.joinUrl || null,
       joinLabel: input.joinLabel || null,
+      secondaryUrl: input.secondaryUrl || null,
+      secondaryLabel: input.secondaryLabel || null,
+      highlights: cleanHighlights(input.highlights),
+      agenda: cleanAgenda(input.agenda),
       sponsors: cleanSponsors(input.sponsors),
       speakers: cleanSpeakers(input.speakers),
       isFeatured: input.isFeatured ?? false,

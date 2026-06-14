@@ -17,7 +17,15 @@ import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/acti
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import type { SiteSettings } from "@/app/actions/settings"
-import type { ProgramPartner, ProgramStartup, GalleryItem, EventSponsor, EventSpeaker } from "@/lib/db/schema"
+import type {
+  ProgramPartner,
+  ProgramStartup,
+  GalleryItem,
+  EventSponsor,
+  EventSpeaker,
+  EventHighlight,
+  EventAgendaItem,
+} from "@/lib/db/schema"
 
 type News = {
   id: number
@@ -33,16 +41,22 @@ type News = {
 type Event = {
   id: number
   title: string
+  subtitle: string | null
   slug: string
   excerpt: string
   content: string
   eventDate: string
   timeLabel: string | null
   location: string | null
+  venue: string | null
   imageUrl: string | null
   bannerUrl: string | null
   joinUrl: string | null
   joinLabel: string | null
+  secondaryUrl: string | null
+  secondaryLabel: string | null
+  highlights: EventHighlight[]
+  agenda: EventAgendaItem[]
   sponsors: EventSponsor[]
   speakers: EventSpeaker[]
   isFeatured: boolean
@@ -125,23 +139,75 @@ const NEWS_FIELDS: FieldDef[] = [
 ]
 
 const EVENT_FIELDS: FieldDef[] = [
-  { name: "title", label: "Title", type: "text", required: true },
+  // — Basics —
+  { name: "title", label: "Title", type: "text", required: true, placeholder: "Japan Financial Innovation Program" },
+  {
+    name: "subtitle",
+    label: "Subtitle (optional)",
+    type: "text",
+    placeholder: "Awards & Future of Finance Leadership Dialogue",
+    hint: "Shown under the title in the hero.",
+  },
+  { name: "excerpt", label: "Short description", type: "textarea", required: true, rows: 3, placeholder: "One or two sentences shown in the hero and on cards." },
+
+  // — When & where —
   { name: "eventDate", label: "Event date", type: "date", required: true },
-  { name: "timeLabel", label: "Time / detail (optional)", type: "text", placeholder: "12:00 PM – 4:30 PM (JST)" },
-  { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo Headquarters" },
+  { name: "timeLabel", label: "Time", type: "text", placeholder: "12:00 – 16:30 (JST)" },
+  { name: "venue", label: "Venue name (optional)", type: "text", placeholder: "Ark Mori Building, 7F" },
+  { name: "location", label: "Address / location (optional)", type: "text", placeholder: "Akasaka, Minato-ku, Tokyo, Japan" },
+
+  // — Call to action —
   {
     name: "joinUrl",
-    label: "Join button link (optional)",
+    label: "Primary button link (optional)",
     type: "text",
     placeholder: "https://lu.ma/your-event or a registration form URL",
     hint: "Paste any URL — a Luma/Eventbrite page, a Google Form, or your own form. Leave empty to hide the button.",
   },
-  { name: "joinLabel", label: "Join button text (optional)", type: "text", placeholder: "Request to Join" },
-  { name: "imageUrl", label: "Card cover image", type: "image", hint: "Shown on event cards (homepage & Events page). Landscape works best." },
-  { name: "bannerUrl", label: "Detail page banner", type: "image", hint: "Large hero image on the event's own page. Falls back to the card cover if empty." },
+  { name: "joinLabel", label: "Primary button text", type: "text", placeholder: "Register Now" },
+  {
+    name: "secondaryUrl",
+    label: "Secondary button link (optional)",
+    type: "text",
+    placeholder: "https://... (e.g. a PDF agenda or info page)",
+    hint: "An optional outline button next to the primary one. Leave empty to hide it.",
+  },
+  { name: "secondaryLabel", label: "Secondary button text", type: "text", placeholder: "View Agenda" },
+
+  // — Images —
+  { name: "imageUrl", label: "Poster / card image", type: "image", hint: "The square poster shown on the event page and on cards." },
+  { name: "bannerUrl", label: "Detail page banner (optional)", type: "image", hint: "Overrides the poster on the event page only. Falls back to the poster if empty." },
   { name: "isFeatured", label: "Feature this event on the homepage", type: "checkbox" },
-  { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
-  { name: "content", label: "Content", type: "richtext", required: true },
+
+  // — About content —
+  { name: "content", label: "About the event", type: "richtext", required: true },
+  {
+    name: "highlights",
+    label: "Highlights",
+    type: "repeater",
+    addLabel: "Add highlight",
+    hint: 'The small feature blocks under "About the Event" (e.g. Startup Pitches, Networking).',
+    itemFields: [
+      { name: "title", label: "Title", type: "text", placeholder: "Startup Pitches" },
+      { name: "description", label: "Description (optional)", type: "textarea", placeholder: "Watch innovative startups pitch to investors." },
+    ],
+  },
+
+  // — Agenda —
+  {
+    name: "agenda",
+    label: "Agenda",
+    type: "repeater",
+    addLabel: "Add agenda item",
+    hint: "Timeline of the day. Each row is one session.",
+    itemFields: [
+      { name: "time", label: "Time", type: "text", placeholder: "12:00 – 12:30" },
+      { name: "title", label: "Session title", type: "text", placeholder: "Registration & Networking" },
+      { name: "description", label: "Description (optional)", type: "textarea", placeholder: "Check-in and connect with industry leaders." },
+    ],
+  },
+
+  // — Speakers —
   {
     name: "speakers",
     label: "Speakers",
@@ -149,21 +215,26 @@ const EVENT_FIELDS: FieldDef[] = [
     addLabel: "Add speaker",
     hint: "Featured speakers shown on the event page.",
     itemFields: [
-      { name: "name", label: "Name", type: "text", placeholder: "Jane Doe" },
-      { name: "role", label: "Role / title (optional)", type: "text", placeholder: "Founder & CEO" },
-      { name: "company", label: "Company (optional)", type: "text", placeholder: "Acme Inc." },
+      { name: "name", label: "Name", type: "text", placeholder: "Takeshi Chino" },
+      { name: "badge", label: "Badge (optional)", type: "text", placeholder: "Keynote / Panelist / Moderator" },
+      { name: "role", label: "Role / title (optional)", type: "text", placeholder: "Global Head of Fintech" },
+      { name: "company", label: "Company (optional)", type: "text", placeholder: "PwC Japan" },
       { name: "imageUrl", label: "Photo", type: "image" },
+      { name: "companyLogoUrl", label: "Company logo (optional)", type: "image" },
       { name: "linkUrl", label: "Profile link (optional)", type: "text", placeholder: "https://..." },
     ],
   },
+
+  // — Sponsors —
   {
     name: "sponsors",
     label: "Sponsors & partners",
     type: "repeater",
     addLabel: "Add sponsor",
-    hint: "Logos shown in the sponsors section of the event page.",
+    hint: "Logos shown in the sponsors section. Use the tier to group them (e.g. Diamond, Platinum, Gold).",
     itemFields: [
-      { name: "name", label: "Name", type: "text", placeholder: "Mizuho" },
+      { name: "name", label: "Name", type: "text", placeholder: "Ripple" },
+      { name: "tier", label: "Tier (optional)", type: "text", placeholder: "Diamond / Platinum / Gold / Silver" },
       { name: "logoUrl", label: "Logo", type: "image" },
       { name: "linkUrl", label: "Website (optional)", type: "text", placeholder: "https://..." },
     ],
@@ -374,30 +445,42 @@ export function AdminDashboard({
               fields={EVENT_FIELDS}
               emptyForm={{
                 title: "",
+                subtitle: "",
                 excerpt: "",
                 content: "",
                 eventDate: "",
                 timeLabel: "",
+                venue: "",
                 location: "",
                 joinUrl: "",
                 joinLabel: "",
+                secondaryUrl: "",
+                secondaryLabel: "",
                 imageUrl: "",
                 bannerUrl: "",
+                highlights: [],
+                agenda: [],
                 sponsors: [],
                 speakers: [],
                 isFeatured: false,
               }}
               toForm={(e) => ({
                 title: e.title,
+                subtitle: e.subtitle ?? "",
                 excerpt: e.excerpt,
                 content: e.content,
                 eventDate: e.eventDate,
                 timeLabel: e.timeLabel ?? "",
+                venue: e.venue ?? "",
                 location: e.location ?? "",
                 joinUrl: e.joinUrl ?? "",
                 joinLabel: e.joinLabel ?? "",
+                secondaryUrl: e.secondaryUrl ?? "",
+                secondaryLabel: e.secondaryLabel ?? "",
                 imageUrl: e.imageUrl ?? "",
                 bannerUrl: e.bannerUrl ?? "",
+                highlights: e.highlights ?? [],
+                agenda: e.agenda ?? [],
                 sponsors: e.sponsors ?? [],
                 speakers: e.speakers ?? [],
                 isFeatured: e.isFeatured,
