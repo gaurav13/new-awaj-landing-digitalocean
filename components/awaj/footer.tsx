@@ -3,12 +3,11 @@ import { Mail, ArrowRight } from "lucide-react"
 import { LogoMark } from "./logo"
 
 const FOOTER_NAV: { label: string; href: string }[] = [
+  { label: "Home", href: "/" },
   { label: "Programs", href: "/#programs" },
-  { label: "Events", href: "/events" },
-  { label: "News", href: "/news" },
   { label: "Members", href: "/members" },
-  { label: "Team", href: "/#team" },
-  { label: "Partners", href: "/#partners" },
+  { label: "News", href: "/news" },
+  { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
   { label: "Admin", href: "/admin" },
 ]
