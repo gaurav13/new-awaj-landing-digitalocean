@@ -12,7 +12,23 @@ import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
 import { RichTextEditor } from "./rich-text-editor"
 
-export type FieldType = "text" | "textarea" | "date" | "select" | "checkbox" | "number" | "image" | "richtext"
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "date"
+  | "select"
+  | "checkbox"
+  | "number"
+  | "image"
+  | "richtext"
+  | "repeater"
+
+export type RepeaterSubField = {
+  name: string
+  label: string
+  type: "text" | "textarea" | "image"
+  placeholder?: string
+}
 
 export type FieldDef = {
   name: string
@@ -21,6 +37,10 @@ export type FieldDef = {
   required?: boolean
   placeholder?: string
   options?: string[]
+  optionItems?: { value: string; label: string }[]
+  itemFields?: RepeaterSubField[]
+  addLabel?: string
+  hint?: string
   full?: boolean
   rows?: number
 }
@@ -38,8 +58,8 @@ type Props<T extends { id: number }> = {
   singular: string
   items: T[]
   fields: FieldDef[]
-  toForm: (item: T) => Record<string, string | boolean | number>
-  emptyForm: Record<string, string | boolean | number>
+  toForm: (item: T) => Record<string, any>
+  emptyForm: Record<string, any>
   render: ColumnRender<T>
   onCreate: (data: any) => Promise<void>
   onUpdate: (id: number, data: any) => Promise<void>
@@ -62,7 +82,7 @@ export function ResourceManager<T extends { id: number }>({
   const [isPending, startTransition] = useTransition()
   const [editing, setEditing] = useState<T | null>(null)
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState<Record<string, string | boolean | number>>(emptyForm)
+  const [form, setForm] = useState<Record<string, any>>(emptyForm)
   const [error, setError] = useState<string | null>(null)
 
   function openCreate() {
@@ -249,13 +269,29 @@ export function ResourceManager<T extends { id: number }>({
                         onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
                         className="h-9 rounded-md border border-input bg-white px-3 text-sm text-navy-text"
                       >
-                        {(f.options ?? []).map((o) => (
-                          <option key={o} value={o}>
-                            {o}
-                          </option>
-                        ))}
+                        {f.optionItems
+                          ? f.optionItems.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.label}
+                              </option>
+                            ))
+                          : (f.options ?? []).map((o) => (
+                              <option key={o} value={o}>
+                                {o}
+                              </option>
+                            ))}
                       </select>
                     </div>
+                  )
+                }
+                if (f.type === "repeater") {
+                  return (
+                    <RepeaterField
+                      key={f.name}
+                      field={f}
+                      value={Array.isArray(form[f.name]) ? form[f.name] : []}
+                      onChange={(rows) => setForm({ ...form, [f.name]: rows })}
+                    />
                   )
                 }
                 if (f.type === "image") {
@@ -343,6 +379,97 @@ export function ResourceManager<T extends { id: number }>({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function RepeaterField({
+  field,
+  value,
+  onChange,
+}: {
+  field: FieldDef
+  value: Record<string, string>[]
+  onChange: (rows: Record<string, string>[]) => void
+}) {
+  const subFields = field.itemFields ?? []
+
+  function emptyRow() {
+    const row: Record<string, string> = {}
+    for (const sf of subFields) row[sf.name] = ""
+    return row
+  }
+
+  function update(index: number, key: string, val: string) {
+    const next = value.map((row, i) => (i === index ? { ...row, [key]: val } : row))
+    onChange(next)
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-gold/25 bg-white/60 p-4">
+      <div className="flex items-center justify-between">
+        <Label>{field.label}</Label>
+        <span className="text-xs text-navy-text/50">{value.length} item{value.length === 1 ? "" : "s"}</span>
+      </div>
+      {field.hint ? <p className="-mt-1 text-xs text-navy-text/55">{field.hint}</p> : null}
+
+      {value.map((row, index) => (
+        <div key={index} className="relative rounded-lg border border-gold/20 bg-beige/30 p-3">
+          <button
+            type="button"
+            onClick={() => onChange(value.filter((_, i) => i !== index))}
+            className="absolute right-2 top-2 rounded-md p-1 text-awaj-red/70 hover:bg-awaj-red/10 hover:text-awaj-red"
+            aria-label="Remove item"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+          <div className="flex flex-col gap-2.5 pr-6">
+            {subFields.map((sf) => {
+              if (sf.type === "image") {
+                return (
+                  <div key={sf.name} className="flex flex-col gap-1.5">
+                    <span className="text-xs font-medium text-navy-text/70">{sf.label}</span>
+                    <ImageUpload value={row[sf.name] ?? ""} onChange={(url) => update(index, sf.name, url)} />
+                  </div>
+                )
+              }
+              if (sf.type === "textarea") {
+                return (
+                  <div key={sf.name} className="flex flex-col gap-1.5">
+                    <span className="text-xs font-medium text-navy-text/70">{sf.label}</span>
+                    <Textarea
+                      value={row[sf.name] ?? ""}
+                      onChange={(e) => update(index, sf.name, e.target.value)}
+                      rows={2}
+                      placeholder={sf.placeholder}
+                    />
+                  </div>
+                )
+              }
+              return (
+                <div key={sf.name} className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-navy-text/70">{sf.label}</span>
+                  <Input
+                    value={row[sf.name] ?? ""}
+                    onChange={(e) => update(index, sf.name, e.target.value)}
+                    placeholder={sf.placeholder}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => onChange([...value, emptyRow()])}
+        className="rounded-full border-gold/40 text-navy-text"
+      >
+        <Plus className="mr-1.5 h-4 w-4" />
+        {field.addLabel ?? "Add item"}
+      </Button>
     </div>
   )
 }

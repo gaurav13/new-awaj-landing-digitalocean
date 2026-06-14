@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { programs } from "@/lib/db/schema"
+import { programs, type ProgramPartner, type ProgramStartup, type GalleryItem } from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
@@ -37,7 +37,35 @@ type ProgramInput = {
   icon: string
   regions?: string
   imageUrl?: string
+  bannerUrl?: string
+  partners?: ProgramPartner[]
+  startups?: ProgramStartup[]
+  gallery?: GalleryItem[]
   sortOrder?: number
+}
+
+function cleanPartners(items?: ProgramPartner[]): ProgramPartner[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((p) => p && p.name?.trim())
+    .map((p) => ({ name: p.name.trim(), logoUrl: p.logoUrl || undefined, linkUrl: p.linkUrl || undefined }))
+}
+
+function cleanStartups(items?: ProgramStartup[]): ProgramStartup[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((s) => s && s.name?.trim())
+    .map((s) => ({
+      name: s.name.trim(),
+      logoUrl: s.logoUrl || undefined,
+      description: s.description || undefined,
+      linkUrl: s.linkUrl || undefined,
+    }))
+}
+
+function cleanGallery(items?: GalleryItem[]): GalleryItem[] {
+  if (!Array.isArray(items)) return []
+  return items.filter((g) => g && g.imageUrl?.trim()).map((g) => ({ imageUrl: g.imageUrl.trim(), caption: g.caption || undefined }))
 }
 
 async function uniqueSlug(base: string, excludeId?: number) {
@@ -67,10 +95,15 @@ export async function createProgram(input: ProgramInput) {
     icon: input.icon || "Rocket",
     regions: input.regions || null,
     imageUrl: input.imageUrl || null,
+    bannerUrl: input.bannerUrl || null,
+    partners: cleanPartners(input.partners),
+    startups: cleanStartups(input.startups),
+    gallery: cleanGallery(input.gallery),
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
   })
   revalidatePath("/")
+  revalidatePath("/programs")
 }
 
 export async function updateProgram(id: number, input: ProgramInput) {
@@ -86,14 +119,21 @@ export async function updateProgram(id: number, input: ProgramInput) {
       icon: input.icon || "Rocket",
       regions: input.regions || null,
       imageUrl: input.imageUrl || null,
+      bannerUrl: input.bannerUrl || null,
+      partners: cleanPartners(input.partners),
+      startups: cleanStartups(input.startups),
+      gallery: cleanGallery(input.gallery),
       sortOrder: input.sortOrder ?? 0,
     })
     .where(eq(programs.id, id))
   revalidatePath("/")
+  revalidatePath("/programs")
+  revalidatePath(`/programs/${slug}`)
 }
 
 export async function deleteProgram(id: number) {
   await getUserId()
   await db.delete(programs).where(eq(programs.id, id))
   revalidatePath("/")
+  revalidatePath("/programs")
 }

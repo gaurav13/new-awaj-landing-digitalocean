@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial, integer, date } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, boolean, serial, integer, date, jsonb } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -94,6 +94,30 @@ export const programs = pgTable("programs", {
   icon: text("icon").notNull().default("Rocket"),
   regions: text("regions"),
   imageUrl: text("image_url"),
+  bannerUrl: text("banner_url"),
+  partners: jsonb("partners").$type<ProgramPartner[]>().notNull().default([]),
+  startups: jsonb("startups").$type<ProgramStartup[]>().notNull().default([]),
+  gallery: jsonb("gallery").$type<GalleryItem[]>().notNull().default([]),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export type ProgramPartner = { name: string; logoUrl?: string; linkUrl?: string }
+export type ProgramStartup = { name: string; logoUrl?: string; description?: string; linkUrl?: string }
+export type GalleryItem = { imageUrl: string; caption?: string }
+
+export const media = pgTable("media", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  type: text("type").notNull().default("Article"),
+  url: text("url"),
+  thumbnailUrl: text("thumbnail_url"),
+  source: text("source"),
+  excerpt: text("excerpt"),
+  programId: integer("program_id").references(() => programs.id, { onDelete: "set null" }),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  publishedAt: timestamp("published_at").notNull().defaultNow(),
   sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

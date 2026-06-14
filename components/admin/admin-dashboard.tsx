@@ -14,7 +14,9 @@ import { createEvent, updateEvent, deleteEvent } from "@/app/actions/events"
 import { createProgram, updateProgram, deleteProgram } from "@/app/actions/programs"
 import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/actions/team"
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
+import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import type { SiteSettings } from "@/app/actions/settings"
+import type { ProgramPartner, ProgramStartup, GalleryItem } from "@/lib/db/schema"
 
 type News = {
   id: number
@@ -48,6 +50,10 @@ type Program = {
   icon: string
   regions: string | null
   imageUrl: string | null
+  bannerUrl: string | null
+  partners: ProgramPartner[]
+  startups: ProgramStartup[]
+  gallery: GalleryItem[]
   sortOrder: number
 }
 type Team = {
@@ -66,6 +72,19 @@ type Partner = {
   tier: string
   logoUrl: string | null
   linkUrl: string | null
+  sortOrder: number
+}
+type Media = {
+  id: number
+  title: string
+  type: string
+  url: string | null
+  thumbnailUrl: string | null
+  source: string | null
+  excerpt: string | null
+  programId: number | null
+  isFeatured: boolean
+  publishedAt: Date | string
   sortOrder: number
 }
 
@@ -99,14 +118,53 @@ const EVENT_FIELDS: FieldDef[] = [
   { name: "content", label: "Content", type: "richtext", required: true },
 ]
 
+const MEDIA_TYPES = ["Article", "Video", "Podcast", "Press Release", "Interview", "Report"]
+
 const PROGRAM_FIELDS: FieldDef[] = [
   { name: "title", label: "Title", type: "text", required: true },
   { name: "icon", label: "Icon", type: "select", options: PROGRAM_ICONS },
   { name: "regions", label: "Regions (optional)", type: "text", placeholder: "Japan • Singapore • USA • UAE" },
-  { name: "imageUrl", label: "Cover image", type: "image" },
+  { name: "imageUrl", label: "Card cover image", type: "image" },
+  { name: "bannerUrl", label: "Detail page banner", type: "image" },
   { name: "sortOrder", label: "Sort order", type: "number" },
   { name: "excerpt", label: "Short summary", type: "textarea", required: true, rows: 3 },
   { name: "content", label: "Full description", type: "richtext", required: true },
+  {
+    name: "partners",
+    label: "Program partners",
+    type: "repeater",
+    addLabel: "Add partner",
+    hint: "Logos shown in the partner section of the program page.",
+    itemFields: [
+      { name: "name", label: "Name", type: "text", placeholder: "Microsoft" },
+      { name: "logoUrl", label: "Logo", type: "image" },
+      { name: "linkUrl", label: "Website (optional)", type: "text", placeholder: "https://..." },
+    ],
+  },
+  {
+    name: "startups",
+    label: "Startups / cohort",
+    type: "repeater",
+    addLabel: "Add startup",
+    hint: "Startups featured in this program.",
+    itemFields: [
+      { name: "name", label: "Name", type: "text", placeholder: "Startup name" },
+      { name: "logoUrl", label: "Logo", type: "image" },
+      { name: "description", label: "Description (optional)", type: "textarea", placeholder: "What they do" },
+      { name: "linkUrl", label: "Website (optional)", type: "text", placeholder: "https://..." },
+    ],
+  },
+  {
+    name: "gallery",
+    label: "Gallery",
+    type: "repeater",
+    addLabel: "Add photo",
+    hint: "Photos shown in the program gallery.",
+    itemFields: [
+      { name: "imageUrl", label: "Image", type: "image" },
+      { name: "caption", label: "Caption (optional)", type: "text", placeholder: "Demo Day 2025" },
+    ],
+  },
 ]
 
 const TEAM_FIELDS: FieldDef[] = [
@@ -136,6 +194,7 @@ export function AdminDashboard({
   programs,
   team,
   partners,
+  media,
   settings,
 }: {
   userName: string
@@ -144,9 +203,27 @@ export function AdminDashboard({
   programs: Program[]
   team: Team[]
   partners: Partner[]
+  media: Media[]
   settings: SiteSettings
 }) {
   const router = useRouter()
+
+  const MEDIA_FIELDS: FieldDef[] = [
+    { name: "title", label: "Title", type: "text", required: true },
+    { name: "type", label: "Type", type: "select", options: MEDIA_TYPES },
+    { name: "source", label: "Source / publisher (optional)", type: "text", placeholder: "Nikkei, CoinDesk..." },
+    { name: "url", label: "External link", type: "text", placeholder: "https://..." },
+    { name: "thumbnailUrl", label: "Thumbnail image", type: "image" },
+    {
+      name: "programId",
+      label: "Related program (optional)",
+      type: "select",
+      optionItems: [{ value: "none", label: "— None —" }, ...programs.map((p) => ({ value: String(p.id), label: p.title }))],
+    },
+    { name: "isFeatured", label: "Feature on the homepage media section", type: "checkbox" },
+    { name: "sortOrder", label: "Sort order", type: "number" },
+    { name: "excerpt", label: "Excerpt (optional)", type: "textarea", rows: 3 },
+  ]
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -191,6 +268,7 @@ export function AdminDashboard({
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
+            <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -283,7 +361,11 @@ export function AdminDashboard({
                 icon: "Rocket",
                 regions: "",
                 imageUrl: "",
+                bannerUrl: "",
                 sortOrder: 0,
+                partners: [],
+                startups: [],
+                gallery: [],
               }}
               toForm={(p) => ({
                 title: p.title,
@@ -292,13 +374,18 @@ export function AdminDashboard({
                 icon: p.icon,
                 regions: p.regions ?? "",
                 imageUrl: p.imageUrl ?? "",
+                bannerUrl: p.bannerUrl ?? "",
                 sortOrder: p.sortOrder,
+                partners: p.partners ?? [],
+                startups: p.startups ?? [],
+                gallery: p.gallery ?? [],
               })}
               render={{
                 image: (p) => p.imageUrl,
                 badge: (p) => p.icon,
                 meta: (p) => p.regions ?? "",
                 title: (p) => p.title,
+                viewHref: (p) => `/programs/${p.slug}`,
               }}
               onCreate={(d) => createProgram(d)}
               onUpdate={(id, d) => updateProgram(id, d)}
@@ -357,6 +444,46 @@ export function AdminDashboard({
               onCreate={(d) => createPartner(d)}
               onUpdate={(id, d) => updatePartner(id, d)}
               onDelete={(id) => deletePartner(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="media" className="mt-6">
+            <ResourceManager<Media>
+              title="Media"
+              singular="Media item"
+              items={media}
+              fields={MEDIA_FIELDS}
+              emptyForm={{
+                title: "",
+                type: "Article",
+                source: "",
+                url: "",
+                thumbnailUrl: "",
+                programId: "none",
+                isFeatured: false,
+                sortOrder: 0,
+                excerpt: "",
+              }}
+              toForm={(m) => ({
+                title: m.title,
+                type: m.type,
+                source: m.source ?? "",
+                url: m.url ?? "",
+                thumbnailUrl: m.thumbnailUrl ?? "",
+                programId: m.programId ? String(m.programId) : "none",
+                isFeatured: m.isFeatured,
+                sortOrder: m.sortOrder,
+                excerpt: m.excerpt ?? "",
+              })}
+              render={{
+                image: (m) => m.thumbnailUrl,
+                badge: (m) => (m.isFeatured ? `Featured · ${m.type}` : m.type),
+                meta: (m) => m.source ?? "",
+                title: (m) => m.title,
+              }}
+              onCreate={(d) => createMedia(d)}
+              onUpdate={(id, d) => updateMedia(id, d)}
+              onDelete={(id) => deleteMedia(id)}
             />
           </TabsContent>
 

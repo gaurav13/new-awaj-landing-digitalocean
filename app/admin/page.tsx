@@ -6,6 +6,7 @@ import { getMyEvents } from "@/app/actions/events"
 import { getMyPrograms } from "@/app/actions/programs"
 import { getMyTeam } from "@/app/actions/team"
 import { getMyPartners } from "@/app/actions/partners"
+import { getMyMedia } from "@/app/actions/media"
 import { getSiteSettings } from "@/app/actions/settings"
 import { AdminDashboard } from "@/components/admin/admin-dashboard"
 
@@ -17,12 +18,13 @@ export default async function AdminPage() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session?.user) redirect("/sign-in")
 
-  const [news, events, programs, team, partners, settings] = await Promise.all([
+  const [news, events, programs, team, partners, media, settings] = await Promise.all([
     getMyNews(),
     getMyEvents(),
     getMyPrograms(),
     getMyTeam(),
     getMyPartners(),
+    getMyMedia(),
     getSiteSettings(),
   ])
 
@@ -34,6 +36,7 @@ export default async function AdminPage() {
       programs={programs}
       team={team}
       partners={partners}
+      media={media}
       settings={settings}
     />
   )
