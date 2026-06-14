@@ -56,6 +56,8 @@ type EventInput = {
   location?: string
   imageUrl?: string
   bannerUrl?: string
+  joinUrl?: string
+  joinLabel?: string
   sponsors?: EventSponsor[]
   speakers?: EventSpeaker[]
   isFeatured?: boolean
@@ -110,6 +112,8 @@ export async function createEvent(input: EventInput) {
     location: input.location || null,
     imageUrl: input.imageUrl || null,
     bannerUrl: input.bannerUrl || null,
+    joinUrl: input.joinUrl || null,
+    joinLabel: input.joinLabel || null,
     sponsors: cleanSponsors(input.sponsors),
     speakers: cleanSpeakers(input.speakers),
     isFeatured: input.isFeatured ?? false,
@@ -134,6 +138,8 @@ export async function updateEvent(id: number, input: EventInput) {
       location: input.location || null,
       imageUrl: input.imageUrl || null,
       bannerUrl: input.bannerUrl || null,
+      joinUrl: input.joinUrl || null,
+      joinLabel: input.joinLabel || null,
       sponsors: cleanSponsors(input.sponsors),
       speakers: cleanSpeakers(input.speakers),
       isFeatured: input.isFeatured ?? false,

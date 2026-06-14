@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowLeft, MapPin, Calendar, Clock, ArrowUpRight } from "lucide-react"
+import { ArrowLeft, MapPin, Calendar, Clock, ArrowUpRight, CalendarCheck } from "lucide-react"
 import { RichContent } from "./rich-content"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 import type { EventSponsor, EventSpeaker } from "@/lib/db/schema"
@@ -13,97 +13,146 @@ type EventData = {
   location: string | null
   imageUrl: string | null
   bannerUrl: string | null
+  joinUrl: string | null
+  joinLabel: string | null
   sponsors: EventSponsor[]
   speakers: EventSpeaker[]
 }
 
+function weekdayLabel(value: string) {
+  const d = new Date(`${value}T00:00:00`)
+  if (Number.isNaN(d.getTime())) return ""
+  return d.toLocaleDateString("en-US", { weekday: "long" })
+}
+
 export function EventDetail({ event }: { event: EventData }) {
-  const banner = event.bannerUrl || event.imageUrl
+  const poster = event.bannerUrl || event.imageUrl
   const d = dateParts(event.eventDate)
+  const mapHref = event.location
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
+    : null
+  const joinLabel = event.joinLabel?.trim() || "Join the Event"
 
   return (
-    <article>
-      {/* Hero header — immersive event banner */}
-      <section className="relative overflow-hidden bg-navy">
-        {banner ? (
-          <>
-            <img
-              src={banner || "/placeholder.svg"}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/85 to-navy/55" />
-          </>
-        ) : null}
+    <article className="bg-ivory">
+      {/* Luma-style hero */}
+      <section className="mx-auto max-w-[1120px] px-5 pt-7 pb-12 lg:px-10 lg:pt-10 lg:pb-16">
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-2 text-sm font-medium text-navy-text/60 transition-colors hover:text-gold"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          All Events
+        </Link>
 
-        <div className="relative mx-auto max-w-[1180px] px-5 pt-8 pb-10 lg:px-10 lg:pt-10 lg:pb-14">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-sm font-medium text-white/70 transition-colors hover:text-gold"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            All Events
-          </Link>
-
-          <div className="mt-8 grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
-            {/* Left: title + meta */}
-            <div>
-              {/* Date chip */}
-              <div className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-2.5 backdrop-blur-sm ring-1 ring-white/15">
-                <div className="flex flex-col items-center leading-none">
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-gold">{d.month}</span>
-                  <span className="font-serif text-2xl font-bold text-white">{d.day}</span>
+        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12">
+          {/* Left: poster + hosted by */}
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-navy shadow-lg ring-1 ring-gold/15">
+              {poster ? (
+                <>
+                  <img
+                    src={poster || "/placeholder.svg"}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+                  />
+                  <img
+                    src={poster || "/placeholder.svg"}
+                    alt={event.title}
+                    className="absolute inset-0 h-full w-full object-contain"
+                  />
+                </>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <Calendar className="h-16 w-16 text-white/20" />
                 </div>
-                <div className="h-9 w-px bg-white/20" />
-                <span className="text-sm font-medium text-white/85">{d.year}</span>
+              )}
+            </div>
+
+            {/* Hosted by */}
+            <div className="mt-6 rounded-2xl border border-gold/20 bg-white p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-navy-text/50">Hosted By</p>
+              <div className="mt-3 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-sm font-bold text-white">
+                  A
+                </div>
+                <span className="font-serif text-base font-bold text-navy-text">Asia Web3 Alliance Japan</span>
               </div>
+            </div>
+          </div>
 
-              <h1 className="mt-6 text-balance font-serif text-4xl font-bold leading-[1.1] tracking-tight text-white md:text-5xl">
-                {event.title}
-              </h1>
-              <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-white/75">{event.excerpt}</p>
+          {/* Right: details */}
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
+              AWAJ Event
+            </span>
 
-              <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/85">
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gold" />
-                  {formatLongDate(event.eventDate)}
+            <h1 className="mt-4 text-balance font-serif text-4xl font-bold leading-[1.08] tracking-tight text-navy-text md:text-5xl">
+              {event.title}
+            </h1>
+
+            {/* Date + time row */}
+            <div className="mt-7 flex items-center gap-4">
+              <div className="flex w-14 flex-col overflow-hidden rounded-xl border border-gold/25 bg-white text-center shadow-sm">
+                <span className="bg-beige py-1 text-[11px] font-bold uppercase tracking-wide text-awaj-red">
+                  {d.month}
                 </span>
+                <span className="py-1.5 font-serif text-xl font-bold leading-none text-navy-text">{d.day}</span>
+              </div>
+              <div>
+                <p className="font-serif text-lg font-bold text-navy-text">
+                  {weekdayLabel(event.eventDate)} {d.day} {d.month}
+                </p>
                 {event.timeLabel ? (
-                  <span className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gold" />
+                  <p className="flex items-center gap-1.5 text-sm text-navy-text/65">
+                    <Clock className="h-3.5 w-3.5 text-gold" />
                     {event.timeLabel}
-                  </span>
-                ) : null}
-                {event.location ? (
-                  <span className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-gold" />
-                    {event.location}
-                  </span>
-                ) : null}
+                  </p>
+                ) : (
+                  <p className="text-sm text-navy-text/65">{formatLongDate(event.eventDate)}</p>
+                )}
               </div>
             </div>
 
-            {/* Right: banner card */}
-            <div className="relative">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] bg-navy-text/60 shadow-2xl ring-1 ring-white/15">
-                {banner ? (
-                  <>
-                    <img
-                      src={banner || "/placeholder.svg"}
-                      alt=""
-                      aria-hidden="true"
-                      className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                    />
-                    <img
-                      src={banner || "/placeholder.svg"}
-                      alt={event.title}
-                      className="absolute inset-0 h-full w-full object-contain"
-                    />
-                  </>
+            {/* Location row */}
+            {event.location ? (
+              <a
+                href={mapHref ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 flex items-center gap-4 rounded-xl border border-transparent transition-colors hover:border-gold/20"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white ring-1 ring-gold/20">
+                  <MapPin className="h-5 w-5 text-gold" />
+                </span>
+                <span className="flex flex-1 items-center justify-between gap-2">
+                  <span className="text-sm font-medium leading-snug text-navy-text">{event.location}</span>
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-navy-text/40" />
+                </span>
+              </a>
+            ) : null}
+
+            {/* Registration card */}
+            <div className="mt-7 overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm">
+              <div className="border-b border-gold/15 bg-beige/50 px-5 py-3">
+                <p className="text-sm font-semibold uppercase tracking-wide text-navy-text/70">Registration</p>
+              </div>
+              <div className="p-5">
+                <p className="text-sm leading-relaxed text-navy-text/70">{event.excerpt}</p>
+                {event.joinUrl ? (
+                  <a
+                    href={event.joinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-awaj-red px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-awaj-red/90"
+                  >
+                    <CalendarCheck className="h-5 w-5" />
+                    {joinLabel}
+                  </a>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <Calendar className="h-16 w-16 text-white/20" />
+                  <div className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-beige px-6 py-3.5 text-base font-semibold text-navy-text/50">
+                    Registration details coming soon
                   </div>
                 )}
               </div>
@@ -113,7 +162,7 @@ export function EventDetail({ event }: { event: EventData }) {
       </section>
 
       {/* About */}
-      <section className="mx-auto max-w-[820px] px-5 py-12 lg:px-10 lg:py-16">
+      <section className="mx-auto max-w-[820px] px-5 pb-12 lg:px-10 lg:pb-16">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">About this Event</p>
         <div className="mt-3 mb-8 h-px w-16 bg-gold/50" />
         <RichContent html={event.content} className="text-base leading-relaxed" />

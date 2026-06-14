@@ -5,7 +5,7 @@ import { getUpcomingEvents } from "@/app/actions/events"
 import { dateParts } from "@/lib/format-date"
 
 export async function EventsNews() {
-  const [news, events] = await Promise.all([getLatestNews(4), getUpcomingEvents(4)])
+  const [news, events] = await Promise.all([getLatestNews(4), getUpcomingEvents(3)])
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
@@ -31,31 +31,48 @@ export async function EventsNews() {
             No upcoming events yet.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((e) => {
               const d = dateParts(e.eventDate)
+              const cover = e.imageUrl || e.bannerUrl
               return (
                 <Link
                   key={e.id}
                   href={`/events/${e.slug}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-gold/15 bg-white shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <div className="relative h-36 overflow-hidden">
-                    <img
-                      src={e.imageUrl || "/images/event-night.png"}
-                      alt=""
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute left-3 top-3 flex flex-col items-center rounded-lg bg-white px-2.5 py-1 text-center shadow-md">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-navy">
+                    {cover ? (
+                      <>
+                        <img
+                          src={cover || "/placeholder.svg"}
+                          alt=""
+                          aria-hidden="true"
+                          className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+                        />
+                        <img
+                          src={cover || "/placeholder.svg"}
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </>
+                    ) : (
+                      <img
+                        src="/images/event-night.png"
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
+                    <div className="absolute left-3 top-3 z-10 flex flex-col items-center rounded-lg bg-white px-2.5 py-1 text-center shadow-md">
                       <span className="text-[10px] font-bold uppercase leading-tight text-awaj-red">{d.month}</span>
                       <span className="font-serif text-xl font-bold leading-none text-navy-text">{d.day}</span>
                     </div>
                   </div>
-                  <div className="flex flex-1 flex-col p-4">
-                    <h3 className="font-serif text-base font-bold leading-snug text-navy-text">{e.title}</h3>
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="font-serif text-lg font-bold leading-snug text-navy-text">{e.title}</h3>
                     {e.location && <p className="mt-1 text-xs font-medium text-navy-text/55">{e.location}</p>}
                     <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-navy-text/70">{e.excerpt}</p>
-                    <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
                       Learn More
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                     </span>

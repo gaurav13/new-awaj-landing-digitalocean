@@ -41,6 +41,8 @@ type Event = {
   location: string | null
   imageUrl: string | null
   bannerUrl: string | null
+  joinUrl: string | null
+  joinLabel: string | null
   sponsors: EventSponsor[]
   speakers: EventSpeaker[]
   isFeatured: boolean
@@ -127,6 +129,14 @@ const EVENT_FIELDS: FieldDef[] = [
   { name: "eventDate", label: "Event date", type: "date", required: true },
   { name: "timeLabel", label: "Time / detail (optional)", type: "text", placeholder: "12:00 PM – 4:30 PM (JST)" },
   { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo Headquarters" },
+  {
+    name: "joinUrl",
+    label: "Join button link (optional)",
+    type: "text",
+    placeholder: "https://lu.ma/your-event or a registration form URL",
+    hint: "Paste any URL — a Luma/Eventbrite page, a Google Form, or your own form. Leave empty to hide the button.",
+  },
+  { name: "joinLabel", label: "Join button text (optional)", type: "text", placeholder: "Request to Join" },
   { name: "imageUrl", label: "Card cover image", type: "image", hint: "Shown on event cards (homepage & Events page). Landscape works best." },
   { name: "bannerUrl", label: "Detail page banner", type: "image", hint: "Large hero image on the event's own page. Falls back to the card cover if empty." },
   { name: "isFeatured", label: "Feature this event on the homepage", type: "checkbox" },
@@ -369,6 +379,8 @@ export function AdminDashboard({
                 eventDate: "",
                 timeLabel: "",
                 location: "",
+                joinUrl: "",
+                joinLabel: "",
                 imageUrl: "",
                 bannerUrl: "",
                 sponsors: [],
@@ -382,6 +394,8 @@ export function AdminDashboard({
                 eventDate: e.eventDate,
                 timeLabel: e.timeLabel ?? "",
                 location: e.location ?? "",
+                joinUrl: e.joinUrl ?? "",
+                joinLabel: e.joinLabel ?? "",
                 imageUrl: e.imageUrl ?? "",
                 bannerUrl: e.bannerUrl ?? "",
                 sponsors: e.sponsors ?? [],

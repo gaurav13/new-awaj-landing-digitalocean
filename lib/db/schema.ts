@@ -81,6 +81,8 @@ export const events = pgTable("events", {
   location: text("location"),
   imageUrl: text("image_url"),
   bannerUrl: text("banner_url"),
+  joinUrl: text("join_url"),
+  joinLabel: text("join_label"),
   sponsors: jsonb("sponsors").$type<EventSponsor[]>().notNull().default([]),
   speakers: jsonb("speakers").$type<EventSpeaker[]>().notNull().default([]),
   isFeatured: boolean("is_featured").notNull().default(false),
