@@ -175,6 +175,7 @@ export const members = pgTable("members", {
   id: serial("id").primaryKey(),
   companyName: text("company_name").notNull(),
   founderName: text("founder_name"),
+  designation: text("designation"),
   websiteUrl: text("website_url"),
   logoUrl: text("logo_url"),
   description: text("description"),

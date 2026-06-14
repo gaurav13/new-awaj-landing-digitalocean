@@ -22,6 +22,7 @@ export async function getMyMembers() {
 type MemberInput = {
   companyName: string
   founderName?: string
+  designation?: string
   websiteUrl?: string
   logoUrl?: string
   description?: string
@@ -36,6 +37,7 @@ export async function createMember(input: MemberInput) {
   await db.insert(members).values({
     companyName: input.companyName,
     founderName: input.founderName || null,
+    designation: input.designation || null,
     websiteUrl: input.websiteUrl || null,
     logoUrl: input.logoUrl || null,
     description: input.description || null,
@@ -56,6 +58,7 @@ export async function updateMember(id: number, input: MemberInput) {
     .set({
       companyName: input.companyName,
       founderName: input.founderName || null,
+      designation: input.designation || null,
       websiteUrl: input.websiteUrl || null,
       logoUrl: input.logoUrl || null,
       description: input.description || null,

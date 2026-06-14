@@ -15,23 +15,31 @@ export const metadata: Metadata = {
 type Member = Awaited<ReturnType<typeof getAllMembers>>[number]
 
 function contactHref(m: Member) {
+  // 1) A custom contact link set by the admin takes priority.
+  if (m.contactUrl) return m.contactUrl
+  // 2) Otherwise email the member directly if an address is on file.
   if (m.contactEmail) {
     const subject = encodeURIComponent(`Request to contact ${m.companyName}`)
     return `mailto:${m.contactEmail}?subject=${subject}`
   }
+  // 3) Fall back to the AWAJ contact form, pre-filled for an introduction.
   return `/contact?member=${encodeURIComponent(m.companyName)}`
+}
+
+function isExternal(href: string) {
+  return href.startsWith("http") || href.startsWith("mailto:")
 }
 
 function MemberCard({ m }: { m: Member }) {
   return (
     <div className="flex h-full flex-col rounded-2xl border border-gold/20 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-beige">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-white p-2.5">
           {m.logoUrl ? (
             <img
               src={m.logoUrl || "/placeholder.svg"}
               alt={`${m.companyName} logo`}
-              className="h-full w-full object-contain"
+              className="max-h-full max-w-full object-contain"
             />
           ) : (
             <Building2 className="h-6 w-6 text-gold" />
@@ -40,10 +48,13 @@ function MemberCard({ m }: { m: Member }) {
         <div className="min-w-0">
           <h3 className="truncate font-serif text-lg font-bold text-navy-text">{m.companyName}</h3>
           {m.founderName ? (
-            <p className="mt-0.5 flex items-center gap-1.5 text-sm text-navy-text/65">
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-navy-text/70">
               <User className="h-3.5 w-3.5 shrink-0 text-gold" />
               <span className="truncate">{m.founderName}</span>
             </p>
+          ) : null}
+          {m.designation ? (
+            <p className="mt-0.5 truncate text-xs text-navy-text/55">{m.designation}</p>
           ) : null}
         </div>
       </div>
@@ -58,20 +69,27 @@ function MemberCard({ m }: { m: Member }) {
             href={m.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gold transition-colors hover:text-navy-text"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-navy-text/80 transition-colors hover:text-awaj-red"
           >
-            <Globe className="h-4 w-4" />
+            <Globe className="h-4 w-4 text-awaj-red" />
             Website
             <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
         ) : null}
-        <a
-          href={contactHref(m)}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
-        >
-          <Mail className="h-3.5 w-3.5 text-gold" />
-          Request to Contact
-        </a>
+        {(() => {
+          const href = contactHref(m)
+          const external = isExternal(href)
+          return (
+            <a
+              href={href}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
+            >
+              <Mail className="h-3.5 w-3.5 text-gold" />
+              Request to Contact
+            </a>
+          )
+        })()}
       </div>
     </div>
   )

@@ -100,6 +100,7 @@ type Member = {
   id: number
   companyName: string
   founderName: string | null
+  designation: string | null
   websiteUrl: string | null
   logoUrl: string | null
   description: string | null
@@ -333,6 +334,7 @@ const MEMBER_FIELDS: FieldDef[] = [
     optionItems: MEMBER_CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
   },
   { name: "founderName", label: "Founder / representative (optional)", type: "text", placeholder: "Jane Doe" },
+  { name: "designation", label: "Designation / title (optional)", type: "text", placeholder: "Founder & CEO" },
   { name: "websiteUrl", label: "Website link (optional)", type: "text", placeholder: "https://example.com" },
   {
     name: "contactUrl",
@@ -653,6 +655,7 @@ export function AdminDashboard({
                 companyName: "",
                 category: "corporate",
                 founderName: "",
+                designation: "",
                 websiteUrl: "",
                 contactUrl: "",
                 contactEmail: "",
@@ -664,6 +667,7 @@ export function AdminDashboard({
                 companyName: m.companyName,
                 category: m.category,
                 founderName: m.founderName ?? "",
+                designation: m.designation ?? "",
                 websiteUrl: m.websiteUrl ?? "",
                 contactUrl: m.contactUrl ?? "",
                 contactEmail: m.contactEmail ?? "",
@@ -674,7 +678,7 @@ export function AdminDashboard({
               render={{
                 image: (m) => m.logoUrl,
                 badge: (m) => memberCategoryLabel(m.category),
-                meta: (m) => m.founderName ?? "",
+                meta: (m) => [m.founderName, m.designation].filter(Boolean).join(" — "),
                 title: (m) => m.companyName,
               }}
               onCreate={(d) => createMember(d)}
