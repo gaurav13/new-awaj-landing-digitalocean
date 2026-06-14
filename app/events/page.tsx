@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight, MapPin, Clock } from "lucide-react"
-import { Header } from "@/components/awaj/header"
-import { Footer } from "@/components/awaj/footer"
+import { SiteHeader } from "@/components/awaj/site-header"
+import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllEvents } from "@/app/actions/events"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 
@@ -20,7 +20,7 @@ export default async function EventsPage() {
 
   return (
     <main className="min-h-svh bg-ivory">
-      <Header />
+      <SiteHeader />
 
       <section className="border-b border-gold/20 bg-navy">
         <div className="mx-auto max-w-[1280px] px-5 py-14 lg:px-10 lg:py-20">
@@ -109,7 +109,7 @@ export default async function EventsPage() {
         )}
       </div>
 
-      <Footer />
+      <SiteFooter />
     </main>
   )
 }

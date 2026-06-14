@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
-import { Header } from "@/components/awaj/header"
-import { Footer } from "@/components/awaj/footer"
+import { SiteHeader } from "@/components/awaj/site-header"
+import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllNews } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 
@@ -16,7 +16,7 @@ export default async function NewsPage() {
 
   return (
     <main className="min-h-svh bg-ivory">
-      <Header />
+      <SiteHeader />
 
       {/* Page hero */}
       <section className="border-b border-gold/20 bg-navy">
@@ -111,7 +111,7 @@ export default async function NewsPage() {
         )}
       </div>
 
-      <Footer />
+      <SiteFooter />
     </main>
   )
 }

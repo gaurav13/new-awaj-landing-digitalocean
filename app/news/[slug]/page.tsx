@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, MapPin, Calendar } from "lucide-react"
-import { Header } from "@/components/awaj/header"
-import { Footer } from "@/components/awaj/footer"
+import { SiteHeader } from "@/components/awaj/site-header"
+import { SiteFooter } from "@/components/awaj/site-footer"
 import { RichContent } from "@/components/awaj/rich-content"
 import { getNewsBySlug, getRelatedNews } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
@@ -28,7 +28,7 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main className="min-h-svh bg-ivory">
-      <Header />
+      <SiteHeader />
 
       <article className="mx-auto max-w-[820px] px-5 py-10 lg:py-14">
         <Link
@@ -109,7 +109,7 @@ export default async function ArticlePage({ params }: Props) {
         </section>
       )}
 
-      <Footer />
+      <SiteFooter />
     </main>
   )
 }
