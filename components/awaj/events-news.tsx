@@ -1,4 +1,7 @@
+import Link from "next/link"
 import { MapPin, Clock, ArrowRight, ChevronRight } from "lucide-react"
+import { getLatestNews } from "@/app/actions/news"
+import { dateParts } from "@/lib/format-date"
 
 const EVENTS = [
   {
@@ -27,63 +30,30 @@ const EVENTS = [
   },
 ]
 
-const NEWS = [
-  {
-    image: "/images/news-1.png",
-    title: "AWAJ Meets U.S. SEC Chairman Paul S. Atkins",
-    desc: "Strengthening the Web3 corridor between Japan and the United States.",
-    month: "MAY",
-    day: "07",
-    year: "2025",
-  },
-  {
-    image: "/images/news-2.png",
-    title: "Strategic Collaboration with The Digital Chamber",
-    desc: "Building stronger ties and advancing Web3 innovation between Japan and the U.S.",
-    month: "APR",
-    day: "28",
-    year: "2025",
-  },
-  {
-    image: "/images/news-3.png",
-    title: "Japan Financial Infrastructure Innovation Program – Phase 2 Selected",
-    desc: "10 startups selected for Demo Day from 76 total applications.",
-    month: "APR",
-    day: "15",
-    year: "2025",
-  },
-  {
-    image: "/images/news-4.png",
-    title: "Memories from Japan Hub, A Week of Excellence",
-    desc: "Highlights from our global event bringing together innovators and leaders.",
-    month: "MAR",
-    day: "31",
-    year: "2025",
-  },
-]
-
-function SectionHeading({ title, link }: { title: string; link: string }) {
+function SectionHeading({ title, link, href }: { title: string; link: string; href: string }) {
   return (
     <div className="mb-6 flex items-center justify-between">
       <h2 className="font-serif text-xl font-bold uppercase tracking-wide text-navy-text">{title}</h2>
-      <a
-        href="#"
+      <Link
+        href={href}
         className="group inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:text-navy-text"
       >
         {link}
         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-      </a>
+      </Link>
     </div>
   )
 }
 
-export function EventsNews() {
+export async function EventsNews() {
+  const news = await getLatestNews(4)
+
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-8 lg:px-10 lg:py-12">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {/* Upcoming Events */}
         <div>
-          <SectionHeading title="Upcoming Events" link="View All Events" />
+          <SectionHeading title="Upcoming Events" link="View All Events" href="#" />
 
           {/* Featured */}
           <div className="relative overflow-hidden rounded-2xl shadow-md">
@@ -135,25 +105,42 @@ export function EventsNews() {
 
         {/* Latest News */}
         <div>
-          <SectionHeading title="Latest News" link="View All News" />
-          <div className="divide-y divide-gold/15 rounded-2xl border border-gold/20 bg-white">
-            {NEWS.map((n) => (
-              <a key={n.title} href="#" className="flex gap-4 p-4 transition-colors hover:bg-beige/40">
-                <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
-                  <img src={n.image || "/placeholder.svg"} alt="" className="h-full w-full object-cover" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-bold leading-snug text-navy-text">{n.title}</h4>
-                  <p className="mt-1 line-clamp-2 text-xs text-navy-text/60">{n.desc}</p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-xs font-semibold uppercase text-navy-text/70">{n.month}</p>
-                  <p className="font-serif text-lg font-bold leading-none text-awaj-red">{n.day}</p>
-                  <p className="text-[10px] text-gold">{n.year}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+          <SectionHeading title="Latest News" link="View All News" href="/news" />
+          {news.length === 0 ? (
+            <div className="rounded-2xl border border-gold/20 bg-white p-8 text-center text-sm text-navy-text/60">
+              No news published yet.
+            </div>
+          ) : (
+            <div className="divide-y divide-gold/15 rounded-2xl border border-gold/20 bg-white">
+              {news.map((n) => {
+                const d = dateParts(n.publishedAt)
+                return (
+                  <Link
+                    key={n.id}
+                    href={`/news/${n.slug}`}
+                    className="flex gap-4 p-4 transition-colors hover:bg-beige/40"
+                  >
+                    <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
+                      <img
+                        src={n.imageUrl || "/placeholder.svg?height=200&width=200&query=news"}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold leading-snug text-navy-text">{n.title}</h4>
+                      <p className="mt-1 line-clamp-2 text-xs text-navy-text/60">{n.excerpt}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-xs font-semibold uppercase text-navy-text/70">{d.month}</p>
+                      <p className="font-serif text-lg font-bold leading-none text-awaj-red">{d.day}</p>
+                      <p className="text-[10px] text-gold">{d.year}</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
     </section>
