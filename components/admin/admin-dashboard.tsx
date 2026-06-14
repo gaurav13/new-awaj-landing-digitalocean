@@ -8,10 +8,13 @@ import { Logo } from "@/components/awaj/logo"
 import { authClient } from "@/lib/auth-client"
 import { formatLongDate } from "@/lib/format-date"
 import { ResourceManager, type FieldDef } from "./resource-manager"
+import { SettingsPanel } from "./settings-panel"
 import { createNews, updateNews, deleteNews } from "@/app/actions/news"
 import { createEvent, updateEvent, deleteEvent } from "@/app/actions/events"
 import { createProgram, updateProgram, deleteProgram } from "@/app/actions/programs"
 import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/actions/team"
+import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
+import type { SiteSettings } from "@/app/actions/settings"
 
 type News = {
   id: number
@@ -55,6 +58,14 @@ type Team = {
   bio: string | null
   imageUrl: string | null
   linkedinUrl: string | null
+  sortOrder: number
+}
+type Partner = {
+  id: number
+  name: string
+  tier: string
+  logoUrl: string | null
+  linkUrl: string | null
   sortOrder: number
 }
 
@@ -108,18 +119,32 @@ const TEAM_FIELDS: FieldDef[] = [
   { name: "bio", label: "Bio (optional)", type: "textarea", rows: 4 },
 ]
 
+const PARTNER_TIERS = ["institution", "strategic"]
+
+const PARTNER_FIELDS: FieldDef[] = [
+  { name: "name", label: "Partner name", type: "text", required: true, placeholder: "Microsoft" },
+  { name: "tier", label: "Tier", type: "select", options: PARTNER_TIERS },
+  { name: "logoUrl", label: "Logo", type: "image" },
+  { name: "linkUrl", label: "Website / link (optional)", type: "text", placeholder: "https://example.com" },
+  { name: "sortOrder", label: "Sort order", type: "number" },
+]
+
 export function AdminDashboard({
   userName,
   news,
   events,
   programs,
   team,
+  partners,
+  settings,
 }: {
   userName: string
   news: News[]
   events: Event[]
   programs: Program[]
   team: Team[]
+  partners: Partner[]
+  settings: SiteSettings
 }) {
   const router = useRouter()
 
@@ -165,6 +190,8 @@ export function AdminDashboard({
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
+            <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news" className="mt-6">
@@ -305,6 +332,36 @@ export function AdminDashboard({
               onUpdate={(id, d) => updateTeamMember(id, d)}
               onDelete={(id) => deleteTeamMember(id)}
             />
+          </TabsContent>
+
+          <TabsContent value="partners" className="mt-6">
+            <ResourceManager<Partner>
+              title="Partners"
+              singular="Partner"
+              items={partners}
+              fields={PARTNER_FIELDS}
+              emptyForm={{ name: "", tier: "strategic", logoUrl: "", linkUrl: "", sortOrder: 0 }}
+              toForm={(p) => ({
+                name: p.name,
+                tier: p.tier,
+                logoUrl: p.logoUrl ?? "",
+                linkUrl: p.linkUrl ?? "",
+                sortOrder: p.sortOrder,
+              })}
+              render={{
+                image: (p) => p.logoUrl,
+                badge: (p) => (p.tier === "institution" ? "Institution" : "Strategic"),
+                meta: (p) => p.linkUrl ?? "",
+                title: (p) => p.name,
+              }}
+              onCreate={(d) => createPartner(d)}
+              onUpdate={(id, d) => updatePartner(id, d)}
+              onDelete={(id) => deletePartner(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <SettingsPanel settings={settings} />
           </TabsContent>
         </Tabs>
       </div>

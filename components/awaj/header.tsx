@@ -14,13 +14,15 @@ const NAV: { label: string; href: string }[] = [
   { label: "Contact", href: "mailto:bm@asiaweb3alliance.jp" },
 ]
 
-export function Header() {
+export function Header({ logoUrl }: { logoUrl?: string }) {
   const [open, setOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gold/20 bg-ivory/90 backdrop-blur-md">
       <div className="mx-auto flex h-[88px] max-w-[1440px] items-center justify-between px-5 lg:px-10">
-        <Logo />
+        <Link href="/" aria-label="Home">
+          <Logo imageUrl={logoUrl} />
+        </Link>
 
         <nav className="hidden items-center gap-7 xl:flex">
           {NAV.map((item) => (

@@ -111,3 +111,20 @@ export const teamMembers = pgTable("team_members", {
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
+
+export const partners = pgTable("partners", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  tier: text("tier").notNull().default("strategic"),
+  logoUrl: text("logo_url"),
+  linkUrl: text("link_url"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const siteSettings = pgTable("site_settings", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})

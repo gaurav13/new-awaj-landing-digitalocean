@@ -1,10 +1,19 @@
 type LogoProps = {
   variant?: "dark" | "light"
   className?: string
+  imageUrl?: string
 }
 
-export function Logo({ variant = "dark", className = "" }: LogoProps) {
+export function Logo({ variant = "dark", className = "", imageUrl }: LogoProps) {
   const textColor = variant === "light" ? "text-white" : "text-navy-text"
+
+  if (imageUrl) {
+    return (
+      <div className={`flex items-center ${className}`}>
+        <img src={imageUrl || "/placeholder.svg"} alt="Asia Web3 &amp; AI Alliance Japan" className="h-12 w-auto object-contain" />
+      </div>
+    )
+  }
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>

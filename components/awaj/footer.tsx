@@ -44,7 +44,7 @@ function DiscordIcon() {
   )
 }
 
-export function Footer() {
+export function Footer({ logoUrl }: { logoUrl?: string }) {
   const socials = [
     { icon: XIcon, label: "X" },
     { icon: LinkedinIcon, label: "LinkedIn" },
@@ -58,13 +58,17 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           {/* Left */}
           <div>
-            <div className="flex items-center gap-3">
-              <LogoMark size={40} />
-              <div className="leading-none">
-                <p className="font-serif text-base font-bold">Asia Web3 &amp; AI Alliance</p>
-                <p className="text-xs font-semibold tracking-[0.35em] text-awaj-red">JAPAN</p>
+            {logoUrl ? (
+              <img src={logoUrl || "/placeholder.svg"} alt="Asia Web3 &amp; AI Alliance Japan" className="h-11 w-auto object-contain" />
+            ) : (
+              <div className="flex items-center gap-3">
+                <LogoMark size={40} />
+                <div className="leading-none">
+                  <p className="font-serif text-base font-bold">Asia Web3 &amp; AI Alliance</p>
+                  <p className="text-xs font-semibold tracking-[0.35em] text-awaj-red">JAPAN</p>
+                </div>
               </div>
-            </div>
+            )}
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/60">
               Building the future of Web3 &amp; AI, together across Asia and beyond.
             </p>

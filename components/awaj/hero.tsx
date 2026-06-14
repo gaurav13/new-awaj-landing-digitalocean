@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react"
 
-export function Hero() {
+export function Hero({ bannerUrl = "/images/hero-tokyo.png" }: { bannerUrl?: string }) {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 pt-12 pb-40 lg:grid-cols-2 lg:px-10 lg:pt-16 lg:pb-52">
@@ -36,7 +36,7 @@ export function Hero() {
         <div className="relative">
           <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-xl">
             <img
-              src="/images/hero-tokyo.png"
+              src={bannerUrl || "/images/hero-tokyo.png"}
               alt="Tokyo Tower at golden hour with Mount Fuji in the background"
               className="h-full w-full object-cover"
             />
