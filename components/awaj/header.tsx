@@ -6,11 +6,11 @@ import { Mail, Globe, Menu, X } from "lucide-react"
 import { Logo } from "./logo"
 
 const NAV: { label: string; href: string }[] = [
+  { label: "Home", href: "/" },
   { label: "Programs", href: "/#programs" },
-  { label: "Events", href: "/events" },
-  { label: "News", href: "/news" },
   { label: "Members", href: "/members" },
-  { label: "Team", href: "/#team" },
+  { label: "News", href: "/news" },
+  { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
 ]
 
