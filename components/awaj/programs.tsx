@@ -32,8 +32,8 @@ export async function Programs() {
   if (programs.length === 0) return null
 
   return (
-    <section id="programs" className="mx-auto max-w-[1280px] px-5 py-20 lg:px-10">
-      <div className="mb-12 text-center">
+    <section id="programs" className="mx-auto max-w-[1280px] px-5 py-14 lg:px-10">
+      <div className="mb-10 text-center">
         <h2 className="font-serif text-3xl font-bold tracking-tight text-navy-text md:text-4xl">Our Core Programs</h2>
         <div className="mx-auto mt-3 h-px w-20 bg-gold/60" />
       </div>

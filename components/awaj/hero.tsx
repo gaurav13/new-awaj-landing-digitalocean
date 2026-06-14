@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 export function Hero({ bannerUrl = "/images/hero-tokyo.png" }: { bannerUrl?: string }) {
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 pt-12 pb-40 lg:grid-cols-2 lg:px-10 lg:pt-16 lg:pb-52">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 pt-10 pb-32 lg:grid-cols-2 lg:px-10 lg:pt-14 lg:pb-44">
         {/* Left */}
         <div className="relative z-10 max-w-xl">
           <h1 className="text-balance font-serif text-4xl font-bold leading-[1.12] tracking-tight text-navy-text md:text-5xl lg:text-[3.4rem]">

@@ -24,7 +24,7 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
           <Logo imageUrl={logoUrl} />
         </Link>
 
-        <nav className="hidden items-center gap-7 xl:flex">
+        <nav className="hidden items-center gap-7 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.label}
