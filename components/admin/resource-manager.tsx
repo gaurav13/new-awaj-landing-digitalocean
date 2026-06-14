@@ -99,8 +99,15 @@ export function ResourceManager<T extends { id: number }>({
         setForm(emptyForm)
         setEditing(null)
         router.refresh()
-      } catch {
-        setError("Something went wrong. Please try again.")
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+              ? err
+              : "Something went wrong. Please try again."
+        console.log("[v0] admin save error:", message)
+        setError(message)
       }
     })
   }
@@ -108,8 +115,14 @@ export function ResourceManager<T extends { id: number }>({
   function handleDelete(id: number) {
     if (!confirm(`Delete this ${singular.toLowerCase()}? This cannot be undone.`)) return
     startTransition(async () => {
-      await onDelete(id)
-      router.refresh()
+      try {
+        await onDelete(id)
+        router.refresh()
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to delete. Please try again."
+        console.log("[v0] admin delete error:", message)
+        setError(message)
+      }
     })
   }
 
