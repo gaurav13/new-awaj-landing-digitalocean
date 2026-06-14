@@ -38,18 +38,35 @@ export default async function EventPage({ params }: Props) {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((e) => {
                 const d = dateParts(e.eventDate)
+                const cover = e.imageUrl || e.bannerUrl
                 return (
                   <Link
                     key={e.id}
                     href={`/events/${e.slug}`}
                     className="group flex flex-col overflow-hidden rounded-2xl border border-gold/20 bg-ivory transition-shadow hover:shadow-md"
                   >
-                    <div className="aspect-[16/10] overflow-hidden">
-                      <img
-                        src={e.imageUrl || "/placeholder.svg?height=400&width=600&query=event"}
-                        alt=""
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
+                    <div className="relative aspect-[16/10] overflow-hidden bg-navy">
+                      {cover ? (
+                        <>
+                          <img
+                            src={cover || "/placeholder.svg"}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+                          />
+                          <img
+                            src={cover || "/placeholder.svg"}
+                            alt=""
+                            className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </>
+                      ) : (
+                        <img
+                          src="/images/event-night.png"
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
                     </div>
                     <div className="flex flex-1 flex-col p-5">
                       <p className="text-xs font-semibold uppercase tracking-wide text-gold">

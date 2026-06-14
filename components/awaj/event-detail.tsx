@@ -54,6 +54,27 @@ function dateBits(value: string) {
   }
 }
 
+/* Eyebrow + serif heading — matches the rest of the site's section style */
+function SectionHeading({
+  eyebrow,
+  title,
+  icon: Icon,
+}: {
+  eyebrow: string
+  title: string
+  icon: typeof Users
+}) {
+  return (
+    <div className="mb-8 flex flex-col items-center text-center">
+      <span className="flex items-center gap-2 text-gold">
+        <Icon className="h-4 w-4" />
+        <span className="text-xs font-semibold uppercase tracking-[0.22em]">{eyebrow}</span>
+      </span>
+      <h2 className="mt-2 font-serif text-3xl font-bold tracking-tight text-navy-text">{title}</h2>
+    </div>
+  )
+}
+
 export function EventDetail({ event }: { event: EventData }) {
   const poster = event.bannerUrl || event.imageUrl
   const d = dateBits(event.eventDate)
@@ -83,7 +104,7 @@ export function EventDetail({ event }: { event: EventData }) {
         </Link>
 
         {/* ── Hero ── */}
-        <section className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-12">
+        <section className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12">
           {/* Poster */}
           <div className="lg:sticky lg:top-6 lg:self-start">
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-navy shadow-lg ring-1 ring-gold/15">
@@ -116,16 +137,16 @@ export function EventDetail({ event }: { event: EventData }) {
               AWAJ Event
             </span>
 
-            <h1 className="mt-4 text-balance font-serif text-4xl font-bold leading-[1.08] tracking-tight text-navy-text md:text-5xl">
+            <h1 className="mt-4 text-balance font-serif text-3xl font-bold leading-[1.12] tracking-tight text-navy-text md:text-4xl">
               {event.title}
             </h1>
             {event.subtitle ? (
-              <p className="mt-3 text-pretty font-serif text-xl font-semibold text-awaj-red md:text-2xl">
+              <p className="mt-2.5 text-pretty font-serif text-lg font-semibold text-awaj-red md:text-xl">
                 {event.subtitle}
               </p>
             ) : null}
 
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-navy-text/70">{event.excerpt}</p>
+            <p className="mt-4 max-w-2xl text-pretty text-base leading-relaxed text-navy-text/70">{event.excerpt}</p>
 
             {/* Info cards */}
             <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -194,36 +215,30 @@ export function EventDetail({ event }: { event: EventData }) {
           </div>
         </section>
 
-        {/* ── Sponsors & partners (top placement) ── */}
+        {/* ── Sponsors & partners (slider, top placement) ── */}
         {event.sponsors.length > 0 ? (
           <section className="mt-12 lg:mt-14">
-            <div className="mb-6 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gold/40" />
-              <h2 className="flex items-center gap-2 font-serif text-lg font-bold uppercase tracking-[0.18em] text-navy-text">
-                <Trophy className="h-5 w-5 text-gold" />
-                Sponsors &amp; Partners
-              </h2>
-              <span className="h-px w-10 bg-gold/40" />
-            </div>
-            <div className="rounded-3xl border border-gold/25 bg-white px-6 py-9 shadow-sm md:px-10">
-              <div className="flex flex-col gap-8">
+            <SectionHeading eyebrow="Backed by" title="Sponsors & Partners" icon={Trophy} />
+            <div className="rounded-3xl border border-gold/25 bg-white px-4 py-8 shadow-sm md:px-8">
+              <div className="flex flex-col gap-7">
                 {tiers.map((group, gi) => (
                   <div key={gi}>
                     {group.tier ? (
-                      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
+                      <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
                         {group.tier}
                       </p>
                     ) : null}
-                    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+                    {/* Horizontal slider — saves vertical space, scrolls on overflow */}
+                    <div className="flex snap-x snap-mandatory items-center gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:justify-center md:flex-wrap md:gap-x-10 md:gap-y-6">
                       {group.items.map((p, i) => {
                         const inner = p.logoUrl ? (
                           <img
                             src={p.logoUrl || "/placeholder.svg"}
                             alt={p.name}
-                            className="h-10 w-auto max-w-[170px] object-contain opacity-80 transition-opacity hover:opacity-100"
+                            className="h-10 w-auto max-w-[150px] object-contain opacity-80 transition-opacity hover:opacity-100"
                           />
                         ) : (
-                          <span className="rounded-xl border border-gold/20 bg-beige/50 px-5 py-2.5 text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/65 transition-colors hover:text-gold">
+                          <span className="whitespace-nowrap rounded-xl border border-gold/20 bg-beige/50 px-5 py-2.5 text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/65 transition-colors hover:text-gold">
                             {p.name}
                           </span>
                         )
@@ -233,13 +248,13 @@ export function EventDetail({ event }: { event: EventData }) {
                             href={p.linkUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center"
+                            className="flex shrink-0 snap-center items-center"
                             aria-label={p.name}
                           >
                             {inner}
                           </a>
                         ) : (
-                          <div key={i} className="flex items-center">
+                          <div key={i} className="flex shrink-0 snap-center items-center">
                             {inner}
                           </div>
                         )
@@ -251,87 +266,13 @@ export function EventDetail({ event }: { event: EventData }) {
             </div>
           </section>
         ) : null}
-
-        {/* ── About + Agenda ── */}
-        <section className="mt-12 grid grid-cols-1 gap-8 lg:mt-16 lg:grid-cols-2 lg:gap-10">
-          {/* About */}
-          <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-gold" />
-              <h2 className="font-serif text-xl font-bold uppercase tracking-wide text-navy-text">About the Event</h2>
-            </div>
-            <RichContent html={event.content} className="mt-5 text-[15px] leading-relaxed" />
-
-            {event.highlights.length > 0 ? (
-              <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-7">
-                {event.highlights.map((h, i) => {
-                  const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length]
-                  return (
-                    <div key={i} className="flex flex-col items-center text-center">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-beige text-gold">
-                        <Icon className="h-5 w-5" strokeWidth={1.75} />
-                      </span>
-                      <h3 className="mt-3 text-sm font-bold text-navy-text">{h.title}</h3>
-                      {h.description ? (
-                        <p className="mt-1 text-xs leading-relaxed text-navy-text/60">{h.description}</p>
-                      ) : null}
-                    </div>
-                  )
-                })}
-              </div>
-            ) : null}
-          </div>
-
-          {/* Agenda */}
-          {event.agenda.length > 0 ? (
-            <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-gold" />
-                  <h2 className="font-serif text-xl font-bold uppercase tracking-wide text-navy-text">Agenda</h2>
-                </div>
-                <span className="text-sm text-navy-text/55">
-                  {d.weekday}, {d.day} {d.month} {d.year}
-                </span>
-              </div>
-
-              <ol className="mt-5">
-                {event.agenda.map((a, i) => {
-                  const Icon = AGENDA_ICONS[i % AGENDA_ICONS.length]
-                  return (
-                    <li key={i} className="flex gap-4 border-t border-gold/15 py-4 first:border-t-0 first:pt-0">
-                      {a.time ? (
-                        <span className="w-24 shrink-0 pt-0.5 text-sm font-semibold text-navy-text/70">{a.time}</span>
-                      ) : null}
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold leading-snug text-navy-text">{a.title}</h3>
-                        {a.description ? (
-                          <p className="mt-0.5 text-sm leading-relaxed text-navy-text/60">{a.description}</p>
-                        ) : null}
-                      </div>
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-full bg-beige text-gold">
-                        <Icon className="h-4 w-4" strokeWidth={1.75} />
-                      </span>
-                    </li>
-                  )
-                })}
-              </ol>
-            </div>
-          ) : null}
-        </section>
       </div>
 
-      {/* ── Speakers ── */}
+      {/* ── Speakers (right after sponsors) ── */}
       {event.speakers.length > 0 ? (
         <section className="border-y border-gold/20 bg-beige/40 py-14 lg:py-16">
           <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-            <div className="mb-9 flex flex-col items-center text-center">
-              <span className="flex items-center gap-2 text-gold">
-                <Users className="h-5 w-5" />
-                <span className="text-xs font-bold uppercase tracking-[0.2em]">Meet the</span>
-              </span>
-              <h2 className="mt-1 font-serif text-3xl font-bold text-navy-text md:text-4xl">Speakers</h2>
-            </div>
+            <SectionHeading eyebrow="Meet the" title="Speakers" icon={Users} />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {event.speakers.map((s, i) => {
                 const inner = (
@@ -382,6 +323,76 @@ export function EventDetail({ event }: { event: EventData }) {
           </div>
         </section>
       ) : null}
+
+      {/* ── About + Agenda ── */}
+      <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
+        <section className="mt-12 grid grid-cols-1 gap-8 pb-2 lg:mt-16 lg:grid-cols-2 lg:gap-10">
+          {/* About */}
+          <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-gold" />
+              <h2 className="font-serif text-2xl font-bold tracking-tight text-navy-text">About the Event</h2>
+            </div>
+            <RichContent html={event.content} className="mt-5 text-[15px] leading-relaxed" />
+
+            {event.highlights.length > 0 ? (
+              <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-7">
+                {event.highlights.map((h, i) => {
+                  const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length]
+                  return (
+                    <div key={i} className="flex flex-col items-center text-center">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-beige text-gold">
+                        <Icon className="h-5 w-5" strokeWidth={1.75} />
+                      </span>
+                      <h3 className="mt-3 text-sm font-bold text-navy-text">{h.title}</h3>
+                      {h.description ? (
+                        <p className="mt-1 text-xs leading-relaxed text-navy-text/60">{h.description}</p>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Agenda */}
+          {event.agenda.length > 0 ? (
+            <div className="rounded-3xl border border-gold/20 bg-white p-7 lg:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-gold" />
+                  <h2 className="font-serif text-2xl font-bold tracking-tight text-navy-text">Agenda</h2>
+                </div>
+                <span className="text-sm text-navy-text/55">
+                  {d.weekday}, {d.day} {d.month} {d.year}
+                </span>
+              </div>
+
+              <ol className="mt-5">
+                {event.agenda.map((a, i) => {
+                  const Icon = AGENDA_ICONS[i % AGENDA_ICONS.length]
+                  return (
+                    <li key={i} className="flex gap-4 border-t border-gold/15 py-4 first:border-t-0 first:pt-0">
+                      {a.time ? (
+                        <span className="w-24 shrink-0 pt-0.5 text-sm font-semibold text-navy-text/70">{a.time}</span>
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold leading-snug text-navy-text">{a.title}</h3>
+                        {a.description ? (
+                          <p className="mt-0.5 text-sm leading-relaxed text-navy-text/60">{a.description}</p>
+                        ) : null}
+                      </div>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-full bg-beige text-gold">
+                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                      </span>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+          ) : null}
+        </section>
+      </div>
     </article>
   )
 }
