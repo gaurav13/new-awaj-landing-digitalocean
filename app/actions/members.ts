@@ -27,6 +27,7 @@ type MemberInput = {
   description?: string
   category?: string
   contactEmail?: string
+  contactUrl?: string
   sortOrder?: number
 }
 
@@ -40,6 +41,7 @@ export async function createMember(input: MemberInput) {
     description: input.description || null,
     category: input.category || "corporate",
     contactEmail: input.contactEmail || null,
+    contactUrl: input.contactUrl || null,
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
   })
@@ -59,6 +61,7 @@ export async function updateMember(id: number, input: MemberInput) {
       description: input.description || null,
       category: input.category || "corporate",
       contactEmail: input.contactEmail || null,
+      contactUrl: input.contactUrl || null,
       sortOrder: input.sortOrder ?? 0,
     })
     .where(eq(members.id, id))

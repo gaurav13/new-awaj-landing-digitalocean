@@ -180,6 +180,7 @@ export const members = pgTable("members", {
   description: text("description"),
   category: text("category").notNull().default("corporate"),
   contactEmail: text("contact_email"),
+  contactUrl: text("contact_url"),
   sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

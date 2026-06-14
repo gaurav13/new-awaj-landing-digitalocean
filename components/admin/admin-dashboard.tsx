@@ -105,6 +105,7 @@ type Member = {
   description: string | null
   category: string
   contactEmail: string | null
+  contactUrl: string | null
   sortOrder: number
 }
 type Media = {
@@ -334,11 +335,18 @@ const MEMBER_FIELDS: FieldDef[] = [
   { name: "founderName", label: "Founder / representative (optional)", type: "text", placeholder: "Jane Doe" },
   { name: "websiteUrl", label: "Website link (optional)", type: "text", placeholder: "https://example.com" },
   {
+    name: "contactUrl",
+    label: "Custom contact link (optional)",
+    type: "text",
+    placeholder: "https://example.com/contact or a mailto: link",
+    hint: 'The "Request to Contact" button opens this link directly. If left empty, the button opens the AWAJ contact form, pre-filled to request an introduction to this member.',
+  },
+  {
     name: "contactEmail",
     label: "Contact email (optional)",
     type: "text",
     placeholder: "contact@example.com",
-    hint: "If set, the “Request to Contact” button emails this address directly. Otherwise it opens the contact form.",
+    hint: "Used as the contact link if no custom link is set above. If both are empty, the AWAJ contact form is used instead.",
   },
   { name: "logoUrl", label: "Company logo (optional)", type: "image" },
   { name: "description", label: "Short description (optional)", type: "textarea", rows: 3 },
@@ -646,6 +654,7 @@ export function AdminDashboard({
                 category: "corporate",
                 founderName: "",
                 websiteUrl: "",
+                contactUrl: "",
                 contactEmail: "",
                 logoUrl: "",
                 description: "",
@@ -656,6 +665,7 @@ export function AdminDashboard({
                 category: m.category,
                 founderName: m.founderName ?? "",
                 websiteUrl: m.websiteUrl ?? "",
+                contactUrl: m.contactUrl ?? "",
                 contactEmail: m.contactEmail ?? "",
                 logoUrl: m.logoUrl ?? "",
                 description: m.description ?? "",
