@@ -45,6 +45,7 @@ export async function Team() {
               <div className="flex flex-1 flex-col p-4">
                 <h3 className="font-serif text-base font-bold leading-snug text-navy-text">{m.name}</h3>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wide text-gold">{m.role}</p>
+                {m.company && <p className="mt-0.5 text-xs font-medium text-navy-text/70">{m.company}</p>}
                 {m.bio && <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-navy-text/65">{m.bio}</p>}
                 {m.linkedinUrl && (
                   <a

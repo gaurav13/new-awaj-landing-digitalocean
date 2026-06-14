@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, MapPin, Calendar, Clock } from "lucide-react"
 import { Header } from "@/components/awaj/header"
 import { Footer } from "@/components/awaj/footer"
+import { RichContent } from "@/components/awaj/rich-content"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 
@@ -69,16 +70,7 @@ export default async function EventPage({ params }: Props) {
 
         <p className="mt-8 text-pretty text-lg font-medium leading-relaxed text-navy-text/80">{event.excerpt}</p>
 
-        <div className="mt-6 space-y-5 leading-relaxed text-navy-text/75">
-          {event.content
-            .split("\n")
-            .filter(Boolean)
-            .map((para, i) => (
-              <p key={i} className="text-pretty">
-                {para}
-              </p>
-            ))}
-        </div>
+        <RichContent html={event.content} className="mt-6" />
       </article>
 
       {related.length > 0 && (

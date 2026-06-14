@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { ImageUpload } from "./image-upload"
+import { RichTextEditor } from "./rich-text-editor"
 
-export type FieldType = "text" | "textarea" | "date" | "select" | "checkbox" | "number"
+export type FieldType = "text" | "textarea" | "date" | "select" | "checkbox" | "number" | "image" | "richtext"
 
 export type FieldDef = {
   name: string
@@ -240,6 +242,29 @@ export function ResourceManager<T extends { id: number }>({
                           </option>
                         ))}
                       </select>
+                    </div>
+                  )
+                }
+                if (f.type === "image") {
+                  return (
+                    <div key={f.name} className="flex flex-col gap-2">
+                      <Label>{f.label}</Label>
+                      <ImageUpload
+                        value={String(form[f.name] ?? "")}
+                        onChange={(url) => setForm({ ...form, [f.name]: url })}
+                      />
+                    </div>
+                  )
+                }
+                if (f.type === "richtext") {
+                  return (
+                    <div key={f.name} className="flex flex-col gap-2">
+                      <Label>{f.label}</Label>
+                      <RichTextEditor
+                        value={String(form[f.name] ?? "")}
+                        onChange={(html) => setForm({ ...form, [f.name]: html })}
+                        placeholder={f.placeholder}
+                      />
                     </div>
                   )
                 }

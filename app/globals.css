@@ -174,3 +174,103 @@
     @apply font-sans;
   }
 }
+
+/* Rich text editor (admin) */
+.prose-admin p {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+.prose-admin p:last-child {
+  margin-bottom: 0;
+}
+.prose-admin h2 {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 1rem 0 0.5rem;
+}
+.prose-admin h3 {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0.75rem 0 0.4rem;
+}
+.prose-admin ul,
+.prose-admin ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.4rem;
+}
+.prose-admin ul {
+  list-style: disc;
+}
+.prose-admin ol {
+  list-style: decimal;
+}
+.prose-admin a {
+  color: var(--color-gold);
+  text-decoration: underline;
+}
+.prose-admin blockquote {
+  border-left: 3px solid var(--color-gold);
+  padding-left: 0.85rem;
+  font-style: italic;
+  margin: 0 0 0.75rem;
+  color: var(--color-navy-text);
+}
+.prose-admin:empty::before,
+.prose-admin p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, var(--color-navy-text) 40%, transparent);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Rendered rich content on public pages */
+.rich-content {
+  line-height: 1.75;
+}
+.rich-content p {
+  margin: 0 0 1.15rem;
+}
+.rich-content h2 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 1.75rem 0 0.75rem;
+  color: var(--color-navy-text);
+}
+.rich-content h3 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 1.4rem 0 0.6rem;
+  color: var(--color-navy-text);
+}
+.rich-content ul,
+.rich-content ol {
+  margin: 0 0 1.15rem;
+  padding-left: 1.5rem;
+}
+.rich-content ul {
+  list-style: disc;
+}
+.rich-content ol {
+  list-style: decimal;
+}
+.rich-content li {
+  margin-bottom: 0.4rem;
+}
+.rich-content a {
+  color: var(--color-gold);
+  text-decoration: underline;
+  font-weight: 500;
+}
+.rich-content blockquote {
+  border-left: 3px solid var(--color-gold);
+  padding-left: 1.1rem;
+  font-style: italic;
+  margin: 0 0 1.15rem;
+  color: color-mix(in srgb, var(--color-navy-text) 80%, transparent);
+}
+.rich-content strong {
+  font-weight: 700;
+}

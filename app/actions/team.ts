@@ -28,6 +28,7 @@ export async function getMyTeam() {
 type TeamInput = {
   name: string
   role: string
+  company?: string
   bio?: string
   imageUrl?: string
   linkedinUrl?: string
@@ -39,6 +40,7 @@ export async function createTeamMember(input: TeamInput) {
   await db.insert(teamMembers).values({
     name: input.name,
     role: input.role,
+    company: input.company || null,
     bio: input.bio || null,
     imageUrl: input.imageUrl || null,
     linkedinUrl: input.linkedinUrl || null,
@@ -55,6 +57,7 @@ export async function updateTeamMember(id: number, input: TeamInput) {
     .set({
       name: input.name,
       role: input.role,
+      company: input.company || null,
       bio: input.bio || null,
       imageUrl: input.imageUrl || null,
       linkedinUrl: input.linkedinUrl || null,

@@ -51,6 +51,7 @@ type Team = {
   id: number
   name: string
   role: string
+  company: string | null
   bio: string | null
   imageUrl: string | null
   linkedinUrl: string | null
@@ -65,15 +66,14 @@ const NEWS_FIELDS: FieldDef[] = [
   { name: "category", label: "Category", type: "select", options: NEWS_CATEGORIES },
   { name: "publishedAt", label: "Publish date", type: "date" },
   { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
-  { name: "imageUrl", label: "Image URL (optional)", type: "text", placeholder: "/images/news-1.png" },
+  { name: "imageUrl", label: "Cover image", type: "image" },
   { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
   {
     name: "content",
     label: "Content",
-    type: "textarea",
+    type: "richtext",
     required: true,
-    rows: 8,
-    placeholder: "Full article body. Separate paragraphs with a blank line.",
+    placeholder: "Write the full article. Use the toolbar to format text, add headings, and insert links.",
   },
 ]
 
@@ -82,26 +82,27 @@ const EVENT_FIELDS: FieldDef[] = [
   { name: "eventDate", label: "Event date", type: "date", required: true },
   { name: "timeLabel", label: "Time / detail (optional)", type: "text", placeholder: "12:00 PM – 4:30 PM (JST)" },
   { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo Headquarters" },
-  { name: "imageUrl", label: "Image URL (optional)", type: "text", placeholder: "/images/event-night.png" },
+  { name: "imageUrl", label: "Cover image", type: "image" },
   { name: "isFeatured", label: "Feature this event on the homepage", type: "checkbox" },
   { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
-  { name: "content", label: "Content", type: "textarea", required: true, rows: 8 },
+  { name: "content", label: "Content", type: "richtext", required: true },
 ]
 
 const PROGRAM_FIELDS: FieldDef[] = [
   { name: "title", label: "Title", type: "text", required: true },
   { name: "icon", label: "Icon", type: "select", options: PROGRAM_ICONS },
   { name: "regions", label: "Regions (optional)", type: "text", placeholder: "Japan • Singapore • USA • UAE" },
-  { name: "imageUrl", label: "Image URL (optional)", type: "text", placeholder: "/images/prog-city.png" },
+  { name: "imageUrl", label: "Cover image", type: "image" },
   { name: "sortOrder", label: "Sort order", type: "number" },
   { name: "excerpt", label: "Short summary", type: "textarea", required: true, rows: 3 },
-  { name: "content", label: "Full description", type: "textarea", required: true, rows: 6 },
+  { name: "content", label: "Full description", type: "richtext", required: true },
 ]
 
 const TEAM_FIELDS: FieldDef[] = [
   { name: "name", label: "Name", type: "text", required: true },
   { name: "role", label: "Role / title", type: "text", required: true, placeholder: "Founder & CEO" },
-  { name: "imageUrl", label: "Photo URL (optional)", type: "text", placeholder: "/images/team-1.png" },
+  { name: "company", label: "Company (optional)", type: "text", placeholder: "Asia Web3 & AI Alliance" },
+  { name: "imageUrl", label: "Photo", type: "image" },
   { name: "linkedinUrl", label: "LinkedIn URL (optional)", type: "text", placeholder: "https://linkedin.com/in/..." },
   { name: "sortOrder", label: "Sort order", type: "number" },
   { name: "bio", label: "Bio (optional)", type: "textarea", rows: 4 },
@@ -284,10 +285,11 @@ export function AdminDashboard({
               singular="Member"
               items={team}
               fields={TEAM_FIELDS}
-              emptyForm={{ name: "", role: "", bio: "", imageUrl: "", linkedinUrl: "", sortOrder: 0 }}
+              emptyForm={{ name: "", role: "", company: "", bio: "", imageUrl: "", linkedinUrl: "", sortOrder: 0 }}
               toForm={(t) => ({
                 name: t.name,
                 role: t.role,
+                company: t.company ?? "",
                 bio: t.bio ?? "",
                 imageUrl: t.imageUrl ?? "",
                 linkedinUrl: t.linkedinUrl ?? "",
@@ -296,7 +298,7 @@ export function AdminDashboard({
               render={{
                 image: (t) => t.imageUrl,
                 badge: (t) => t.role,
-                meta: () => "",
+                meta: (t) => t.company ?? "",
                 title: (t) => t.name,
               }}
               onCreate={(d) => createTeamMember(d)}

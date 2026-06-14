@@ -103,6 +103,7 @@ export const teamMembers = pgTable("team_members", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   role: text("role").notNull(),
+  company: text("company"),
   bio: text("bio"),
   imageUrl: text("image_url"),
   linkedinUrl: text("linkedin_url"),
