@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, boolean, serial, integer, date } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -66,6 +66,47 @@ export const newsArticles = pgTable("news_articles", {
   imageUrl: text("image_url"),
   location: text("location"),
   publishedAt: timestamp("published_at").notNull().defaultNow(),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  eventDate: date("event_date").notNull(),
+  timeLabel: text("time_label"),
+  location: text("location"),
+  imageUrl: text("image_url"),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const programs = pgTable("programs", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  icon: text("icon").notNull().default("Rocket"),
+  regions: text("regions"),
+  imageUrl: text("image_url"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const teamMembers = pgTable("team_members", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  role: text("role").notNull(),
+  bio: text("bio"),
+  imageUrl: text("image_url"),
+  linkedinUrl: text("linkedin_url"),
+  sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })

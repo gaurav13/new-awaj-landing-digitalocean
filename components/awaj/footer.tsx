@@ -3,13 +3,11 @@ import { Mail, ArrowRight } from "lucide-react"
 import { LogoMark } from "./logo"
 
 const FOOTER_NAV: { label: string; href: string }[] = [
-  { label: "About Us", href: "#" },
-  { label: "Programs", href: "#" },
-  { label: "Venture Studio", href: "#" },
-  { label: "Partners", href: "#" },
-  { label: "Membership", href: "#" },
-  { label: "Events", href: "#" },
+  { label: "Programs", href: "/#programs" },
+  { label: "Events", href: "/events" },
   { label: "News", href: "/news" },
+  { label: "Team", href: "/#team" },
+  { label: "Partners", href: "/#partners" },
   { label: "Contact", href: "mailto:bm@asiaweb3alliance.jp" },
   { label: "Admin", href: "/admin" },
 ]

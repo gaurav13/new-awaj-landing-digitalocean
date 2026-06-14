@@ -13,7 +13,7 @@ const PARTNERS = [
 
 export function Partners() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 pb-16 lg:px-10">
+    <section id="partners" className="mx-auto max-w-[1280px] px-5 pb-16 lg:px-10">
       <div className="rounded-3xl border border-gold/25 bg-white px-6 py-10 shadow-sm md:px-10">
         <div className="mb-8 text-center">
           <h2 className="font-serif text-xl font-bold uppercase tracking-[0.2em] text-navy-text">Trusted Partners</h2>

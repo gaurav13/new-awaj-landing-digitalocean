@@ -4,6 +4,7 @@ import { Stats } from "@/components/awaj/stats"
 import { Programs } from "@/components/awaj/programs"
 import { EventsNews } from "@/components/awaj/events-news"
 import { Offerings } from "@/components/awaj/offerings"
+import { Team } from "@/components/awaj/team"
 import { Partners } from "@/components/awaj/partners"
 import { Footer } from "@/components/awaj/footer"
 
@@ -16,6 +17,7 @@ export default function Page() {
       <Programs />
       <EventsNews />
       <Offerings />
+      <Team />
       <Partners />
       <Footer />
     </main>

@@ -1,10 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Mail, Globe, Menu, X } from "lucide-react"
 import { Logo } from "./logo"
 
-const NAV = ["About Us", "Programs", "Venture Studio", "Partners", "Membership", "Events", "Contact"]
+const NAV: { label: string; href: string }[] = [
+  { label: "Programs", href: "/#programs" },
+  { label: "Events", href: "/events" },
+  { label: "News", href: "/news" },
+  { label: "Team", href: "/#team" },
+  { label: "Partners", href: "/#partners" },
+  { label: "Contact", href: "mailto:bm@asiaweb3alliance.jp" },
+]
 
 export function Header() {
   const [open, setOpen] = useState(false)
@@ -16,13 +24,13 @@ export function Header() {
 
         <nav className="hidden items-center gap-7 xl:flex">
           {NAV.map((item) => (
-            <a
-              key={item}
-              href="#"
+            <Link
+              key={item.label}
+              href={item.href}
               className="text-sm font-medium text-navy-text/80 transition-colors hover:text-gold"
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
         </nav>
 
@@ -57,13 +65,14 @@ export function Header() {
         <div className="border-t border-gold/20 bg-ivory px-5 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
             {NAV.map((item) => (
-              <a
-                key={item}
-                href="#"
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-navy-text/80 hover:bg-beige"
               >
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
             <a
               href="mailto:bm@asiaweb3alliance.jp"
