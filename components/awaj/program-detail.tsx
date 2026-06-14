@@ -34,13 +34,13 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
   return (
     <article>
       {/* Hero — heading left, banner right (like the main header) */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 px-5 pt-8 pb-12 lg:grid-cols-2 lg:px-10 lg:pt-12 lg:pb-16">
+      <section className="relative overflow-hidden border-b border-gold/15">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-stretch gap-8 px-5 pt-8 pb-10 lg:grid-cols-[1fr_1.05fr] lg:gap-12 lg:px-10 lg:pt-12 lg:pb-14">
           {/* Left */}
-          <div className="relative z-10 max-w-xl">
+          <div className="relative z-10 flex flex-col justify-center lg:py-4">
             <Link
               href="/programs"
-              className="inline-flex items-center gap-2 text-sm font-medium text-navy-text/60 transition-colors hover:text-gold"
+              className="inline-flex w-fit items-center gap-2 text-sm font-medium text-navy-text/60 transition-colors hover:text-gold"
             >
               <ArrowLeft className="h-4 w-4" />
               All Programs
@@ -54,24 +54,23 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
             <h1 className="mt-3 text-balance font-serif text-4xl font-bold leading-[1.12] tracking-tight text-navy-text md:text-5xl">
               {program.title}
             </h1>
-            <p className="mt-5 text-pretty text-lg leading-relaxed text-navy-text/70">{program.excerpt}</p>
+            <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-navy-text/70">{program.excerpt}</p>
           </div>
 
           {/* Right visual */}
-          <div className="relative">
-            <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] bg-beige shadow-xl">
+          <div className="relative min-h-[260px]">
+            <div className="relative h-full w-full overflow-hidden rounded-[1.75rem] bg-beige shadow-xl ring-1 ring-gold/15">
               {banner ? (
                 <img
                   src={banner || "/placeholder.svg"}
                   alt={program.title}
-                  className="h-full w-full object-cover"
+                  className="h-full max-h-[460px] min-h-[260px] w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center">
+                <div className="flex h-full min-h-[260px] w-full items-center justify-center">
                   <Globe2 className="h-16 w-16 text-gold/30" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-ivory/30" />
             </div>
           </div>
         </div>

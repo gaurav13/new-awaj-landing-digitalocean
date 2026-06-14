@@ -42,18 +42,18 @@ export async function Programs() {
       <div className="grid grid-cols-1 gap-7 md:grid-cols-3">
         {programs.map((p) => {
           const Icon = ICONS[p.icon] ?? Rocket
-          const banner = p.bannerUrl || p.imageUrl
+          const cover = p.imageUrl || p.bannerUrl
           return (
             <Link
               key={p.id}
               href={`/programs/${p.slug}`}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm transition-shadow hover:shadow-lg"
             >
-              {/* Banner */}
+              {/* Cover */}
               <div className="relative aspect-video overflow-hidden bg-beige">
-                {banner ? (
+                {cover ? (
                   <img
-                    src={banner || "/placeholder.svg"}
+                    src={cover || "/placeholder.svg"}
                     alt=""
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />

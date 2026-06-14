@@ -298,6 +298,7 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label>{f.label}</Label>
+                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <ImageUpload
                         value={String(form[f.name] ?? "")}
                         onChange={(url) => setForm({ ...form, [f.name]: url })}
