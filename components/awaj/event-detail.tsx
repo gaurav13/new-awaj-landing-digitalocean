@@ -57,9 +57,6 @@ function dateBits(value: string) {
 export function EventDetail({ event }: { event: EventData }) {
   const poster = event.bannerUrl || event.imageUrl
   const d = dateBits(event.eventDate)
-  const mapHref = event.location
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
-    : null
   const primaryLabel = event.joinLabel?.trim() || "Register Now"
 
   // Group sponsors by tier, preserving order of first appearance
@@ -197,6 +194,64 @@ export function EventDetail({ event }: { event: EventData }) {
           </div>
         </section>
 
+        {/* ── Sponsors & partners (top placement) ── */}
+        {event.sponsors.length > 0 ? (
+          <section className="mt-12 lg:mt-14">
+            <div className="mb-6 flex items-center justify-center gap-3">
+              <span className="h-px w-10 bg-gold/40" />
+              <h2 className="flex items-center gap-2 font-serif text-lg font-bold uppercase tracking-[0.18em] text-navy-text">
+                <Trophy className="h-5 w-5 text-gold" />
+                Sponsors &amp; Partners
+              </h2>
+              <span className="h-px w-10 bg-gold/40" />
+            </div>
+            <div className="rounded-3xl border border-gold/25 bg-white px-6 py-9 shadow-sm md:px-10">
+              <div className="flex flex-col gap-8">
+                {tiers.map((group, gi) => (
+                  <div key={gi}>
+                    {group.tier ? (
+                      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
+                        {group.tier}
+                      </p>
+                    ) : null}
+                    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+                      {group.items.map((p, i) => {
+                        const inner = p.logoUrl ? (
+                          <img
+                            src={p.logoUrl || "/placeholder.svg"}
+                            alt={p.name}
+                            className="h-10 w-auto max-w-[170px] object-contain opacity-80 transition-opacity hover:opacity-100"
+                          />
+                        ) : (
+                          <span className="rounded-xl border border-gold/20 bg-beige/50 px-5 py-2.5 text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/65 transition-colors hover:text-gold">
+                            {p.name}
+                          </span>
+                        )
+                        return p.linkUrl ? (
+                          <a
+                            key={i}
+                            href={p.linkUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center"
+                            aria-label={p.name}
+                          >
+                            {inner}
+                          </a>
+                        ) : (
+                          <div key={i} className="flex items-center">
+                            {inner}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         {/* ── About + Agenda ── */}
         <section className="mt-12 grid grid-cols-1 gap-8 lg:mt-16 lg:grid-cols-2 lg:gap-10">
           {/* About */}
@@ -270,43 +325,47 @@ export function EventDetail({ event }: { event: EventData }) {
       {event.speakers.length > 0 ? (
         <section className="border-y border-gold/20 bg-beige/40 py-14 lg:py-16">
           <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-            <div className="mb-9 flex items-end justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-6 w-6 text-gold" />
-                <h2 className="font-serif text-2xl font-bold text-navy-text md:text-3xl">Speakers</h2>
-              </div>
+            <div className="mb-9 flex flex-col items-center text-center">
+              <span className="flex items-center gap-2 text-gold">
+                <Users className="h-5 w-5" />
+                <span className="text-xs font-bold uppercase tracking-[0.2em]">Meet the</span>
+              </span>
+              <h2 className="mt-1 font-serif text-3xl font-bold text-navy-text md:text-4xl">Speakers</h2>
             </div>
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {event.speakers.map((s, i) => {
                 const inner = (
-                  <div className="flex h-full flex-col items-center rounded-2xl border border-gold/20 bg-white p-4 text-center transition-shadow hover:shadow-md">
-                    <div className="h-20 w-20 overflow-hidden rounded-full bg-beige ring-2 ring-gold/20">
+                  <div className="group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border border-gold/20 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                    <span className="absolute inset-x-0 top-0 h-1 bg-gold/70" />
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-beige ring-1 ring-gold/20">
                       {s.imageUrl ? (
                         <img src={s.imageUrl || "/placeholder.svg"} alt={s.name} className="h-full w-full object-cover" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center font-serif text-2xl font-bold text-gold">
+                        <div className="flex h-full w-full items-center justify-center font-serif text-3xl font-bold text-gold">
                           {s.name.charAt(0)}
                         </div>
                       )}
                     </div>
-                    {s.badge ? (
-                      <span className="mt-3 rounded-full bg-beige px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-awaj-red">
-                        {s.badge}
-                      </span>
-                    ) : null}
-                    <h3 className="mt-2 flex items-center gap-1 font-serif text-sm font-bold leading-snug text-navy-text">
-                      {s.name}
-                      {s.linkUrl ? <ArrowUpRight className="h-3 w-3 text-navy-text/40" /> : null}
-                    </h3>
-                    {s.role ? <p className="mt-0.5 text-xs leading-snug text-navy-text/60">{s.role}</p> : null}
-                    {s.company ? <p className="text-xs leading-snug text-navy-text/50">{s.company}</p> : null}
-                    {s.companyLogoUrl ? (
-                      <img
-                        src={s.companyLogoUrl || "/placeholder.svg"}
-                        alt={s.company || ""}
-                        className="mt-2 h-5 w-auto max-w-[90px] object-contain opacity-80"
-                      />
-                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      {s.badge ? (
+                        <span className="inline-block rounded-full bg-awaj-red/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-awaj-red">
+                          {s.badge}
+                        </span>
+                      ) : null}
+                      <h3 className="mt-1.5 flex items-center gap-1 font-serif text-lg font-bold leading-snug text-navy-text">
+                        <span className="truncate">{s.name}</span>
+                        {s.linkUrl ? <ArrowUpRight className="h-4 w-4 shrink-0 text-navy-text/40 transition-colors group-hover:text-gold" /> : null}
+                      </h3>
+                      {s.role ? <p className="mt-0.5 text-sm font-medium leading-snug text-navy-text/70">{s.role}</p> : null}
+                      {s.company ? <p className="text-sm leading-snug text-navy-text/50">{s.company}</p> : null}
+                      {s.companyLogoUrl ? (
+                        <img
+                          src={s.companyLogoUrl || "/placeholder.svg"}
+                          alt={s.company || ""}
+                          className="mt-2 h-5 w-auto max-w-[100px] object-contain opacity-80"
+                        />
+                      ) : null}
+                    </div>
                   </div>
                 )
                 return s.linkUrl ? (
@@ -319,60 +378,6 @@ export function EventDetail({ event }: { event: EventData }) {
                   </div>
                 )
               })}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {/* ── Sponsors & partners ── */}
-      {event.sponsors.length > 0 ? (
-        <section className="mx-auto max-w-[1180px] px-5 py-14 lg:px-8 lg:py-16">
-          <div className="mb-8 flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-gold" />
-            <h2 className="font-serif text-2xl font-bold text-navy-text md:text-3xl">Sponsors &amp; Partners</h2>
-          </div>
-          <div className="rounded-3xl border border-gold/25 bg-white px-6 py-10 shadow-sm md:px-10">
-            <div className="flex flex-col gap-9">
-              {tiers.map((group, gi) => (
-                <div key={gi}>
-                  {group.tier ? (
-                    <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.25em] text-navy-text/45">
-                      {group.tier}
-                    </p>
-                  ) : null}
-                  <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
-                    {group.items.map((p, i) => {
-                      const inner = p.logoUrl ? (
-                        <img
-                          src={p.logoUrl || "/placeholder.svg"}
-                          alt={p.name}
-                          className="h-10 w-auto max-w-[170px] object-contain opacity-80 transition-opacity hover:opacity-100"
-                        />
-                      ) : (
-                        <span className="text-center font-serif text-base font-bold leading-tight tracking-tight text-navy/55 transition-colors hover:text-gold">
-                          {p.name}
-                        </span>
-                      )
-                      return p.linkUrl ? (
-                        <a
-                          key={i}
-                          href={p.linkUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center"
-                          aria-label={p.name}
-                        >
-                          {inner}
-                        </a>
-                      ) : (
-                        <div key={i} className="flex items-center">
-                          {inner}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
