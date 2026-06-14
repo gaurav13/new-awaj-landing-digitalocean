@@ -17,7 +17,7 @@ import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/acti
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import type { SiteSettings } from "@/app/actions/settings"
-import type { ProgramPartner, ProgramStartup, GalleryItem } from "@/lib/db/schema"
+import type { ProgramPartner, ProgramStartup, GalleryItem, EventSponsor, EventSpeaker } from "@/lib/db/schema"
 
 type News = {
   id: number
@@ -40,6 +40,9 @@ type Event = {
   timeLabel: string | null
   location: string | null
   imageUrl: string | null
+  bannerUrl: string | null
+  sponsors: EventSponsor[]
+  speakers: EventSpeaker[]
   isFeatured: boolean
 }
 type Program = {
@@ -124,10 +127,37 @@ const EVENT_FIELDS: FieldDef[] = [
   { name: "eventDate", label: "Event date", type: "date", required: true },
   { name: "timeLabel", label: "Time / detail (optional)", type: "text", placeholder: "12:00 PM – 4:30 PM (JST)" },
   { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo Headquarters" },
-  { name: "imageUrl", label: "Cover image", type: "image" },
+  { name: "imageUrl", label: "Card cover image", type: "image", hint: "Shown on event cards (homepage & Events page). Landscape works best." },
+  { name: "bannerUrl", label: "Detail page banner", type: "image", hint: "Large hero image on the event's own page. Falls back to the card cover if empty." },
   { name: "isFeatured", label: "Feature this event on the homepage", type: "checkbox" },
   { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
   { name: "content", label: "Content", type: "richtext", required: true },
+  {
+    name: "speakers",
+    label: "Speakers",
+    type: "repeater",
+    addLabel: "Add speaker",
+    hint: "Featured speakers shown on the event page.",
+    itemFields: [
+      { name: "name", label: "Name", type: "text", placeholder: "Jane Doe" },
+      { name: "role", label: "Role / title (optional)", type: "text", placeholder: "Founder & CEO" },
+      { name: "company", label: "Company (optional)", type: "text", placeholder: "Acme Inc." },
+      { name: "imageUrl", label: "Photo", type: "image" },
+      { name: "linkUrl", label: "Profile link (optional)", type: "text", placeholder: "https://..." },
+    ],
+  },
+  {
+    name: "sponsors",
+    label: "Sponsors & partners",
+    type: "repeater",
+    addLabel: "Add sponsor",
+    hint: "Logos shown in the sponsors section of the event page.",
+    itemFields: [
+      { name: "name", label: "Name", type: "text", placeholder: "Mizuho" },
+      { name: "logoUrl", label: "Logo", type: "image" },
+      { name: "linkUrl", label: "Website (optional)", type: "text", placeholder: "https://..." },
+    ],
+  },
 ]
 
 const MEDIA_TYPES = ["Article", "Video", "Podcast", "Press Release", "Interview", "Report"]
@@ -340,6 +370,9 @@ export function AdminDashboard({
                 timeLabel: "",
                 location: "",
                 imageUrl: "",
+                bannerUrl: "",
+                sponsors: [],
+                speakers: [],
                 isFeatured: false,
               }}
               toForm={(e) => ({
@@ -350,6 +383,9 @@ export function AdminDashboard({
                 timeLabel: e.timeLabel ?? "",
                 location: e.location ?? "",
                 imageUrl: e.imageUrl ?? "",
+                bannerUrl: e.bannerUrl ?? "",
+                sponsors: e.sponsors ?? [],
+                speakers: e.speakers ?? [],
                 isFeatured: e.isFeatured,
               })}
               render={{

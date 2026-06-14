@@ -47,13 +47,19 @@ export default async function EventsPage() {
                 href={`/events/${featured.slug}`}
                 className="group grid grid-cols-1 overflow-hidden rounded-3xl border border-gold/20 bg-navy text-white shadow-sm transition-shadow hover:shadow-md lg:grid-cols-2"
               >
-                <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto">
+                <div className="relative aspect-[16/10] overflow-hidden bg-navy-text lg:aspect-auto lg:min-h-[340px]">
                   <img
                     src={featured.imageUrl || "/placeholder.svg?height=600&width=800&query=event"}
                     alt=""
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
                   />
-                  <span className="absolute left-4 top-4 rounded-full bg-awaj-red px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                  <img
+                    src={featured.imageUrl || "/placeholder.svg?height=600&width=800&query=event"}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute left-4 top-4 z-10 rounded-full bg-awaj-red px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
                     Featured
                   </span>
                 </div>

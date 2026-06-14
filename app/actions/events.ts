@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { events } from "@/lib/db/schema"
+import { events, type EventSponsor, type EventSpeaker } from "@/lib/db/schema"
 import { asc, eq, ne } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
@@ -55,7 +55,30 @@ type EventInput = {
   timeLabel?: string
   location?: string
   imageUrl?: string
+  bannerUrl?: string
+  sponsors?: EventSponsor[]
+  speakers?: EventSpeaker[]
   isFeatured?: boolean
+}
+
+function cleanSponsors(items?: EventSponsor[]): EventSponsor[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((s) => s && s.name?.trim())
+    .map((s) => ({ name: s.name.trim(), logoUrl: s.logoUrl || undefined, linkUrl: s.linkUrl || undefined }))
+}
+
+function cleanSpeakers(items?: EventSpeaker[]): EventSpeaker[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .filter((s) => s && s.name?.trim())
+    .map((s) => ({
+      name: s.name.trim(),
+      role: s.role || undefined,
+      company: s.company || undefined,
+      imageUrl: s.imageUrl || undefined,
+      linkUrl: s.linkUrl || undefined,
+    }))
 }
 
 async function uniqueSlug(base: string, excludeId?: number) {
@@ -86,6 +109,9 @@ export async function createEvent(input: EventInput) {
     timeLabel: input.timeLabel || null,
     location: input.location || null,
     imageUrl: input.imageUrl || null,
+    bannerUrl: input.bannerUrl || null,
+    sponsors: cleanSponsors(input.sponsors),
+    speakers: cleanSpeakers(input.speakers),
     isFeatured: input.isFeatured ?? false,
     authorId: userId,
   })
@@ -107,11 +133,15 @@ export async function updateEvent(id: number, input: EventInput) {
       timeLabel: input.timeLabel || null,
       location: input.location || null,
       imageUrl: input.imageUrl || null,
+      bannerUrl: input.bannerUrl || null,
+      sponsors: cleanSponsors(input.sponsors),
+      speakers: cleanSpeakers(input.speakers),
       isFeatured: input.isFeatured ?? false,
     })
     .where(eq(events.id, id))
   revalidatePath("/")
   revalidatePath("/events")
+  revalidatePath(`/events/${slug}`)
 }
 
 export async function deleteEvent(id: number) {

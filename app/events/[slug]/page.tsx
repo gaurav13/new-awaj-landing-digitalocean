@@ -1,11 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, MapPin, Calendar, Clock } from "lucide-react"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
-import { RichContent } from "@/components/awaj/rich-content"
+import { EventDetail } from "@/components/awaj/event-detail"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
-import { dateParts, formatLongDate } from "@/lib/format-date"
+import { dateParts } from "@/lib/format-date"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -30,48 +29,7 @@ export default async function EventPage({ params }: Props) {
     <main className="min-h-svh bg-ivory">
       <SiteHeader />
 
-      <article className="mx-auto max-w-[820px] px-5 py-10 lg:py-14">
-        <Link
-          href="/events"
-          className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold transition-colors hover:text-navy-text"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          All Events
-        </Link>
-
-        <h1 className="mt-6 text-balance font-serif text-3xl font-bold leading-tight text-navy-text lg:text-4xl">
-          {event.title}
-        </h1>
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-navy-text/60">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-gold" />
-            {formatLongDate(event.eventDate)}
-          </span>
-          {event.timeLabel && (
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-gold" />
-              {event.timeLabel}
-            </span>
-          )}
-          {event.location && (
-            <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-gold" />
-              {event.location}
-            </span>
-          )}
-        </div>
-
-        {event.imageUrl && (
-          <div className="mt-8 overflow-hidden rounded-2xl">
-            <img src={event.imageUrl || "/placeholder.svg"} alt="" className="w-full object-cover" />
-          </div>
-        )}
-
-        <p className="mt-8 text-pretty text-lg font-medium leading-relaxed text-navy-text/80">{event.excerpt}</p>
-
-        <RichContent html={event.content} className="mt-6" />
-      </article>
+      <EventDetail event={event} />
 
       {related.length > 0 && (
         <section className="border-t border-gold/20 bg-white">

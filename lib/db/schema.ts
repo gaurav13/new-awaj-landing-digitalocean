@@ -80,10 +80,16 @@ export const events = pgTable("events", {
   timeLabel: text("time_label"),
   location: text("location"),
   imageUrl: text("image_url"),
+  bannerUrl: text("banner_url"),
+  sponsors: jsonb("sponsors").$type<EventSponsor[]>().notNull().default([]),
+  speakers: jsonb("speakers").$type<EventSpeaker[]>().notNull().default([]),
   isFeatured: boolean("is_featured").notNull().default(false),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
+
+export type EventSponsor = { name: string; logoUrl?: string; linkUrl?: string }
+export type EventSpeaker = { name: string; role?: string; company?: string; imageUrl?: string; linkUrl?: string }
 
 export const programs = pgTable("programs", {
   id: serial("id").primaryKey(),
