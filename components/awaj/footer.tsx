@@ -5,7 +5,7 @@ import { LogoMark } from "./logo"
 const FOOTER_NAV: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
   { label: "Programs", href: "/#programs" },
-  { label: "Members", href: "/members" },
+  // { label: "Members", href: "/members" },
   { label: "News", href: "/news" },
   { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
