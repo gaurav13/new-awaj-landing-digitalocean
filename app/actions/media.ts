@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { withDb } from "@/lib/db/with-db"
 import { media } from "@/lib/db/schema"
 import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -9,24 +10,32 @@ import { getUserId } from "@/lib/admin-helpers"
 // ---- Public reads ----
 
 export async function getAllMedia() {
-  return db.select().from(media).orderBy(asc(media.sortOrder), desc(media.publishedAt))
+  return withDb(() => db.select().from(media).orderBy(asc(media.sortOrder), desc(media.publishedAt)), [])
 }
 
 export async function getFeaturedMedia(limit = 4) {
-  return db
-    .select()
-    .from(media)
-    .where(eq(media.isFeatured, true))
-    .orderBy(asc(media.sortOrder), desc(media.publishedAt))
-    .limit(limit)
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(media)
+        .where(eq(media.isFeatured, true))
+        .orderBy(asc(media.sortOrder), desc(media.publishedAt))
+        .limit(limit),
+    [],
+  )
 }
 
 export async function getMediaByProgram(programId: number) {
-  return db
-    .select()
-    .from(media)
-    .where(eq(media.programId, programId))
-    .orderBy(asc(media.sortOrder), desc(media.publishedAt))
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(media)
+        .where(eq(media.programId, programId))
+        .orderBy(asc(media.sortOrder), desc(media.publishedAt)),
+    [],
+  )
 }
 
 // ---- Admin reads/writes ----

@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { withDb } from "@/lib/db/with-db"
 import { newsArticles } from "@/lib/db/schema"
 import { desc, eq, ne } from "drizzle-orm"
 import { headers } from "next/headers"
@@ -26,33 +27,38 @@ function slugify(input: string) {
 // ---- Public reads ----
 
 export async function getAllNews() {
-  return db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt))
+  return withDb(() => db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt)), [])
 }
 
 export async function getLatestNews(limit = 4) {
-  return db
-    .select()
-    .from(newsArticles)
-    .orderBy(desc(newsArticles.publishedAt))
-    .limit(limit)
+  return withDb(
+    () => db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt)).limit(limit),
+    [],
+  )
 }
 
 export async function getNewsBySlug(slug: string) {
-  const rows = await db
-    .select()
-    .from(newsArticles)
-    .where(eq(newsArticles.slug, slug))
-    .limit(1)
-  return rows[0] ?? null
+  return withDb(async () => {
+    const rows = await db
+      .select()
+      .from(newsArticles)
+      .where(eq(newsArticles.slug, slug))
+      .limit(1)
+    return rows[0] ?? null
+  }, null)
 }
 
 export async function getRelatedNews(slug: string, limit = 3) {
-  return db
-    .select()
-    .from(newsArticles)
-    .where(ne(newsArticles.slug, slug))
-    .orderBy(desc(newsArticles.publishedAt))
-    .limit(limit)
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(newsArticles)
+        .where(ne(newsArticles.slug, slug))
+        .orderBy(desc(newsArticles.publishedAt))
+        .limit(limit),
+    [],
+  )
 }
 
 // ---- Admin reads/writes (auth required) ----

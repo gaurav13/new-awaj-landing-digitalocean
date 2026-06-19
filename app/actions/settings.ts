@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { withDb } from "@/lib/db/with-db"
 import { siteSettings } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
@@ -20,13 +21,15 @@ const DEFAULTS: SiteSettings = {
 // ---- Public read ----
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const rows = await db.select().from(siteSettings)
-  const map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]))
-  return {
-    headerLogoUrl: map.headerLogoUrl || DEFAULTS.headerLogoUrl,
-    footerLogoUrl: map.footerLogoUrl || DEFAULTS.footerLogoUrl,
-    heroBannerUrl: map.heroBannerUrl || DEFAULTS.heroBannerUrl,
-  }
+  return withDb(async () => {
+    const rows = await db.select().from(siteSettings)
+    const map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]))
+    return {
+      headerLogoUrl: map.headerLogoUrl || DEFAULTS.headerLogoUrl,
+      footerLogoUrl: map.footerLogoUrl || DEFAULTS.footerLogoUrl,
+      heroBannerUrl: map.heroBannerUrl || DEFAULTS.heroBannerUrl,
+    }
+  }, DEFAULTS)
 }
 
 // ---- Admin write ----

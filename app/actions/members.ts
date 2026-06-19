@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { withDb } from "@/lib/db/with-db"
 import { members } from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -9,7 +10,10 @@ import { getUserId } from "@/lib/admin-helpers"
 // ---- Public reads ----
 
 export async function getAllMembers() {
-  return db.select().from(members).orderBy(asc(members.sortOrder), asc(members.companyName))
+  return withDb(
+    () => db.select().from(members).orderBy(asc(members.sortOrder), asc(members.companyName)),
+    [],
+  )
 }
 
 // ---- Admin reads/writes ----

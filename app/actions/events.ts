@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { withDb } from "@/lib/db/with-db"
 import {
   events,
   type EventSponsor,
@@ -15,35 +16,37 @@ import { getUserId, slugify } from "@/lib/admin-helpers"
 // ---- Public reads ----
 
 export async function getAllEvents() {
-  return db.select().from(events).orderBy(asc(events.eventDate))
+  return withDb(() => db.select().from(events).orderBy(asc(events.eventDate)), [])
 }
 
 export async function getUpcomingEvents(limit = 4) {
-  return db.select().from(events).orderBy(asc(events.eventDate)).limit(limit)
+  return withDb(() => db.select().from(events).orderBy(asc(events.eventDate)).limit(limit), [])
 }
 
 export async function getFeaturedEvent() {
-  const rows = await db
-    .select()
-    .from(events)
-    .where(eq(events.isFeatured, true))
-    .orderBy(asc(events.eventDate))
-    .limit(1)
-  return rows[0] ?? null
+  return withDb(async () => {
+    const rows = await db
+      .select()
+      .from(events)
+      .where(eq(events.isFeatured, true))
+      .orderBy(asc(events.eventDate))
+      .limit(1)
+    return rows[0] ?? null
+  }, null)
 }
 
 export async function getEventBySlug(slug: string) {
-  const rows = await db.select().from(events).where(eq(events.slug, slug)).limit(1)
-  return rows[0] ?? null
+  return withDb(async () => {
+    const rows = await db.select().from(events).where(eq(events.slug, slug)).limit(1)
+    return rows[0] ?? null
+  }, null)
 }
 
 export async function getRelatedEvents(slug: string, limit = 3) {
-  return db
-    .select()
-    .from(events)
-    .where(ne(events.slug, slug))
-    .orderBy(asc(events.eventDate))
-    .limit(limit)
+  return withDb(
+    () => db.select().from(events).where(ne(events.slug, slug)).orderBy(asc(events.eventDate)).limit(limit),
+    [],
+  )
 }
 
 // ---- Admin reads/writes ----

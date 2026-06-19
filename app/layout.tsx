@@ -3,6 +3,9 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import './globals.css'
 
+// Database-backed pages must not prerender at build time when env vars are unavailable.
+export const dynamic = 'force-dynamic'
+
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
