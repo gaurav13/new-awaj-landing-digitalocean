@@ -9,7 +9,6 @@ const FOOTER_NAV: { label: string; href: string }[] = [
   { label: "News", href: "/news" },
   { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
-  { label: "Admin", href: "/admin" },
 ]
 
 function XIcon() {
