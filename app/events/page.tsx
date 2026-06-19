@@ -8,6 +8,7 @@ import { dateParts, formatLongDate } from "@/lib/format-date"
 export const metadata = {
   title: "Events | Asia Web3 & AI Alliance Japan",
   description: "Upcoming events, demo days, and VC Connect sessions from Asia Web3 & AI Alliance Japan (AWAJ).",
+  alternates: { canonical: "/events" },
 }
 
 export default async function EventsPage() {

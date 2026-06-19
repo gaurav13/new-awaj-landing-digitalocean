@@ -7,6 +7,7 @@ export const metadata = {
   title: "Media",
   description:
     "Press coverage, interviews, videos, and podcasts featuring Asia Web3 & AI Alliance Japan (AWAJ) across global media.",
+  alternates: { canonical: "/media" },
 }
 
 export default async function MediaPage() {

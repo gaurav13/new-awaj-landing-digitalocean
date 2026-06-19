@@ -52,10 +52,32 @@ const SEO_TEXT_FIELDS: TextField[] = [
     placeholder: "Web3, AI, Japan, Asia, blockchain",
   },
   {
+    key: "canonicalBaseUrl",
+    label: "Canonical base URL",
+    help: "Your primary domain, used to build canonical + social URLs (e.g. https://awaj.org). Leave empty to auto-detect the deployment URL.",
+    placeholder: "https://awaj.org",
+  },
+  {
     key: "twitterHandle",
     label: "X (Twitter) handle",
     help: "Optional. Used in social share cards, e.g. @AWAJ.",
     placeholder: "@AWAJ",
+  },
+]
+
+const SOCIAL_TEXT_FIELDS: TextField[] = [
+  {
+    key: "ogTitle",
+    label: "Open Graph title",
+    help: "Title shown when shared on social media. Leave empty to reuse the site title.",
+    placeholder: "Asia Web3 & AI Alliance Japan",
+  },
+  {
+    key: "ogDescription",
+    label: "Open Graph description",
+    help: "Description shown in social share cards. Leave empty to reuse the meta description.",
+    multiline: true,
+    placeholder: "A short, punchy summary for social sharing...",
   },
 ]
 
@@ -152,6 +174,39 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Social sharing (Open Graph) */}
+      <section className="mt-10">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Social sharing (Open Graph)</h3>
+        <p className="mt-1 text-sm text-navy-text/60">
+          Override how your site looks when shared on X, LinkedIn, Facebook, and chat apps. Pairs with the social share
+          image above.
+        </p>
+        <div className="mt-4 flex flex-col gap-5 rounded-2xl border border-gold/20 bg-white p-5">
+          {SOCIAL_TEXT_FIELDS.map((f) => (
+            <div key={f.key} className="flex flex-col gap-2">
+              <Label htmlFor={f.key}>{f.label}</Label>
+              <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">{f.help}</p>
+              {f.multiline ? (
+                <Textarea
+                  id={f.key}
+                  rows={3}
+                  value={form[f.key]}
+                  placeholder={f.placeholder}
+                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                />
+              ) : (
+                <Input
+                  id={f.key}
+                  value={form[f.key]}
+                  placeholder={f.placeholder}
+                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                />
+              )}
+            </div>
+          ))}
         </div>
       </section>
 

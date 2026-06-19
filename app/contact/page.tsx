@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Contact | Asia Web3 & AI Alliance Japan",
   description:
     "Get in touch with Asia Web3 & AI Alliance Japan for media, sponsorship, partnership, membership, and other inquiries.",
+  alternates: { canonical: "/contact" },
 }
 
 const INQUIRY_CARDS = [

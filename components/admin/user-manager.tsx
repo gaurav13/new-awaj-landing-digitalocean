@@ -3,12 +3,13 @@
 import type React from "react"
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Trash2, KeyRound, ShieldCheck, Shield, Ban, CircleCheck, X } from "lucide-react"
+import { Plus, Trash2, KeyRound, ShieldCheck, Shield, Ban, CircleCheck, X, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   createAdminUser,
+  updateAdminUser,
   setUserRole,
   setUserPassword,
   removeAdminUser,
@@ -31,9 +32,11 @@ export function UserManager({ users, currentUserId }: { users: AdminUser[]; curr
   const [error, setError] = useState<string | null>(null)
   const [showCreate, setShowCreate] = useState(false)
   const [passwordFor, setPasswordFor] = useState<AdminUser | null>(null)
+  const [editFor, setEditFor] = useState<AdminUser | null>(null)
 
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "admin" as "admin" | "superadmin" })
   const [newPassword, setNewPassword] = useState("")
+  const [editForm, setEditForm] = useState({ name: "", email: "" })
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, onDone?: () => void) {
     setError(null)
@@ -57,6 +60,18 @@ export function UserManager({ users, currentUserId }: { users: AdminUser[]; curr
     run(() => createAdminUser(form), () => {
       setShowCreate(false)
       setForm({ name: "", email: "", password: "", role: "admin" })
+    })
+  }
+
+  function handleEdit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!editFor) return
+    if (!editForm.name.trim() || !editForm.email.trim()) {
+      setError("Name and email are required.")
+      return
+    }
+    run(() => updateAdminUser(editFor.id, editForm), () => {
+      setEditFor(null)
     })
   }
 
@@ -94,7 +109,7 @@ export function UserManager({ users, currentUserId }: { users: AdminUser[]; curr
         </Button>
       </div>
 
-      {error && !showCreate && !passwordFor ? (
+      {error && !showCreate && !passwordFor && !editFor ? (
         <p className="mt-4 rounded-lg bg-awaj-red/10 px-4 py-2 text-sm text-awaj-red" role="alert">
           {error}
         </p>
@@ -132,6 +147,19 @@ export function UserManager({ users, currentUserId }: { users: AdminUser[]; curr
                   <p className="text-xs text-navy-text/40">Joined {formatLongDate(u.createdAt)}</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError(null)
+                      setEditForm({ name: u.name, email: u.email })
+                      setEditFor(u)
+                    }}
+                    className="rounded-lg p-2 text-navy-text/60 transition-colors hover:bg-beige hover:text-navy-text"
+                    aria-label={`Edit ${u.name}`}
+                    title="Edit details"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
@@ -230,6 +258,35 @@ export function UserManager({ users, currentUserId }: { users: AdminUser[]; curr
               </p>
             ) : null}
             <DrawerActions isPending={isPending} onCancel={() => setShowCreate(false)} submitLabel="Create user" />
+          </form>
+        </Drawer>
+      ) : null}
+
+      {/* Edit user drawer */}
+      {editFor ? (
+        <Drawer title="Edit admin user" onClose={() => setEditFor(null)}>
+          <form onSubmit={handleEdit} className="flex flex-1 flex-col gap-4 p-6">
+            <Field label="Full name">
+              <Input
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                required
+              />
+            </Field>
+            <Field label="Email">
+              <Input
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                required
+              />
+            </Field>
+            {error ? (
+              <p className="text-sm text-awaj-red" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <DrawerActions isPending={isPending} onCancel={() => setEditFor(null)} submitLabel="Save changes" />
           </form>
         </Drawer>
       ) : null}

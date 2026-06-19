@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { ProgramDetail } from "@/components/awaj/program-detail"
 import { getProgramBySlug } from "@/app/actions/programs"
 import { getMediaByProgram } from "@/app/actions/media"
+import { buildPageMetadata } from "@/lib/seo"
 
 export async function generateMetadata({
   params,
@@ -14,10 +15,13 @@ export async function generateMetadata({
   const { slug } = await params
   const program = await getProgramBySlug(slug)
   if (!program) return { title: "Program not found | AWAJ" }
-  return {
-    title: `${program.title} | Asia Web3 & AI Alliance Japan`,
+  return buildPageMetadata({
+    path: `/programs/${slug}`,
+    title: program.title,
     description: program.excerpt,
-  }
+    image: program.imageUrl || program.bannerUrl,
+    type: "article",
+  })
 }
 
 export default async function ProgramPage({ params }: { params: Promise<{ slug: string }> }) {

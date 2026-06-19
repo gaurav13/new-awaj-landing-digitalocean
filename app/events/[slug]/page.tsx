@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { EventDetail } from "@/components/awaj/event-detail"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
 import { dateParts } from "@/lib/format-date"
+import { buildPageMetadata } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -12,10 +13,13 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const event = await getEventBySlug(slug)
   if (!event) return { title: "Event not found | AWAJ" }
-  return {
-    title: `${event.title} | AWAJ`,
+  return buildPageMetadata({
+    path: `/events/${slug}`,
+    title: event.title,
     description: event.excerpt,
-  }
+    image: event.imageUrl || event.bannerUrl,
+    type: "article",
+  })
 }
 
 export default async function EventPage({ params }: Props) {

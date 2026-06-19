@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { RichContent } from "@/components/awaj/rich-content"
 import { getNewsBySlug, getRelatedNews } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
+import { buildPageMetadata } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -13,10 +14,13 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
   if (!article) return { title: "Article not found | AWAJ" }
-  return {
-    title: `${article.title} | AWAJ`,
+  return buildPageMetadata({
+    path: `/news/${slug}`,
+    title: article.title,
     description: article.excerpt,
-  }
+    image: article.imageUrl,
+    type: "article",
+  })
 }
 
 export default async function ArticlePage({ params }: Props) {

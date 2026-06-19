@@ -14,9 +14,12 @@ export type SiteSettings = {
   siteTitle: string
   siteDescription: string
   siteKeywords: string
+  ogTitle: string
+  ogDescription: string
   ogImageUrl: string
   faviconUrl: string
   twitterHandle: string
+  canonicalBaseUrl: string
 }
 
 const DEFAULTS: SiteSettings = {
@@ -27,9 +30,12 @@ const DEFAULTS: SiteSettings = {
   siteDescription:
     "Asia Web3 & AI Alliance Japan (AWAJ) connects startups, investors, and institutions across Asia and Japan's Web3 & AI ecosystem.",
   siteKeywords: "Web3, AI, Japan, Asia, blockchain, startups, alliance, AWAJ",
+  ogTitle: "",
+  ogDescription: "",
   ogImageUrl: "",
   faviconUrl: "",
   twitterHandle: "",
+  canonicalBaseUrl: "",
 }
 
 // ---- Public read ----
@@ -45,9 +51,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       siteTitle: map.siteTitle || DEFAULTS.siteTitle,
       siteDescription: map.siteDescription || DEFAULTS.siteDescription,
       siteKeywords: map.siteKeywords || DEFAULTS.siteKeywords,
+      ogTitle: map.ogTitle || DEFAULTS.ogTitle,
+      ogDescription: map.ogDescription || DEFAULTS.ogDescription,
       ogImageUrl: map.ogImageUrl || DEFAULTS.ogImageUrl,
       faviconUrl: map.faviconUrl || DEFAULTS.faviconUrl,
       twitterHandle: map.twitterHandle || DEFAULTS.twitterHandle,
+      canonicalBaseUrl: map.canonicalBaseUrl || DEFAULTS.canonicalBaseUrl,
     }
   }, DEFAULTS)
 }
