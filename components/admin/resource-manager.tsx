@@ -50,7 +50,7 @@ export type ColumnRender<T> = {
   badge?: (item: T) => string | null
   meta?: (item: T) => string
   title: (item: T) => string
-  viewHref?: (item: T) => string
+  viewHref?: (item: T) => string | null | undefined
 }
 
 type Props<T extends { id: number }> = {

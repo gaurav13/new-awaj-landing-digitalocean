@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { getMyNews } from "@/app/actions/news"
+import { getMyMedia } from "@/app/actions/media"
 import { getMyEvents } from "@/app/actions/events"
 import { getMyPrograms } from "@/app/actions/programs"
 import { getMyTeam } from "@/app/actions/team"
@@ -24,9 +25,10 @@ export default async function AdminPage() {
 
   const superAdmin = await isSuperAdmin()
 
-  const [news, events, programs, team, partners, members, banners, messages, settings, users] =
+  const [news, media, events, programs, team, partners, members, banners, messages, settings, users] =
     await Promise.all([
       getMyNews(),
+      getMyMedia(),
       getMyEvents(),
       getMyPrograms(),
       getMyTeam(),
@@ -44,6 +46,7 @@ export default async function AdminPage() {
       currentUserId={session.user.id}
       isSuperAdmin={superAdmin}
       news={news}
+      media={media}
       events={events}
       programs={programs}
       team={team}

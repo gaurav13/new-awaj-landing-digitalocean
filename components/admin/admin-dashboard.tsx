@@ -18,6 +18,7 @@ import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/acti
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
 import { createMember, updateMember, deleteMember } from "@/app/actions/members"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
+import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { MEMBER_CATEGORIES, memberCategoryLabel } from "@/lib/member-categories"
 import type { SiteSettings } from "@/app/actions/settings"
 import type {
@@ -39,12 +40,18 @@ type News = {
   category: string
   imageUrl: string | null
   location: string | null
-  mediaType: string
+  publishedAt: Date | string
+}
+type Media = {
+  id: number
+  title: string
+  type: string
+  url: string | null
+  thumbnailUrl: string | null
   source: string | null
-  externalUrl: string | null
+  excerpt: string | null
   programId: number | null
   isFeatured: boolean
-  status: string
   sortOrder: number
   publishedAt: Date | string
 }
@@ -139,8 +146,8 @@ type Message = {
   createdAt: Date | string
 }
 
-const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements", "Media"]
-const COVERAGE_FORMATS = ["article", "Video", "Podcast", "Press Release", "Interview", "Report"]
+const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements"]
+const MEDIA_TYPES = ["Article", "Video", "Podcast", "Press Release", "Interview", "Report"]
 const PROGRAM_ICONS = ["Rocket", "Building2", "Share2", "Globe", "GraduationCap", "Users", "Award", "Landmark"]
 
 const EVENT_FIELDS: FieldDef[] = [
@@ -212,7 +219,7 @@ const EVENT_FIELDS: FieldDef[] = [
     ],
   },
 
-  // — Speakers —
+  // ��� Speakers —
   {
     name: "speakers",
     label: "Speakers",
@@ -348,6 +355,7 @@ export function AdminDashboard({
   currentUserId,
   isSuperAdmin,
   news,
+  media,
   events,
   programs,
   team,
@@ -362,6 +370,7 @@ export function AdminDashboard({
   currentUserId: string
   isSuperAdmin: boolean
   news: News[]
+  media: Media[]
   events: Event[]
   programs: Program[]
   team: Team[]
@@ -379,31 +388,48 @@ export function AdminDashboard({
     ...programs.map((p) => ({ value: String(p.id), label: p.title })),
   ]
 
-  const NEWSROOM_FIELDS: FieldDef[] = [
+  const NEWS_FIELDS: FieldDef[] = [
     { name: "title", label: "Title", type: "text", required: true },
     { name: "category", label: "Category", type: "select", options: NEWS_CATEGORIES },
-    {
-      name: "mediaType",
-      label: "Format",
-      type: "select",
-      options: COVERAGE_FORMATS,
-      hint: 'Use "article" for a standard story. Video / Podcast / Interview show a play badge in the media carousel.',
-    },
     { name: "publishedAt", label: "Publish date", type: "date" },
     { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
+    {
+      name: "imageUrl",
+      label: "Cover image",
+      type: "image",
+      hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
+    },
+    { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
+    { name: "content", label: "Article content", type: "richtext", required: true },
+  ]
+
+  const MEDIA_FIELDS: FieldDef[] = [
+    { name: "title", label: "Title", type: "text", required: true, placeholder: "AWAJ featured in Nikkei" },
+    {
+      name: "type",
+      label: "Format",
+      type: "select",
+      options: MEDIA_TYPES,
+      hint: "Video / Podcast / Interview show a play badge in the homepage carousel.",
+    },
     {
       name: "source",
       label: "Source / publisher (optional)",
       type: "text",
-      placeholder: "Nikkei, CoinDesk...",
-      hint: "Fill this in for external press coverage.",
+      placeholder: "Nikkei, CoinDesk, Bloomberg...",
     },
     {
-      name: "externalUrl",
-      label: "External link (optional)",
+      name: "url",
+      label: "Link",
       type: "text",
       placeholder: "https://...",
-      hint: "If set, the item links off-site (press coverage) instead of opening an article page.",
+      hint: "The article / video URL. Opens in a new tab when clicked.",
+    },
+    {
+      name: "thumbnailUrl",
+      label: "Thumbnail image",
+      type: "image",
+      hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
     },
     {
       name: "programId",
@@ -411,25 +437,14 @@ export function AdminDashboard({
       type: "select",
       optionItems: programOptions,
     },
-    {
-      name: "imageUrl",
-      label: "Cover image",
-      type: "image",
-      hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
-    },
+    { name: "publishedAt", label: "Publish date", type: "date" },
     {
       name: "isFeatured",
       label: 'Feature in the homepage "AWAJ in the Media" carousel',
       type: "checkbox",
     },
-    { name: "sortOrder", label: "Sort order (featured carousel)", type: "number" },
-    { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
-    {
-      name: "content",
-      label: "Content (optional for external coverage)",
-      type: "richtext",
-      placeholder: "Write the full article. Leave empty for external press coverage that links off-site.",
-    },
+    { name: "sortOrder", label: "Sort order", type: "number" },
+    { name: "excerpt", label: "Short description (optional)", type: "textarea", rows: 2 },
   ]
 
   const BANNER_FIELDS: FieldDef[] = [
@@ -486,7 +501,8 @@ export function AdminDashboard({
 
         <Tabs defaultValue="news" className="mt-8">
           <TabsList className="bg-beige">
-            <TabsTrigger value="news">Newsroom ({news.length})</TabsTrigger>
+            <TabsTrigger value="news">News ({news.length})</TabsTrigger>
+            <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
@@ -502,23 +518,17 @@ export function AdminDashboard({
 
           <TabsContent value="news" className="mt-6">
             <ResourceManager<News>
-              title="Newsroom"
-              singular="Item"
+              title="News articles"
+              singular="Article"
               items={news}
-              fields={NEWSROOM_FIELDS}
+              fields={NEWS_FIELDS}
               emptyForm={{
                 title: "",
                 excerpt: "",
                 content: "",
                 category: "News",
-                mediaType: "article",
                 location: "",
-                source: "",
-                externalUrl: "",
-                programId: "none",
                 imageUrl: "",
-                isFeatured: false,
-                sortOrder: 0,
                 publishedAt: "",
               }}
               toForm={(a) => ({
@@ -526,26 +536,63 @@ export function AdminDashboard({
                 excerpt: a.excerpt,
                 content: a.content ?? "",
                 category: a.category,
-                mediaType: a.mediaType ?? "article",
                 location: a.location ?? "",
-                source: a.source ?? "",
-                externalUrl: a.externalUrl ?? "",
-                programId: a.programId ? String(a.programId) : "none",
                 imageUrl: a.imageUrl ?? "",
-                isFeatured: a.isFeatured,
-                sortOrder: a.sortOrder,
                 publishedAt: new Date(a.publishedAt).toISOString().slice(0, 10),
               })}
               render={{
                 image: (a) => a.imageUrl,
-                badge: (a) => (a.isFeatured ? `Featured · ${a.category}` : a.category),
-                meta: (a) => [formatLongDate(a.publishedAt), a.source].filter(Boolean).join(" · "),
+                badge: (a) => a.category,
+                meta: (a) => formatLongDate(a.publishedAt),
                 title: (a) => a.title,
-                viewHref: (a) => a.externalUrl || `/news/${a.slug}`,
+                viewHref: (a) => `/news/${a.slug}`,
               }}
               onCreate={(d) => createNews(d)}
               onUpdate={(id, d) => updateNews(id, d)}
               onDelete={(id) => deleteNews(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="media" className="mt-6">
+            <ResourceManager<Media>
+              title="Media coverage"
+              singular="Media item"
+              items={media}
+              fields={MEDIA_FIELDS}
+              emptyForm={{
+                title: "",
+                type: "Article",
+                source: "",
+                url: "",
+                thumbnailUrl: "",
+                programId: "none",
+                publishedAt: "",
+                isFeatured: false,
+                sortOrder: 0,
+                excerpt: "",
+              }}
+              toForm={(m) => ({
+                title: m.title,
+                type: m.type ?? "Article",
+                source: m.source ?? "",
+                url: m.url ?? "",
+                thumbnailUrl: m.thumbnailUrl ?? "",
+                programId: m.programId ? String(m.programId) : "none",
+                publishedAt: new Date(m.publishedAt).toISOString().slice(0, 10),
+                isFeatured: m.isFeatured,
+                sortOrder: m.sortOrder,
+                excerpt: m.excerpt ?? "",
+              })}
+              render={{
+                image: (m) => m.thumbnailUrl,
+                badge: (m) => (m.isFeatured ? `Featured · ${m.type}` : m.type),
+                meta: (m) => [formatLongDate(m.publishedAt), m.source].filter(Boolean).join(" · "),
+                title: (m) => m.title,
+                viewHref: (m) => m.url || undefined,
+              }}
+              onCreate={(d) => createMedia(d)}
+              onUpdate={(id, d) => updateMedia(id, d)}
+              onDelete={(id) => deleteMedia(id)}
             />
           </TabsContent>
 
