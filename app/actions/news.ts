@@ -1,28 +1,11 @@
 "use server"
 
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
 import { newsArticles } from "@/lib/db/schema"
 import { desc, eq, ne } from "drizzle-orm"
-import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
-
-async function getUserId() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error("Unauthorized")
-  return session.user.id
-}
-
-function slugify(input: string) {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 80)
-}
+import { getUserId, slugify } from "@/lib/admin-helpers"
 
 // ---- Public reads ----
 
@@ -39,11 +22,7 @@ export async function getLatestNews(limit = 4) {
 
 export async function getNewsBySlug(slug: string) {
   return withDb(async () => {
-    const rows = await db
-      .select()
-      .from(newsArticles)
-      .where(eq(newsArticles.slug, slug))
-      .limit(1)
+    const rows = await db.select().from(newsArticles).where(eq(newsArticles.slug, slug)).limit(1)
     return rows[0] ?? null
   }, null)
 }
@@ -68,7 +47,7 @@ export async function getMyNews() {
   return db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt))
 }
 
-type NewsInput = {
+export type NewsInput = {
   title: string
   excerpt: string
   content: string
@@ -81,7 +60,6 @@ type NewsInput = {
 async function uniqueSlug(base: string, excludeId?: number) {
   let slug = base || "article"
   let n = 1
-  // ensure uniqueness
   while (true) {
     const rows = await db
       .select({ id: newsArticles.id })

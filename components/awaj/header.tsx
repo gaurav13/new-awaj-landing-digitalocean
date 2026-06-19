@@ -10,6 +10,7 @@ const NAV: { label: string; href: string }[] = [
   { label: "Programs", href: "/#programs" },
   // { label: "Members", href: "/members" },
   { label: "News", href: "/news" },
+  { label: "Media", href: "/media" },
   { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
 ]

@@ -52,7 +52,7 @@ type MediaInput = {
   thumbnailUrl?: string
   source?: string
   excerpt?: string
-  programId?: number | null
+  programId?: number | string | null
   isFeatured?: boolean
   sortOrder?: number
 }
@@ -78,6 +78,7 @@ export async function createMedia(input: MediaInput) {
     authorId: userId,
   })
   revalidatePath("/")
+  revalidatePath("/media")
 }
 
 export async function updateMedia(id: number, input: MediaInput) {
@@ -97,10 +98,12 @@ export async function updateMedia(id: number, input: MediaInput) {
     })
     .where(eq(media.id, id))
   revalidatePath("/")
+  revalidatePath("/media")
 }
 
 export async function deleteMedia(id: number) {
   await getUserId()
   await db.delete(media).where(eq(media.id, id))
   revalidatePath("/")
+  revalidatePath("/media")
 }

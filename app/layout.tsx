@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
+import { getSiteSettings } from '@/app/actions/settings'
 import './globals.css'
 
 // Database-backed pages must not prerender at build time when env vars are unavailable.
@@ -16,28 +17,51 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'Asia Web3 & AI Alliance Japan (AWAJ)',
-  description:
-    'Asia Web3 & AI Alliance Japan (AWAJ) is a General Incorporated Association bridging Asian and Japanese markets, creating real opportunities for growth, innovation, and global success.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+
+  const title = settings.siteTitle
+  const description = settings.siteDescription
+  const ogImages = settings.ogImageUrl ? [{ url: settings.ogImageUrl }] : undefined
+
+  // A custom favicon set in admin overrides the bundled icons.
+  const icon = settings.faviconUrl
+    ? [{ url: settings.faviconUrl }]
+    : [
+        { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
+        { url: '/icon-dark-32x32.png', media: '(prefers-color-scheme: dark)' },
+        { url: '/icon.svg', type: 'image/svg+xml' },
+      ]
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${title}`,
+    },
+    description,
+    keywords: settings.siteKeywords
+      ? settings.siteKeywords.split(',').map((k) => k.trim()).filter(Boolean)
+      : undefined,
+    generator: 'v0.app',
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      siteName: title,
+      images: ogImages,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: settings.ogImageUrl ? [settings.ogImageUrl] : undefined,
+      site: settings.twitterHandle || undefined,
+    },
+    icons: {
+      icon,
+      apple: settings.faviconUrl || '/apple-icon.png',
+    },
+  }
 }
 
 export const viewport: Viewport = {

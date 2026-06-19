@@ -1,6 +1,13 @@
 import { ArrowRight } from "lucide-react"
+import { BannerSlider, type Banner } from "./banner-slider"
 
-export function Hero({ bannerUrl = "/images/hero-tokyo.png" }: { bannerUrl?: string }) {
+export function Hero({
+  bannerUrl = "/images/hero-tokyo.png",
+  banners = [],
+}: {
+  bannerUrl?: string
+  banners?: Banner[]
+}) {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 pt-10 pb-32 lg:grid-cols-2 lg:px-10 lg:pt-14 lg:pb-44">
@@ -34,14 +41,18 @@ export function Hero({ bannerUrl = "/images/hero-tokyo.png" }: { bannerUrl?: str
 
         {/* Right visual */}
         <div className="relative">
-          <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-xl">
-            <img
-              src={bannerUrl || "/images/hero-tokyo.png"}
-              alt="Tokyo Tower at golden hour with Mount Fuji in the background"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-ivory/40" />
-          </div>
+          {banners.length > 0 ? (
+            <BannerSlider banners={banners} />
+          ) : (
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-xl">
+              <img
+                src={bannerUrl || "/images/hero-tokyo.png"}
+                alt="Tokyo Tower at golden hour with Mount Fuji in the background"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-ivory/40" />
+            </div>
+          )}
         </div>
       </div>
 

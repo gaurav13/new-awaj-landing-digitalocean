@@ -1,5 +1,15 @@
 import { betterAuth } from "better-auth"
+import { admin } from "better-auth/plugins"
+import { createAccessControl } from "better-auth/plugins/access"
+import { defaultStatements, adminAc } from "better-auth/plugins/admin/access"
 import { pool } from "@/lib/db"
+import { sendEmail, resetPasswordEmailHtml } from "@/lib/email"
+
+// Access control: a "superadmin" can manage other admins; a regular "admin"
+// can only manage content (no user-management permissions).
+const ac = createAccessControl(defaultStatements)
+const adminRole = ac.newRole({})
+const superadminRole = ac.newRole(adminAc.statements)
 
 function getAuthBaseUrl() {
   if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
@@ -19,6 +29,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your AWAJ password",
+        html: resetPasswordEmailHtml(url, user.name),
+      })
+    },
   },
   trustedOrigins: [
     "http://localhost:3000",
@@ -45,4 +62,16 @@ export const auth = betterAuth({
       secure: true,
     },
   },
+  plugins: [
+    admin({
+      ac,
+      roles: {
+        admin: adminRole,
+        superadmin: superadminRole,
+      },
+      // Only "superadmin" can manage other admins; "admin" is a content editor.
+      adminRoles: ["superadmin"],
+      defaultRole: "admin",
+    }),
+  ],
 })

@@ -50,7 +50,7 @@ export type ColumnRender<T> = {
   badge?: (item: T) => string | null
   meta?: (item: T) => string
   title: (item: T) => string
-  viewHref?: (item: T) => string
+  viewHref?: (item: T) => string | null | undefined
 }
 
 type Props<T extends { id: number }> = {
@@ -263,6 +263,7 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label htmlFor={f.name}>{f.label}</Label>
+                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <select
                         id={f.name}
                         value={String(form[f.name] ?? "")}
@@ -310,6 +311,7 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label>{f.label}</Label>
+                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <RichTextEditor
                         value={String(form[f.name] ?? "")}
                         onChange={(html) => setForm({ ...form, [f.name]: html })}
@@ -322,6 +324,7 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label htmlFor={f.name}>{f.label}</Label>
+                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <Textarea
                         id={f.name}
                         value={String(form[f.name] ?? "")}
@@ -336,6 +339,7 @@ export function ResourceManager<T extends { id: number }>({
                 return (
                   <div key={f.name} className="flex flex-col gap-2">
                     <Label htmlFor={f.name}>{f.label}</Label>
+                    {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                     <Input
                       id={f.name}
                       type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}

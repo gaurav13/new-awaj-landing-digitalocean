@@ -2,7 +2,9 @@
  * Renders body content that may be either rich HTML (from the admin editor)
  * or legacy plain text with newline-separated paragraphs.
  */
-export function RichContent({ html, className }: { html: string; className?: string }) {
+export function RichContent({ html, className }: { html: string | null | undefined; className?: string }) {
+  if (!html) return null
+
   const isHtml = /<\/?[a-z][\s\S]*>/i.test(html)
 
   if (isHtml) {

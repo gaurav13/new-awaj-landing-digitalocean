@@ -1,8 +1,8 @@
-import { MediaCard } from "./media-card"
+import { MediaCarousel } from "./media-carousel"
 import { getFeaturedMedia } from "@/app/actions/media"
 
 export async function FeaturedMedia() {
-  const media = await getFeaturedMedia(4)
+  const media = await getFeaturedMedia(8)
   if (media.length === 0) return null
 
   return (
@@ -16,11 +16,7 @@ export async function FeaturedMedia() {
           <div className="mx-auto mt-3 h-px w-20 bg-gold/60" />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {media.map((m) => (
-            <MediaCard key={m.id} item={m} />
-          ))}
-        </div>
+        <MediaCarousel items={media} />
       </div>
     </section>
   )
