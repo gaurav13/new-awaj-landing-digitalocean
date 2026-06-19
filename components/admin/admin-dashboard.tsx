@@ -10,13 +10,14 @@ import { formatLongDate } from "@/lib/format-date"
 import { ResourceManager, type FieldDef } from "./resource-manager"
 import { SettingsPanel } from "./settings-panel"
 import { MessagesPanel } from "./messages-panel"
+import { UserManager, type AdminUser } from "./user-manager"
 import { createNews, updateNews, deleteNews } from "@/app/actions/news"
 import { createEvent, updateEvent, deleteEvent } from "@/app/actions/events"
 import { createProgram, updateProgram, deleteProgram } from "@/app/actions/programs"
 import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/actions/team"
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
 import { createMember, updateMember, deleteMember } from "@/app/actions/members"
-import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
+import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { MEMBER_CATEGORIES, memberCategoryLabel } from "@/lib/member-categories"
 import type { SiteSettings } from "@/app/actions/settings"
 import type {
@@ -34,10 +35,17 @@ type News = {
   title: string
   slug: string
   excerpt: string
-  content: string
+  content: string | null
   category: string
   imageUrl: string | null
   location: string | null
+  mediaType: string
+  source: string | null
+  externalUrl: string | null
+  programId: number | null
+  isFeatured: boolean
+  status: string
+  sortOrder: number
   publishedAt: Date | string
 }
 type Event = {
@@ -109,17 +117,14 @@ type Member = {
   contactUrl: string | null
   sortOrder: number
 }
-type Media = {
+type Banner = {
   id: number
-  title: string
-  type: string
-  url: string | null
-  thumbnailUrl: string | null
-  source: string | null
-  excerpt: string | null
-  programId: number | null
-  isFeatured: boolean
-  publishedAt: Date | string
+  title: string | null
+  subtitle: string | null
+  imageUrl: string
+  linkUrl: string | null
+  linkLabel: string | null
+  isActive: boolean
   sortOrder: number
 }
 type Message = {
@@ -134,24 +139,9 @@ type Message = {
   createdAt: Date | string
 }
 
-const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements"]
+const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements", "Media"]
+const COVERAGE_FORMATS = ["article", "Video", "Podcast", "Press Release", "Interview", "Report"]
 const PROGRAM_ICONS = ["Rocket", "Building2", "Share2", "Globe", "GraduationCap", "Users", "Award", "Landmark"]
-
-const NEWS_FIELDS: FieldDef[] = [
-  { name: "title", label: "Title", type: "text", required: true },
-  { name: "category", label: "Category", type: "select", options: NEWS_CATEGORIES },
-  { name: "publishedAt", label: "Publish date", type: "date" },
-  { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
-  { name: "imageUrl", label: "Cover image", type: "image" },
-  { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
-  {
-    name: "content",
-    label: "Content",
-    type: "richtext",
-    required: true,
-    placeholder: "Write the full article. Use the toolbar to format text, add headings, and insert links.",
-  },
-]
 
 const EVENT_FIELDS: FieldDef[] = [
   // — Basics —
@@ -256,8 +246,6 @@ const EVENT_FIELDS: FieldDef[] = [
   },
 ]
 
-const MEDIA_TYPES = ["Article", "Video", "Podcast", "Press Release", "Interview", "Report"]
-
 const PROGRAM_FIELDS: FieldDef[] = [
   { name: "title", label: "Title", type: "text", required: true },
   { name: "icon", label: "Icon", type: "select", options: PROGRAM_ICONS },
@@ -357,44 +345,107 @@ const MEMBER_FIELDS: FieldDef[] = [
 
 export function AdminDashboard({
   userName,
+  currentUserId,
+  isSuperAdmin,
   news,
   events,
   programs,
   team,
   partners,
   members,
-  media,
+  banners,
   messages,
   settings,
+  users,
 }: {
   userName: string
+  currentUserId: string
+  isSuperAdmin: boolean
   news: News[]
   events: Event[]
   programs: Program[]
   team: Team[]
   partners: Partner[]
   members: Member[]
-  media: Media[]
+  banners: Banner[]
   messages: Message[]
   settings: SiteSettings
+  users: AdminUser[]
 }) {
   const router = useRouter()
 
-  const MEDIA_FIELDS: FieldDef[] = [
+  const programOptions = [
+    { value: "none", label: "— None —" },
+    ...programs.map((p) => ({ value: String(p.id), label: p.title })),
+  ]
+
+  const NEWSROOM_FIELDS: FieldDef[] = [
     { name: "title", label: "Title", type: "text", required: true },
-    { name: "type", label: "Type", type: "select", options: MEDIA_TYPES },
-    { name: "source", label: "Source / publisher (optional)", type: "text", placeholder: "Nikkei, CoinDesk..." },
-    { name: "url", label: "External link", type: "text", placeholder: "https://..." },
-    { name: "thumbnailUrl", label: "Thumbnail image", type: "image" },
+    { name: "category", label: "Category", type: "select", options: NEWS_CATEGORIES },
+    {
+      name: "mediaType",
+      label: "Format",
+      type: "select",
+      options: COVERAGE_FORMATS,
+      hint: 'Use "article" for a standard story. Video / Podcast / Interview show a play badge in the media carousel.',
+    },
+    { name: "publishedAt", label: "Publish date", type: "date" },
+    { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
+    {
+      name: "source",
+      label: "Source / publisher (optional)",
+      type: "text",
+      placeholder: "Nikkei, CoinDesk...",
+      hint: "Fill this in for external press coverage.",
+    },
+    {
+      name: "externalUrl",
+      label: "External link (optional)",
+      type: "text",
+      placeholder: "https://...",
+      hint: "If set, the item links off-site (press coverage) instead of opening an article page.",
+    },
     {
       name: "programId",
       label: "Related program (optional)",
       type: "select",
-      optionItems: [{ value: "none", label: "— None —" }, ...programs.map((p) => ({ value: String(p.id), label: p.title }))],
+      optionItems: programOptions,
     },
-    { name: "isFeatured", label: "Feature on the homepage media section", type: "checkbox" },
+    {
+      name: "imageUrl",
+      label: "Cover image",
+      type: "image",
+      hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
+    },
+    {
+      name: "isFeatured",
+      label: 'Feature in the homepage "AWAJ in the Media" carousel',
+      type: "checkbox",
+    },
+    { name: "sortOrder", label: "Sort order (featured carousel)", type: "number" },
+    { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
+    {
+      name: "content",
+      label: "Content (optional for external coverage)",
+      type: "richtext",
+      placeholder: "Write the full article. Leave empty for external press coverage that links off-site.",
+    },
+  ]
+
+  const BANNER_FIELDS: FieldDef[] = [
+    {
+      name: "imageUrl",
+      label: "Banner image",
+      type: "image",
+      required: true,
+      hint: "Recommended 1920×800px (wide), JPG or PNG, under 800KB. Shown full-width in the homepage slider.",
+    },
+    { name: "title", label: "Headline (optional)", type: "text", placeholder: "Shown over the banner" },
+    { name: "subtitle", label: "Subtitle (optional)", type: "textarea", rows: 2 },
+    { name: "linkUrl", label: "Button link (optional)", type: "text", placeholder: "https://... or /programs" },
+    { name: "linkLabel", label: "Button text (optional)", type: "text", placeholder: "Learn more" },
+    { name: "isActive", label: "Show this banner on the homepage", type: "checkbox" },
     { name: "sortOrder", label: "Sort order", type: "number" },
-    { name: "excerpt", label: "Excerpt (optional)", type: "textarea", rows: 3 },
   ]
 
   async function handleSignOut() {
@@ -435,49 +486,62 @@ export function AdminDashboard({
 
         <Tabs defaultValue="news" className="mt-8">
           <TabsList className="bg-beige">
-            <TabsTrigger value="news">News ({news.length})</TabsTrigger>
+            <TabsTrigger value="news">Newsroom ({news.length})</TabsTrigger>
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
+            <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
             <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
-            <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
             <TabsTrigger value="messages">
               Messages{messages.filter((m) => !m.isRead).length > 0 ? ` (${messages.filter((m) => !m.isRead).length})` : ""}
             </TabsTrigger>
+            {isSuperAdmin ? <TabsTrigger value="users">Users ({users.length})</TabsTrigger> : null}
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news" className="mt-6">
             <ResourceManager<News>
-              title="News"
-              singular="Article"
+              title="Newsroom"
+              singular="Item"
               items={news}
-              fields={NEWS_FIELDS}
+              fields={NEWSROOM_FIELDS}
               emptyForm={{
                 title: "",
                 excerpt: "",
                 content: "",
                 category: "News",
+                mediaType: "article",
                 location: "",
+                source: "",
+                externalUrl: "",
+                programId: "none",
                 imageUrl: "",
+                isFeatured: false,
+                sortOrder: 0,
                 publishedAt: "",
               }}
               toForm={(a) => ({
                 title: a.title,
                 excerpt: a.excerpt,
-                content: a.content,
+                content: a.content ?? "",
                 category: a.category,
+                mediaType: a.mediaType ?? "article",
                 location: a.location ?? "",
+                source: a.source ?? "",
+                externalUrl: a.externalUrl ?? "",
+                programId: a.programId ? String(a.programId) : "none",
                 imageUrl: a.imageUrl ?? "",
+                isFeatured: a.isFeatured,
+                sortOrder: a.sortOrder,
                 publishedAt: new Date(a.publishedAt).toISOString().slice(0, 10),
               })}
               render={{
                 image: (a) => a.imageUrl,
-                badge: (a) => a.category,
-                meta: (a) => formatLongDate(a.publishedAt),
+                badge: (a) => (a.isFeatured ? `Featured · ${a.category}` : a.category),
+                meta: (a) => [formatLongDate(a.publishedAt), a.source].filter(Boolean).join(" · "),
                 title: (a) => a.title,
-                viewHref: (a) => `/news/${a.slug}`,
+                viewHref: (a) => a.externalUrl || `/news/${a.slug}`,
               }}
               onCreate={(d) => createNews(d)}
               onUpdate={(id, d) => updateNews(id, d)}
@@ -687,49 +751,51 @@ export function AdminDashboard({
             />
           </TabsContent>
 
-          <TabsContent value="media" className="mt-6">
-            <ResourceManager<Media>
-              title="Media"
-              singular="Media item"
-              items={media}
-              fields={MEDIA_FIELDS}
+          <TabsContent value="banners" className="mt-6">
+            <ResourceManager<Banner>
+              title="Homepage banners"
+              singular="Banner"
+              items={banners}
+              fields={BANNER_FIELDS}
               emptyForm={{
+                imageUrl: "",
                 title: "",
-                type: "Article",
-                source: "",
-                url: "",
-                thumbnailUrl: "",
-                programId: "none",
-                isFeatured: false,
+                subtitle: "",
+                linkUrl: "",
+                linkLabel: "",
+                isActive: true,
                 sortOrder: 0,
-                excerpt: "",
               }}
-              toForm={(m) => ({
-                title: m.title,
-                type: m.type,
-                source: m.source ?? "",
-                url: m.url ?? "",
-                thumbnailUrl: m.thumbnailUrl ?? "",
-                programId: m.programId ? String(m.programId) : "none",
-                isFeatured: m.isFeatured,
-                sortOrder: m.sortOrder,
-                excerpt: m.excerpt ?? "",
+              toForm={(b) => ({
+                imageUrl: b.imageUrl ?? "",
+                title: b.title ?? "",
+                subtitle: b.subtitle ?? "",
+                linkUrl: b.linkUrl ?? "",
+                linkLabel: b.linkLabel ?? "",
+                isActive: b.isActive,
+                sortOrder: b.sortOrder,
               })}
               render={{
-                image: (m) => m.thumbnailUrl,
-                badge: (m) => (m.isFeatured ? `Featured · ${m.type}` : m.type),
-                meta: (m) => m.source ?? "",
-                title: (m) => m.title,
+                image: (b) => b.imageUrl,
+                badge: (b) => (b.isActive ? "Active" : "Hidden"),
+                meta: (b) => b.linkUrl ?? "",
+                title: (b) => b.title || "Untitled banner",
               }}
-              onCreate={(d) => createMedia(d)}
-              onUpdate={(id, d) => updateMedia(id, d)}
-              onDelete={(id) => deleteMedia(id)}
+              onCreate={(d) => createBanner(d)}
+              onUpdate={(id, d) => updateBanner(id, d)}
+              onDelete={(id) => deleteBanner(id)}
             />
           </TabsContent>
 
           <TabsContent value="messages" className="mt-6">
             <MessagesPanel messages={messages} />
           </TabsContent>
+
+          {isSuperAdmin ? (
+            <TabsContent value="users" className="mt-6">
+              <UserManager users={users} currentUserId={currentUserId} />
+            </TabsContent>
+          ) : null}
 
           <TabsContent value="settings" className="mt-6">
             <SettingsPanel settings={settings} />

@@ -8,6 +8,10 @@ export const user = pgTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  role: text("role").notNull().default("admin"),
+  banned: boolean("banned").default(false),
+  banReason: text("banReason"),
+  banExpires: timestamp("banExpires"),
   createdAt: timestamp("createdAt")
     .$defaultFn(() => new Date())
     .notNull(),
@@ -24,6 +28,7 @@ export const session = pgTable("session", {
   updatedAt: timestamp("updatedAt").notNull(),
   ipAddress: text("ipAddress"),
   userAgent: text("userAgent"),
+  impersonatedBy: text("impersonatedBy"),
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -61,10 +66,18 @@ export const newsArticles = pgTable("news_articles", {
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   excerpt: text("excerpt").notNull(),
-  content: text("content").notNull(),
+  content: text("content"),
   category: text("category").notNull().default("News"),
   imageUrl: text("image_url"),
   location: text("location"),
+  // Unified newsroom fields (media coverage is now part of the newsroom)
+  externalUrl: text("external_url"),
+  source: text("source"),
+  status: text("status").notNull().default("published"),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  programId: integer("program_id"),
+  mediaType: text("media_type").notNull().default("article"),
+  sortOrder: integer("sort_order").notNull().default(0),
   publishedAt: timestamp("published_at").notNull().defaultNow(),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -142,6 +155,19 @@ export const media = pgTable("media", {
   programId: integer("program_id").references(() => programs.id, { onDelete: "set null" }),
   isFeatured: boolean("is_featured").notNull().default(false),
   publishedAt: timestamp("published_at").notNull().defaultNow(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const banners = pgTable("banners", {
+  id: serial("id").primaryKey(),
+  title: text("title"),
+  subtitle: text("subtitle"),
+  imageUrl: text("image_url").notNull(),
+  linkUrl: text("link_url"),
+  linkLabel: text("link_label"),
+  isActive: boolean("is_active").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

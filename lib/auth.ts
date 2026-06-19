@@ -1,5 +1,7 @@
 import { betterAuth } from "better-auth"
+import { admin } from "better-auth/plugins"
 import { pool } from "@/lib/db"
+import { sendEmail, resetPasswordEmailHtml } from "@/lib/email"
 
 function getAuthBaseUrl() {
   if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
@@ -19,6 +21,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your AWAJ password",
+        html: resetPasswordEmailHtml(url, user.name),
+      })
+    },
   },
   trustedOrigins: [
     "http://localhost:3000",
@@ -45,4 +54,11 @@ export const auth = betterAuth({
       secure: true,
     },
   },
+  plugins: [
+    admin({
+      // "superadmin" can manage other admins; "admin" is a regular content editor.
+      adminRoles: ["superadmin"],
+      defaultRole: "admin",
+    }),
+  ],
 })
