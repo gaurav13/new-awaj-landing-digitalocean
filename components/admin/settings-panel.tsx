@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
+import { ChangePassword } from "./change-password"
 import { updateSiteSettings, type SiteSettings } from "@/app/actions/settings"
 
 type ImageField = { key: keyof SiteSettings; label: string; help: string }
@@ -184,6 +185,8 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
           Settings saved. Changes are now live on the site.
         </p>
       )}
+
+      <ChangePassword />
     </div>
   )
 }

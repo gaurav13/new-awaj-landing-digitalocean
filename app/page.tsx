@@ -12,13 +12,14 @@ import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { JoinCta } from "@/components/awaj/join-cta"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getSiteSettings } from "@/app/actions/settings"
+import { getActiveBanners } from "@/app/actions/banners"
 
 export default async function Page() {
-  const settings = await getSiteSettings()
+  const [settings, banners] = await Promise.all([getSiteSettings(), getActiveBanners()])
   return (
     <main className="min-h-screen bg-ivory">
       <SiteHeader />
-      <Hero bannerUrl={settings.heroBannerUrl} />
+      <Hero bannerUrl={settings.heroBannerUrl} banners={banners} />
       <Stats />
       <GrowthJourney />
       <Programs />

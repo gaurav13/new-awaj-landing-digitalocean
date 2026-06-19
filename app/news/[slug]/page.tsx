@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { ArrowLeft, MapPin, Calendar } from "lucide-react"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
@@ -23,6 +23,11 @@ export default async function ArticlePage({ params }: Props) {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
   if (!article) notFound()
+
+  // External press coverage has no internal body — send readers to the source.
+  if (!article.content && article.externalUrl) {
+    redirect(article.externalUrl)
+  }
 
   const related = await getRelatedNews(slug, 3)
 
@@ -70,7 +75,7 @@ export default async function ArticlePage({ params }: Props) {
 
         <p className="mt-8 text-pretty text-lg font-medium leading-relaxed text-navy-text/80">{article.excerpt}</p>
 
-        <RichContent html={article.content} className="mt-6" />
+        {article.content ? <RichContent html={article.content} className="mt-6" /> : null}
       </article>
 
       {related.length > 0 && (
