@@ -38,9 +38,9 @@ export default async function MediaPage() {
             <p className="mt-2 text-sm text-navy-text/60">Check back soon for the latest coverage of AWAJ.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {media.map((m) => (
-              <MediaCard key={m.id} item={m} />
+              <MediaCard key={m.id} item={m} compact />
             ))}
           </div>
         )}

@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { EventDetail } from "@/components/awaj/event-detail"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
 import { dateParts } from "@/lib/format-date"
-import { buildPageMetadata } from "@/lib/seo"
+import { buildPageMetadata, getEventSchema, getBreadcrumbSchema } from "@/lib/seo"
+import { JsonLd } from "@/components/seo/json-ld"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -29,8 +30,25 @@ export default async function EventPage({ params }: Props) {
 
   const related = await getRelatedEvents(slug, 3)
 
+  const [eventSchema, breadcrumbSchema] = await Promise.all([
+    getEventSchema({
+      path: `/events/${slug}`,
+      title: event.title,
+      description: event.excerpt,
+      image: event.imageUrl || event.bannerUrl,
+      startDate: event.eventDate,
+      location: event.location,
+    }),
+    getBreadcrumbSchema([
+      { name: "Home", path: "/" },
+      { name: "Events", path: "/events" },
+      { name: event.title, path: `/events/${slug}` },
+    ]),
+  ])
+
   return (
     <main className="min-h-svh bg-ivory">
+      <JsonLd data={[eventSchema, breadcrumbSchema]} />
       <SiteHeader />
 
       <EventDetail event={event} />

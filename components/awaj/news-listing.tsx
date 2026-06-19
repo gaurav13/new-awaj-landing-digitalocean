@@ -21,24 +21,14 @@ type Article = {
 
 const PAGE_SIZE = 6
 
-function articleHref(a: Article) {
-  return a.externalUrl || `/news/${a.slug}`
-}
-
 function isExternal(a: Article) {
   return Boolean(a.externalUrl)
 }
 
 function CardLink({ article, children, className }: { article: Article; children: React.ReactNode; className?: string }) {
-  if (isExternal(article)) {
-    return (
-      <a href={articleHref(article)} target="_blank" rel="noopener noreferrer" className={className}>
-        {children}
-      </a>
-    )
-  }
+  // Every article opens its own readable page on the site.
   return (
-    <Link href={articleHref(article)} className={className}>
+    <Link href={`/news/${article.slug}`} className={className}>
       {children}
     </Link>
   )

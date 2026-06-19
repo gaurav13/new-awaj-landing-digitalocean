@@ -69,3 +69,126 @@ export async function buildPageMetadata(input: PageSeoInput): Promise<Metadata> 
     },
   }
 }
+
+// ---------------------------------------------------------------------------
+// schema.org JSON-LD structured data
+// ---------------------------------------------------------------------------
+
+function absoluteUrl(base: string, path: string) {
+  if (!path) return base
+  if (/^https?:\/\//.test(path)) return path
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`
+}
+
+/** Organization schema describing the Alliance. Used site-wide. */
+export async function getOrganizationSchema() {
+  const settings = await getSiteSettings()
+  const base = resolveBaseUrl(settings.canonicalBaseUrl)
+  const logo = settings.headerLogoUrl || settings.ogImageUrl
+  const handle = settings.twitterHandle?.replace(/^@/, "")
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${base}/#organization`,
+    name: settings.siteTitle,
+    url: base,
+    description: settings.siteDescription,
+    ...(logo ? { logo: absoluteUrl(base, logo) } : {}),
+    ...(handle ? { sameAs: [`https://x.com/${handle}`] } : {}),
+  }
+}
+
+/** WebSite schema. Used site-wide. */
+export async function getWebSiteSchema() {
+  const settings = await getSiteSettings()
+  const base = resolveBaseUrl(settings.canonicalBaseUrl)
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${base}/#website`,
+    name: settings.siteTitle,
+    url: base,
+    description: settings.siteDescription,
+    publisher: { "@id": `${base}/#organization` },
+  }
+}
+
+type ArticleSchemaInput = {
+  path: string
+  title: string
+  description?: string
+  image?: string | null
+  datePublished?: Date | string
+  dateModified?: Date | string
+  section?: string
+}
+
+/** Article schema for news detail pages. */
+export async function getArticleSchema(input: ArticleSchemaInput) {
+  const settings = await getSiteSettings()
+  const base = resolveBaseUrl(settings.canonicalBaseUrl)
+  const url = absoluteUrl(base, input.path)
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    headline: input.title,
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.image ? { image: [absoluteUrl(base, input.image)] } : {}),
+    ...(input.section ? { articleSection: input.section } : {}),
+    ...(input.datePublished ? { datePublished: new Date(input.datePublished).toISOString() } : {}),
+    dateModified: new Date(input.dateModified || input.datePublished || Date.now()).toISOString(),
+    author: { "@type": "Organization", name: settings.siteTitle, "@id": `${base}/#organization` },
+    publisher: { "@id": `${base}/#organization` },
+  }
+}
+
+type EventSchemaInput = {
+  path: string
+  title: string
+  description?: string
+  image?: string | null
+  startDate?: Date | string
+  location?: string | null
+}
+
+/** Event schema for event detail pages. */
+export async function getEventSchema(input: EventSchemaInput) {
+  const settings = await getSiteSettings()
+  const base = resolveBaseUrl(settings.canonicalBaseUrl)
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: input.title,
+    url: absoluteUrl(base, input.path),
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.image ? { image: [absoluteUrl(base, input.image)] } : {}),
+    ...(input.startDate ? { startDate: new Date(input.startDate).toISOString() } : {}),
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    ...(input.location
+      ? { location: { "@type": "Place", name: input.location, address: input.location } }
+      : {}),
+    organizer: { "@type": "Organization", name: settings.siteTitle, url: base },
+  }
+}
+
+/** BreadcrumbList schema. Accepts ordered { name, path } crumbs. */
+export async function getBreadcrumbSchema(crumbs: { name: string; path: string }[]) {
+  const settings = await getSiteSettings()
+  const base = resolveBaseUrl(settings.canonicalBaseUrl)
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      item: absoluteUrl(base, c.path),
+    })),
+  }
+}

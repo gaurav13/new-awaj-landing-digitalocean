@@ -2,7 +2,8 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { getSiteSettings } from '@/app/actions/settings'
-import { resolveBaseUrl } from '@/lib/seo'
+import { resolveBaseUrl, getOrganizationSchema, getWebSiteSchema } from '@/lib/seo'
+import { JsonLd } from '@/components/seo/json-ld'
 import './globals.css'
 
 // Database-backed pages must not prerender at build time when env vars are unavailable.
@@ -80,17 +81,23 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const [organizationSchema, webSiteSchema] = await Promise.all([
+    getOrganizationSchema(),
+    getWebSiteSchema(),
+  ])
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} bg-background`}
     >
       <body className="font-sans antialiased">
+        <JsonLd data={[organizationSchema, webSiteSchema]} />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

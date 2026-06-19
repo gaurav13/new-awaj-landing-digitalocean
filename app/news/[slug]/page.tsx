@@ -1,12 +1,13 @@
 import Link from "next/link"
-import { notFound, redirect } from "next/navigation"
-import { ArrowLeft, MapPin, Calendar } from "lucide-react"
+import { notFound } from "next/navigation"
+import { ArrowLeft, MapPin, Calendar, ExternalLink } from "lucide-react"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { RichContent } from "@/components/awaj/rich-content"
 import { getNewsBySlug, getRelatedNews } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
-import { buildPageMetadata } from "@/lib/seo"
+import { buildPageMetadata, getArticleSchema, getBreadcrumbSchema } from "@/lib/seo"
+import { JsonLd } from "@/components/seo/json-ld"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -28,15 +29,27 @@ export default async function ArticlePage({ params }: Props) {
   const article = await getNewsBySlug(slug)
   if (!article) notFound()
 
-  // External press coverage has no internal body — send readers to the source.
-  if (!article.content && article.externalUrl) {
-    redirect(article.externalUrl)
-  }
-
   const related = await getRelatedNews(slug, 3)
+
+  const [articleSchema, breadcrumbSchema] = await Promise.all([
+    getArticleSchema({
+      path: `/news/${slug}`,
+      title: article.title,
+      description: article.excerpt,
+      image: article.imageUrl,
+      datePublished: article.publishedAt,
+      section: article.category,
+    }),
+    getBreadcrumbSchema([
+      { name: "Home", path: "/" },
+      { name: "News", path: "/news" },
+      { name: article.title, path: `/news/${slug}` },
+    ]),
+  ])
 
   return (
     <main className="min-h-svh bg-ivory">
+      <JsonLd data={[articleSchema, breadcrumbSchema]} />
       <SiteHeader />
 
       <article className="mx-auto max-w-[820px] px-5 py-10 lg:py-14">
@@ -80,6 +93,25 @@ export default async function ArticlePage({ params }: Props) {
         <p className="mt-8 text-pretty text-lg font-medium leading-relaxed text-navy-text/80">{article.excerpt}</p>
 
         {article.content ? <RichContent html={article.content} className="mt-6" /> : null}
+
+        {article.externalUrl ? (
+          <div className="mt-8 rounded-2xl border border-gold/20 bg-white p-6">
+            <p className="text-sm text-navy-text/70">
+              {article.source
+                ? `This story was originally published by ${article.source}.`
+                : "This story was originally published externally."}
+            </p>
+            <a
+              href={article.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-awaj-red px-5 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
+            >
+              Read the full coverage
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
+        ) : null}
       </article>
 
       {related.length > 0 && (
