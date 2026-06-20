@@ -24,6 +24,7 @@ type MediaItem = {
   type: string
   url: string | null
   thumbnailUrl: string | null
+  logoUrl: string | null
   source: string | null
   excerpt: string | null
 }

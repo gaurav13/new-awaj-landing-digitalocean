@@ -49,6 +49,7 @@ type Media = {
   type: string
   url: string | null
   thumbnailUrl: string | null
+  logoUrl: string | null
   source: string | null
   excerpt: string | null
   programId: number | null
@@ -450,9 +451,16 @@ export function AdminDashboard({
     },
     {
       name: "source",
-      label: "Source / publisher (optional)",
+      label: "Source / publisher",
       type: "text",
       placeholder: "Nikkei, CoinDesk, Bloomberg...",
+      hint: "Shown prominently on the media card. The outlet name appears first.",
+    },
+    {
+      name: "logoUrl",
+      label: "Publisher logo",
+      type: "image",
+      hint: "The media outlet's logo, shown first on the card. Square or wide logo, transparent PNG preferred, under 200KB.",
     },
     {
       name: "url",
@@ -463,7 +471,7 @@ export function AdminDashboard({
     },
     {
       name: "thumbnailUrl",
-      label: "Thumbnail image",
+      label: "Banner / cover image",
       type: "image",
       hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
     },
@@ -602,6 +610,7 @@ export function AdminDashboard({
                 source: "",
                 url: "",
                 thumbnailUrl: "",
+                logoUrl: "",
                 programId: "none",
                 publishedAt: "",
                 isFeatured: false,
@@ -614,6 +623,7 @@ export function AdminDashboard({
                 source: m.source ?? "",
                 url: m.url ?? "",
                 thumbnailUrl: m.thumbnailUrl ?? "",
+                logoUrl: m.logoUrl ?? "",
                 programId: m.programId ? String(m.programId) : "none",
                 publishedAt: new Date(m.publishedAt).toISOString().slice(0, 10),
                 isFeatured: m.isFeatured,

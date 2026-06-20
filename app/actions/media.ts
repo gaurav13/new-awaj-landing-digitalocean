@@ -50,6 +50,7 @@ type MediaInput = {
   type: string
   url?: string
   thumbnailUrl?: string
+  logoUrl?: string
   source?: string
   excerpt?: string
   programId?: number | string | null
@@ -70,6 +71,7 @@ export async function createMedia(input: MediaInput) {
     type: input.type || "Article",
     url: input.url || null,
     thumbnailUrl: input.thumbnailUrl || null,
+    logoUrl: input.logoUrl || null,
     source: input.source || null,
     excerpt: input.excerpt || null,
     programId: normalizeProgramId(input.programId),
@@ -90,6 +92,7 @@ export async function updateMedia(id: number, input: MediaInput) {
       type: input.type || "Article",
       url: input.url || null,
       thumbnailUrl: input.thumbnailUrl || null,
+      logoUrl: input.logoUrl || null,
       source: input.source || null,
       excerpt: input.excerpt || null,
       programId: normalizeProgramId(input.programId),

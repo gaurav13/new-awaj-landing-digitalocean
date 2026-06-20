@@ -150,6 +150,7 @@ export const media = pgTable("media", {
   type: text("type").notNull().default("Article"),
   url: text("url"),
   thumbnailUrl: text("thumbnail_url"),
+  logoUrl: text("logo_url"),
   source: text("source"),
   excerpt: text("excerpt"),
   programId: integer("program_id").references(() => programs.id, { onDelete: "set null" }),
