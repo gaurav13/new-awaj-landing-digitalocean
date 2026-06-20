@@ -105,7 +105,7 @@ function PersonCard({ person }: { person: DirectoryPerson }) {
           <img
             src={person.companyLogo || "/placeholder.svg"}
             alt={person.companyName ? `${person.companyName} logo` : "Company logo"}
-            className="mt-2 h-5 w-auto max-w-[100px] object-contain"
+            className="mt-2 h-10 w-auto max-w-[150px] object-contain"
           />
         ) : person.companyName ? (
           <p className="mt-1 text-xs font-semibold text-gold">{person.companyName}</p>
