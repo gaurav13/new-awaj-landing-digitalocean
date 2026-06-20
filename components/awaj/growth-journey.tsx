@@ -81,18 +81,25 @@ export function GrowthJourney() {
             </p>
           </div>
 
-          {/* Middle: feature grid */}
-          <div className="lg:col-span-5 lg:px-6">
-            <div className="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2">
-              {FEATURES.map((f) => (
-                <div key={f.title} className="flex gap-4">
-                  <f.icon className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.5} aria-hidden="true" />
-                  <div>
-                    <h3 className="font-serif text-base font-bold text-white">{f.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-white/55">{f.desc}</p>
+          {/* Middle: feature grid in a bordered box with dividers */}
+          <div className="lg:col-span-5 lg:px-2">
+            <div className="overflow-hidden rounded-2xl border border-gold/25">
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                {FEATURES.map((f, i) => (
+                  <div
+                    key={f.title}
+                    className={`flex gap-4 border-gold/15 p-6 ${i % 2 === 0 ? "sm:border-r" : ""} ${
+                      i < FEATURES.length - 1 ? "border-b" : ""
+                    } ${i >= FEATURES.length - 2 ? "sm:border-b-0" : ""}`}
+                  >
+                    <f.icon className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.5} aria-hidden="true" />
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-white">{f.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-white/55">{f.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -144,26 +151,28 @@ export function GrowthJourney() {
             </h2>
           </div>
 
-          {/* Right: steps */}
+          {/* Right: steps in an elegant card */}
           <div className="lg:col-span-9">
-            <ol className="grid grid-cols-1 gap-x-2 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
-              {STEPS.map((s, i) => (
-                <li key={s.num} className="relative flex flex-col items-center text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/30 bg-white">
-                    <s.icon className="h-7 w-7 text-gold" strokeWidth={1.5} aria-hidden="true" />
-                  </div>
-                  {i < STEPS.length - 1 && (
-                    <ArrowRight
-                      className="absolute -right-2 top-8 hidden h-5 w-5 -translate-y-1/2 text-gold/60 lg:block"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <p className="mt-4 text-sm font-semibold text-gold">{s.num}</p>
-                  <h3 className="mt-1 font-serif text-base font-bold text-navy-text">{s.title}</h3>
-                  <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-navy-text/60">{s.desc}</p>
-                </li>
-              ))}
-            </ol>
+            <div className="rounded-2xl border border-gold/20 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
+              <ol className="grid grid-cols-1 gap-x-2 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
+                {STEPS.map((s, i) => (
+                  <li key={s.num} className="relative flex flex-col items-center text-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/30 bg-beige/40">
+                      <s.icon className="h-7 w-7 text-gold" strokeWidth={1.5} aria-hidden="true" />
+                    </div>
+                    {i < STEPS.length - 1 && (
+                      <ArrowRight
+                        className="absolute -right-2 top-8 hidden h-5 w-5 -translate-y-1/2 text-gold/60 lg:block"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <p className="mt-4 text-sm font-semibold text-gold">{s.num}</p>
+                    <h3 className="mt-1 font-serif text-base font-bold text-navy-text">{s.title}</h3>
+                    <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-navy-text/60">{s.desc}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </div>
