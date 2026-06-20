@@ -12,7 +12,7 @@ function Logo({ item }: { item: LogoItem }) {
     <img
       src={item.src || "/placeholder.svg"}
       alt={item.alt}
-      className="h-8 w-auto max-w-[150px] shrink-0 object-contain opacity-70 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+      className="h-8 w-auto max-w-[150px] shrink-0 object-contain transition-transform duration-300 hover:scale-105"
       loading="lazy"
     />
   )
