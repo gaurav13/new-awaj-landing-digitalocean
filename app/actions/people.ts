@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { people, eventsPeople, programsPeople } from "@/lib/db/schema"
+import { people, eventsPeople, programsPeople, events, programs } from "@/lib/db/schema"
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
@@ -55,6 +55,69 @@ export async function getPublishedPeople(): Promise<Person[]> {
         .orderBy(desc(people.featured), asc(people.sortOrder), asc(people.id)),
     [],
   )
+}
+
+export type PersonConnection = { id: number; title: string; slug: string }
+export type DirectoryPerson = Person & {
+  events: PersonConnection[]
+  programs: PersonConnection[]
+}
+
+export async function getPeopleDirectory(): Promise<DirectoryPerson[]> {
+  return withDb(async () => {
+    const rows = await db
+      .select()
+      .from(people)
+      .where(eq(people.status, "published"))
+      .orderBy(desc(people.featured), asc(people.sortOrder), asc(people.id))
+    if (rows.length === 0) return []
+    const ids = rows.map((r) => r.id)
+
+    const eventLinks = await db
+      .select({
+        personId: eventsPeople.personId,
+        id: events.id,
+        title: events.title,
+        slug: events.slug,
+        sortOrder: eventsPeople.sortOrder,
+      })
+      .from(eventsPeople)
+      .innerJoin(events, eq(events.id, eventsPeople.eventId))
+      .where(inArray(eventsPeople.personId, ids))
+      .orderBy(asc(eventsPeople.sortOrder))
+
+    const programLinks = await db
+      .select({
+        personId: programsPeople.personId,
+        id: programs.id,
+        title: programs.title,
+        slug: programs.slug,
+        sortOrder: programsPeople.sortOrder,
+      })
+      .from(programsPeople)
+      .innerJoin(programs, eq(programs.id, programsPeople.programId))
+      .where(inArray(programsPeople.personId, ids))
+      .orderBy(asc(programsPeople.sortOrder))
+
+    const eventsByPerson = new Map<number, PersonConnection[]>()
+    for (const l of eventLinks) {
+      const arr = eventsByPerson.get(l.personId) ?? []
+      arr.push({ id: l.id, title: l.title, slug: l.slug })
+      eventsByPerson.set(l.personId, arr)
+    }
+    const programsByPerson = new Map<number, PersonConnection[]>()
+    for (const l of programLinks) {
+      const arr = programsByPerson.get(l.personId) ?? []
+      arr.push({ id: l.id, title: l.title, slug: l.slug })
+      programsByPerson.set(l.personId, arr)
+    }
+
+    return rows.map((r) => ({
+      ...r,
+      events: eventsByPerson.get(r.id) ?? [],
+      programs: programsByPerson.get(r.id) ?? [],
+    }))
+  }, [])
 }
 
 export async function getPeopleForEvent(eventId: number): Promise<Person[]> {
