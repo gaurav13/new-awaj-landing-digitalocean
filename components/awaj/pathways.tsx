@@ -124,7 +124,7 @@ const ACCENT: Record<
 }
 
 const BOTTOM_FEATURES: { icon: LucideIcon; title: string; body: string }[] = [
-  { icon: UsersRound, title: "Global Network", body: "Access to 10,000+ ecosystem leaders" },
+  { icon: UsersRound, title: "Global Network", body: "Access to 200+ ecosystem leaders" },
   { icon: Globe, title: "Exclusive Opportunities", body: "Early access to events, programs & insights" },
   { icon: BarChart3, title: "Growth & Impact", body: "Resources and connections to scale globally" },
   { icon: Star, title: "Trusted Community", body: "Built on trust, collaboration and shared success" },
