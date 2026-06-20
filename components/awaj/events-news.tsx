@@ -2,10 +2,10 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { getLatestNews } from "@/app/actions/news"
 import { getUpcomingEvents } from "@/app/actions/events"
-import { dateParts } from "@/lib/format-date"
+import { EventsCarousel } from "@/components/awaj/events-carousel"
 
 export async function EventsNews() {
-  const [events, news] = await Promise.all([getUpcomingEvents(4), getLatestNews(4)])
+  const [events, news] = await Promise.all([getUpcomingEvents(10), getLatestNews(4)])
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
@@ -28,42 +28,7 @@ export async function EventsNews() {
               No upcoming events yet.
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {events.map((e) => {
-                const d = dateParts(e.eventDate)
-                const cover = e.imageUrl || e.bannerUrl
-                return (
-                  <Link
-                    key={e.id}
-                    href={`/events/${e.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-gold/15 bg-white shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-beige">
-                      <img
-                        src={cover || "/images/event-night.png"}
-                        alt=""
-                        className={`absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105 ${
-                          cover ? "object-contain" : "object-cover"
-                        }`}
-                      />
-                      <div className="absolute left-3 top-3 z-10 flex flex-col items-center rounded-lg bg-white px-2.5 py-1 text-center shadow-md">
-                        <span className="text-[10px] font-bold uppercase leading-tight text-awaj-red">{d.month}</span>
-                        <span className="font-serif text-xl font-bold leading-none text-navy-text">{d.day}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <h3 className="font-serif text-lg font-bold leading-snug text-navy-text">{e.title}</h3>
-                      {e.location && <p className="mt-1 text-xs font-semibold text-gold">{e.location}</p>}
-                      <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-navy-text/70">{e.excerpt}</p>
-                      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
-                        Learn More
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
+            <EventsCarousel events={events} />
           )}
         </div>
 
