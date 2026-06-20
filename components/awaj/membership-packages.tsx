@@ -20,6 +20,7 @@ import {
   CreditCard,
 } from "lucide-react"
 import type { MembershipContent } from "@/lib/membership-content"
+import { PartnersMarquee } from "@/components/awaj/partners-marquee"
 
 export type MembershipPlan = {
   id: number
@@ -176,6 +177,9 @@ export function MembershipPackages({
           </div>
         ) : null}
       </section>
+
+      {/* Partner logos — auto-sliding, synced with the editable Partners section */}
+      <PartnersMarquee />
 
       {/* Plan cards */}
       <section className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">

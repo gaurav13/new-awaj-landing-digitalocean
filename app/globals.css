@@ -289,6 +289,9 @@
   width: max-content;
   animation: awaj-marquee 30s linear infinite;
 }
+.awaj-marquee-track-reverse {
+  animation-direction: reverse;
+}
 .awaj-marquee-mask:hover .awaj-marquee-track {
   animation-play-state: paused;
 }
