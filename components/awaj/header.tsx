@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Mail, Globe, Menu, X, ChevronDown } from "lucide-react"
+import { Globe, Menu, X, ChevronDown } from "lucide-react"
 import { Logo } from "./logo"
 
 type NavChild = { label: string; href: string }
@@ -88,13 +88,12 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href="mailto:bm@asiaweb3alliance.jp"
+          <Link
+            href="/membership"
             className="flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
-            <Mail className="h-4 w-4 text-gold" />
-            bm@asiaweb3alliance.jp
-          </a>
+            Become A Member
+          </Link>
           <button
             type="button"
             aria-label="Language"
@@ -158,13 +157,13 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
                 </Link>
               ),
             )}
-            <a
-              href="mailto:bm@asiaweb3alliance.jp"
-              className="mt-2 flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white"
+            <Link
+              href="/membership"
+              onClick={closeMobile}
+              className="mt-2 flex items-center justify-center rounded-full bg-navy px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
             >
-              <Mail className="h-4 w-4 text-gold" />
-              bm@asiaweb3alliance.jp
-            </a>
+              Become A Member
+            </Link>
           </nav>
         </div>
       )}
