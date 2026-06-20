@@ -106,7 +106,7 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
                     {e.location && <p className="mt-1 text-[11px] font-semibold text-gold">{e.location}</p>}
                     <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-navy-text/70">{e.excerpt}</p>
                     <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-semibold text-awaj-red">
-                      Learn More
+                      Join Event
                       <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
