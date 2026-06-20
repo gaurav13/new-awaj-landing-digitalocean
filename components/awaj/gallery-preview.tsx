@@ -19,6 +19,7 @@ type Slide = {
   key: string
   src: string
   title: string
+  count: number
 }
 
 export function GalleryPreview({ albums }: { albums: GalleryPreviewAlbum[] }) {
@@ -26,14 +27,12 @@ export function GalleryPreview({ albums }: { albums: GalleryPreviewAlbum[] }) {
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(false)
 
-  // Flatten albums into a single strip of photos, matching the reference row layout.
+  // One slide per activity (album), using its cover image. The slider scrolls
+  // through every featured activity, supporting well over 10 entries.
   const slides: Slide[] = []
   for (const album of albums) {
-    const photos = album.photos.length > 0 ? album.photos : album.coverImageUrl ? [{ imageUrl: album.coverImageUrl }] : []
-    for (let i = 0; i < photos.length; i++) {
-      const src = (photos[i] as { imageUrl?: string }).imageUrl
-      if (src) slides.push({ key: `${album.id}-${i}`, src, title: album.title })
-    }
+    const src = album.coverImageUrl || (album.photos[0] as { imageUrl?: string } | undefined)?.imageUrl
+    if (src) slides.push({ key: `${album.id}`, src, title: album.title, count: album.photos.length })
   }
 
   const updateArrows = () => {
@@ -97,10 +96,15 @@ export function GalleryPreview({ albums }: { albums: GalleryPreviewAlbum[] }) {
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-navy/0 transition-colors group-hover:bg-navy/15" />
-              <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-navy opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                <Images className="h-3 w-3" />
-                View
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-navy/10 to-transparent" />
+              {slide.count > 0 ? (
+                <span className="pointer-events-none absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-navy shadow-sm">
+                  <Images className="h-3 w-3" />
+                  {slide.count}
+                </span>
+              ) : null}
+              <span className="pointer-events-none absolute inset-x-2 bottom-2 line-clamp-2 text-xs font-semibold leading-snug text-white">
+                {slide.title}
               </span>
             </Link>
           ))}
