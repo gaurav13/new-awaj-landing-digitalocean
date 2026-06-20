@@ -9,6 +9,7 @@ import { getMyPrograms } from "@/app/actions/programs"
 import { getMyTeam } from "@/app/actions/team"
 import { getMyPartners } from "@/app/actions/partners"
 import { getMyMembers } from "@/app/actions/members"
+import { getMyMembershipPlans } from "@/app/actions/membership"
 import { getMyMessages } from "@/app/actions/contact"
 import { getMyBanners } from "@/app/actions/banners"
 import { getAllUsers } from "@/app/actions/users"
@@ -26,21 +27,35 @@ export default async function AdminPage() {
 
   const superAdmin = await isSuperAdmin()
 
-  const [news, media, galleries, events, programs, team, partners, members, banners, messages, settings, users] =
-    await Promise.all([
-      getMyNews(),
-      getMyMedia(),
-      getMyGalleries(),
-      getMyEvents(),
-      getMyPrograms(),
-      getMyTeam(),
-      getMyPartners(),
-      getMyMembers(),
-      getMyBanners(),
-      getMyMessages(),
-      getSiteSettings(),
-      superAdmin ? getAllUsers() : Promise.resolve([]),
-    ])
+  const [
+    news,
+    media,
+    galleries,
+    events,
+    programs,
+    team,
+    partners,
+    members,
+    membershipPlans,
+    banners,
+    messages,
+    settings,
+    users,
+  ] = await Promise.all([
+    getMyNews(),
+    getMyMedia(),
+    getMyGalleries(),
+    getMyEvents(),
+    getMyPrograms(),
+    getMyTeam(),
+    getMyPartners(),
+    getMyMembers(),
+    getMyMembershipPlans(),
+    getMyBanners(),
+    getMyMessages(),
+    getSiteSettings(),
+    superAdmin ? getAllUsers() : Promise.resolve([]),
+  ])
 
   return (
     <AdminDashboard
@@ -55,6 +70,7 @@ export default async function AdminPage() {
       team={team}
       partners={partners}
       members={members}
+      membershipPlans={membershipPlans}
       banners={banners}
       messages={messages}
       settings={settings}

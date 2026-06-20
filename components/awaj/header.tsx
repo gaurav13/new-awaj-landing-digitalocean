@@ -8,6 +8,7 @@ import { Logo } from "./logo"
 const NAV: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
   { label: "Programs", href: "/#programs" },
+  { label: "Membership", href: "/membership" },
   // { label: "Members", href: "/members" },
   { label: "News", href: "/news" },
   { label: "Media", href: "/media" },

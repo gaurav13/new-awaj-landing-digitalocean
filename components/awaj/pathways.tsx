@@ -27,7 +27,7 @@ const PATHWAYS: Pathway[] = [
       { icon: Users, label: "Professionals" },
     ],
     cta: "Become a Member",
-    href: "mailto:bm@asiaweb3alliance.jp?subject=Membership%20Inquiry",
+    href: "/membership",
     accent: "red",
   },
   {

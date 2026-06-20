@@ -229,6 +229,26 @@ export const members = pgTable("members", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const membershipPlans = pgTable("membership_plans", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull().default("Users"),
+  price: text("price").notNull().default("Free"),
+  priceNote: text("price_note"),
+  periodLabel: text("period_label").default("1 Year Membership"),
+  badge: text("badge"),
+  description: text("description").notNull().default(""),
+  features: jsonb("features").$type<string[]>().notNull().default([]),
+  ctaLabel: text("cta_label").notNull().default("Join Now"),
+  ctaUrl: text("cta_url"),
+  footnote: text("footnote"),
+  accent: text("accent").notNull().default("gold"),
+  isHighlighted: boolean("is_highlighted").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
 export const siteSettings = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value"),

@@ -26,7 +26,7 @@ export function JoinCta() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:shrink-0">
             <Link
-              href="/members"
+              href="/membership"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-awaj-red px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               Become a Member
