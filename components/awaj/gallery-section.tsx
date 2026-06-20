@@ -9,30 +9,29 @@ export async function GallerySection() {
   if (withPhotos.length === 0) return null
 
   return (
-    <section className="py-16 lg:py-20">
+    <section className="bg-beige/40 py-16 lg:py-20">
       <div className="mx-auto max-w-[1280px] px-5 lg:px-10">
-        <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">Moments</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-navy-text md:text-4xl">
-            Gallery & Highlights
-          </h2>
-          <div className="mx-auto mt-3 h-px w-20 bg-gold/60" />
-          <p className="mx-auto mt-4 max-w-2xl text-pretty leading-relaxed text-navy-text/65">
-            A look back at our events, programs, and the community building the future of Web3 &amp; AI across Asia.
-          </p>
-        </div>
+        <div className="mb-9 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">Moments</p>
+            <h2 className="mt-2 font-serif text-3xl font-bold tracking-tight text-navy-text md:text-4xl">
+              Gallery &amp; Highlights
+            </h2>
+            <p className="mt-3 max-w-xl text-pretty leading-relaxed text-navy-text/65">
+              A glance at our events, programs, and conferences building the future of Web3 &amp; AI across Asia.
+            </p>
+          </div>
 
-        <GalleryPreview albums={withPhotos} />
-
-        <div className="mt-10 flex justify-center">
           <Link
             href="/gallery"
-            className="group inline-flex items-center gap-2 rounded-full bg-navy px-7 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
+            className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-navy/20 px-5 py-2.5 text-sm font-semibold text-navy-text transition-colors hover:bg-navy hover:text-white"
           >
-            Explore Full Gallery
+            View All Albums
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
+
+        <GalleryPreview albums={withPhotos} />
       </div>
     </section>
   )

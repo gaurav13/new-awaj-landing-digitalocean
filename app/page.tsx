@@ -25,11 +25,11 @@ export default async function Page() {
       <GrowthJourney />
       <Programs />
       <EventsNews />
+      <GallerySection />
       <Offerings />
       <Partners />
       <Pathways />
       <Team />
-      <GallerySection />
       <FeaturedMedia />
       <JoinCta />
       <SiteFooter />
