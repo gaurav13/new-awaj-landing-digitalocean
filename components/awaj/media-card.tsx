@@ -35,15 +35,13 @@ export function MediaCard({ item }: { item: MediaItem }) {
       {/* Header: publisher logo (hero) + format badge */}
       <div className="flex items-center justify-between gap-3 px-6 pt-6">
         {item.logoUrl ? (
-          <span className="inline-flex items-center rounded-xl bg-beige/50 px-3 py-2 ring-1 ring-gold/10">
-            <img
-              src={item.logoUrl || "/placeholder.svg"}
-              alt={`${publisher} logo`}
-              className="h-8 w-auto max-w-[150px] object-contain object-left"
-            />
-          </span>
+          <img
+            src={item.logoUrl || "/placeholder.svg"}
+            alt={`${publisher} logo`}
+            className="h-9 w-auto max-w-[160px] object-contain object-left"
+          />
         ) : (
-          <span className="inline-flex items-center gap-2 rounded-xl bg-beige/50 px-3 py-2 ring-1 ring-gold/10">
+          <span className="inline-flex items-center gap-2">
             <Newspaper className="h-5 w-5 text-gold" />
             <span className="font-serif text-xl font-bold uppercase tracking-tight text-navy-text">{publisher}</span>
           </span>

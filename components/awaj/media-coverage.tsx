@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Globe, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { MediaCard, type MediaItem } from "./media-card"
@@ -36,6 +36,7 @@ export function MediaCoverage({
 }) {
   const [active, setActive] = useState<FilterId>("all")
   const trackRef = useRef<HTMLDivElement>(null)
+  const pausedRef = useRef(false)
 
   const scrollBy = (dir: 1 | -1) => {
     const track = trackRef.current
@@ -54,6 +55,22 @@ export function MediaCoverage({
     () => (active === "all" ? items : items.filter((m) => categorize(m.type) === active)),
     [items, active],
   )
+
+  // Auto-advance the slider; loops back to the start and pauses on hover.
+  useEffect(() => {
+    if (variant !== "slider" || filtered.length <= 1) return
+    const id = setInterval(() => {
+      const track = trackRef.current
+      if (!track || pausedRef.current) return
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8
+      if (atEnd) {
+        track.scrollTo({ left: 0, behavior: "smooth" })
+      } else {
+        track.scrollBy({ left: track.clientWidth * 0.85, behavior: "smooth" })
+      }
+    }, 4000)
+    return () => clearInterval(id)
+  }, [variant, filtered.length])
 
   return (
     <div>
@@ -114,6 +131,12 @@ export function MediaCoverage({
       {variant === "slider" ? (
         <div
           ref={trackRef}
+          onMouseEnter={() => {
+            pausedRef.current = true
+          }}
+          onMouseLeave={() => {
+            pausedRef.current = false
+          }}
           className="-mx-5 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-5 pb-2 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {filtered.map((m) => (
