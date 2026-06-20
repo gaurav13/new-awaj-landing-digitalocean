@@ -25,7 +25,7 @@ function actionLabel(kind: string) {
   return "Read article"
 }
 
-export function MediaCard({ item }: { item: MediaItem }) {
+export function MediaCard({ item, showExcerpt = false }: { item: MediaItem; showExcerpt?: boolean }) {
   const kind = categorize(item.type)
   const isVideo = kind === "video"
   const publisher = item.source || "AWAJ"
@@ -78,9 +78,13 @@ export function MediaCard({ item }: { item: MediaItem }) {
 
       {/* Body */}
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="flex-1 text-balance font-serif text-lg font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
+        <h3 className="text-balance font-serif text-lg font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
           {item.title}
         </h3>
+        {showExcerpt && item.excerpt ? (
+          <p className="mt-2.5 line-clamp-3 text-pretty text-sm leading-relaxed text-navy-text/60">{item.excerpt}</p>
+        ) : null}
+        <div className="flex-1" />
         {item.url ? (
           <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
             {actionLabel(kind)}
