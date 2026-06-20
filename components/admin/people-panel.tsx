@@ -3,14 +3,22 @@
 import type React from "react"
 import { useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Pencil, Trash2, X, Search, Star } from "lucide-react"
+import { Plus, Pencil, Trash2, X, Search, Star, ArrowUp, ArrowDown, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
 import { PEOPLE_ROLE_TYPES } from "@/lib/db/schema"
-import { createPerson, updatePerson, deletePerson, type Person, type PersonInput } from "@/app/actions/people"
+import {
+  createPerson,
+  updatePerson,
+  deletePerson,
+  importPeopleFromSources,
+  reorderPerson,
+  type Person,
+  type PersonInput,
+} from "@/app/actions/people"
 
 type Counts = { total: number; published: number; draft: number; homepage: number }
 
@@ -149,6 +157,39 @@ export function PeoplePanel({
       }
     })
   }
+
+  function handleImport() {
+    if (
+      !confirm(
+        "Import all team members and event speakers into this directory? Existing people are matched by name (no duplicates), and everyone is re-ordered Team → Government → others.",
+      )
+    )
+      return
+    setError(null)
+    startTransition(async () => {
+      try {
+        const res = await importPeopleFromSources()
+        setNotice(`Imported ${res.imported} new ${res.imported === 1 ? "person" : "people"}. Directory now has ${res.total}.`)
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Import failed.")
+      }
+    })
+  }
+
+  function handleReorder(id: number, direction: "up" | "down") {
+    startTransition(async () => {
+      try {
+        await reorderPerson(id, direction)
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to reorder.")
+      }
+    })
+  }
+
+  // Reordering only makes sense against the full, unfiltered, globally-ordered list.
+  const reorderEnabled = roleFilter === "all" && statusFilter === "all" && !search.trim()
 
   const counterCards = [
     { label: "Total People", value: counts.total },
