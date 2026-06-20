@@ -7,11 +7,18 @@ import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
 
+import { resolveProgramRecord } from "@/lib/images"
+
 // ---- Public reads ----
 
 export async function getAllPrograms() {
   return withDb(
-    () => db.select().from(programs).orderBy(asc(programs.sortOrder), asc(programs.id)),
+    () =>
+      db
+        .select()
+        .from(programs)
+        .orderBy(asc(programs.sortOrder), asc(programs.id))
+        .then((rows) => rows.map(resolveProgramRecord)),
     [],
   )
 }
@@ -19,7 +26,7 @@ export async function getAllPrograms() {
 export async function getProgramBySlug(slug: string) {
   return withDb(async () => {
     const rows = await db.select().from(programs).where(eq(programs.slug, slug)).limit(1)
-    return rows[0] ?? null
+    return rows[0] ? resolveProgramRecord(rows[0]) : null
   }, null)
 }
 

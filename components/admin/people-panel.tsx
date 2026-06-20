@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
+import { resolveImageUrl } from "@/lib/images"
 import { PEOPLE_ROLE_TYPES } from "@/lib/db/schema"
 import {
   createPerson,
@@ -302,7 +303,11 @@ export function PeoplePanel({
               <li key={p.id} className="flex items-center gap-4 p-4 hover:bg-beige/30">
                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-beige">
                   {p.profilePhoto ? (
-                    <img src={p.profilePhoto || "/placeholder.svg"} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={resolveImageUrl(p.profilePhoto) || "/placeholder.svg"}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : null}
                 </div>
                 <div className="min-w-0 flex-1">

@@ -7,11 +7,18 @@ import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 
+import { resolveOptionalImage } from "@/lib/images"
+
 // ---- Public reads ----
 
 export async function getAllMembers() {
   return withDb(
-    () => db.select().from(members).orderBy(asc(members.sortOrder), asc(members.companyName)),
+    () =>
+      db
+        .select()
+        .from(members)
+        .orderBy(asc(members.sortOrder), asc(members.companyName))
+        .then((rows) => rows.map((r) => ({ ...r, logoUrl: resolveOptionalImage(r.logoUrl) }))),
     [],
   )
 }

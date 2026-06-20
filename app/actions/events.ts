@@ -14,11 +14,15 @@ import { asc, desc, eq, ne, gte, lt } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
 import { syncEventSpeakerPeople } from "@/lib/people-sync"
+import { resolveEventRecord } from "@/lib/images"
 
 // ---- Public reads ----
 
 export async function getAllEvents() {
-  return withDb(() => db.select().from(events).orderBy(asc(events.eventDate)), [])
+  return withDb(
+    () => db.select().from(events).orderBy(asc(events.eventDate)).then((rows) => rows.map(resolveEventRecord)),
+    [],
+  )
 }
 
 export async function getUpcomingEvents(limit = 4) {
@@ -31,7 +35,8 @@ export async function getUpcomingEvents(limit = 4) {
         .from(events)
         .where(gte(events.eventDate, today))
         .orderBy(asc(events.eventDate))
-        .limit(limit),
+        .limit(limit)
+        .then((rows) => rows.map(resolveEventRecord)),
     [],
   )
 }
@@ -48,7 +53,7 @@ export async function getHomeEvents(limit = 10) {
       .orderBy(asc(events.eventDate))
       .limit(limit)
 
-    if (upcoming.length >= limit) return upcoming
+    if (upcoming.length >= limit) return upcoming.map(resolveEventRecord)
 
     const past = await db
       .select()
@@ -57,7 +62,7 @@ export async function getHomeEvents(limit = 10) {
       .orderBy(desc(events.eventDate))
       .limit(limit - upcoming.length)
 
-    return [...upcoming, ...past]
+    return [...upcoming, ...past].map(resolveEventRecord)
   }, [])
 }
 
@@ -69,20 +74,27 @@ export async function getFeaturedEvent() {
       .where(eq(events.isFeatured, true))
       .orderBy(asc(events.eventDate))
       .limit(1)
-    return rows[0] ?? null
+    return rows[0] ? resolveEventRecord(rows[0]) : null
   }, null)
 }
 
 export async function getEventBySlug(slug: string) {
   return withDb(async () => {
     const rows = await db.select().from(events).where(eq(events.slug, slug)).limit(1)
-    return rows[0] ?? null
+    return rows[0] ? resolveEventRecord(rows[0]) : null
   }, null)
 }
 
 export async function getRelatedEvents(slug: string, limit = 3) {
   return withDb(
-    () => db.select().from(events).where(ne(events.slug, slug)).orderBy(asc(events.eventDate)).limit(limit),
+    () =>
+      db
+        .select()
+        .from(events)
+        .where(ne(events.slug, slug))
+        .orderBy(asc(events.eventDate))
+        .limit(limit)
+        .then((rows) => rows.map(resolveEventRecord)),
     [],
   )
 }

@@ -7,6 +7,7 @@ import { and, asc, eq, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 import { findOrCreatePersonByName, renumberPeopleByPriority, syncEventSpeakerPeople } from "@/lib/people-sync"
+import { resolveOptionalImage, resolvePersonRecord } from "@/lib/images"
 
 export type Person = typeof people.$inferSelect
 
@@ -41,7 +42,8 @@ export async function getHomepageLeaders(limit = 12): Promise<Person[]> {
         .from(people)
         .where(and(eq(people.showOnHomepage, true), eq(people.status, "published")))
         .orderBy(asc(people.sortOrder), asc(people.id))
-        .limit(limit),
+        .limit(limit)
+        .then((rows) => rows.map(resolvePersonRecord)),
     [],
   )
 }
@@ -53,7 +55,8 @@ export async function getPublishedPeople(): Promise<Person[]> {
         .select()
         .from(people)
         .where(eq(people.status, "published"))
-        .orderBy(asc(people.sortOrder), asc(people.id)),
+        .orderBy(asc(people.sortOrder), asc(people.id))
+        .then((rows) => rows.map(resolvePersonRecord)),
     [],
   )
 }
@@ -100,10 +103,10 @@ export async function getPeopleDirectory(): Promise<DirectoryPerson[]> {
       const entry: DirectoryPerson = {
         id: `person-${p.id}`,
         fullName: p.fullName,
-        profilePhoto: p.profilePhoto,
+        profilePhoto: resolveOptionalImage(p.profilePhoto),
         jobTitle: p.jobTitle,
         companyName: p.companyName,
-        companyLogo: p.companyLogo,
+        companyLogo: resolveOptionalImage(p.companyLogo),
         linkedinUrl: p.linkedinUrl,
         showLinkedin: p.showLinkedin,
         showCompanyLogo: p.showCompanyLogo,
@@ -159,7 +162,7 @@ export async function getPeopleForEvent(eventId: number): Promise<Person[]> {
       .from(people)
       .where(and(inArray(people.id, ids), eq(people.status, "published")))
     const order = new Map(ids.map((id, i) => [id, i]))
-    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)).map(resolvePersonRecord)
   }, [])
 }
 
@@ -177,7 +180,7 @@ export async function getPeopleForProgram(programId: number): Promise<Person[]> 
       .from(people)
       .where(and(inArray(people.id, ids), eq(people.status, "published")))
     const order = new Map(ids.map((id, i) => [id, i]))
-    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)).map(resolvePersonRecord)
   }, [])
 }
 

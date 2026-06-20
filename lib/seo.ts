@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getSiteSettings } from "@/app/actions/settings"
+import { resolveImageUrl } from "@/lib/images"
 
 /**
  * Resolves the canonical base URL for the site. Priority:
@@ -45,7 +46,8 @@ export async function buildPageMetadata(input: PageSeoInput): Promise<Metadata> 
   const title = input.title || settings.siteTitle
   const description = input.description || settings.ogDescription || settings.siteDescription
   const ogTitle = input.title || settings.ogTitle || settings.siteTitle
-  const image = input.image || settings.ogImageUrl || undefined
+  const imageRaw = input.image || settings.ogImageUrl || undefined
+  const image = imageRaw ? resolveImageUrl(imageRaw) : undefined
   const canonical = input.path === "/" ? "/" : input.path
 
   return {
@@ -84,7 +86,8 @@ function absoluteUrl(base: string, path: string) {
 export async function getOrganizationSchema() {
   const settings = await getSiteSettings()
   const base = resolveBaseUrl(settings.canonicalBaseUrl)
-  const logo = settings.headerLogoUrl || settings.ogImageUrl
+  const logoRaw = settings.headerLogoUrl || settings.ogImageUrl
+  const logo = logoRaw ? resolveImageUrl(logoRaw) : undefined
   const handle = settings.twitterHandle?.replace(/^@/, "")
 
   return {
@@ -94,7 +97,7 @@ export async function getOrganizationSchema() {
     name: settings.siteTitle,
     url: base,
     description: settings.siteDescription,
-    ...(logo ? { logo: absoluteUrl(base, logo) } : {}),
+    ...(logo ? { logo } : {}),
     ...(handle ? { sameAs: [`https://x.com/${handle}`] } : {}),
   }
 }
@@ -137,7 +140,7 @@ export async function getArticleSchema(input: ArticleSchemaInput) {
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     headline: input.title,
     ...(input.description ? { description: input.description } : {}),
-    ...(input.image ? { image: [absoluteUrl(base, input.image)] } : {}),
+    ...(input.image ? { image: [resolveImageUrl(input.image)] } : {}),
     ...(input.section ? { articleSection: input.section } : {}),
     ...(input.datePublished ? { datePublished: new Date(input.datePublished).toISOString() } : {}),
     dateModified: new Date(input.dateModified || input.datePublished || Date.now()).toISOString(),
@@ -166,7 +169,7 @@ export async function getEventSchema(input: EventSchemaInput) {
     name: input.title,
     url: absoluteUrl(base, input.path),
     ...(input.description ? { description: input.description } : {}),
-    ...(input.image ? { image: [absoluteUrl(base, input.image)] } : {}),
+    ...(input.image ? { image: [resolveImageUrl(input.image)] } : {}),
     ...(input.startDate ? { startDate: new Date(input.startDate).toISOString() } : {}),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     ...(input.location

@@ -5,6 +5,18 @@ import { withDb } from "@/lib/db/with-db"
 import { siteSettings } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
+import { toStoredImagePath } from "@/lib/images"
+
+const IMAGE_SETTING_KEYS = new Set([
+  "headerLogoUrl",
+  "footerLogoUrl",
+  "heroBannerUrl",
+  "ogImageUrl",
+  "faviconUrl",
+  "membershipHeroUrl",
+  "presidentPhotoUrl",
+  "presidentBgUrl",
+])
 
 export type SiteSettings = {
   headerLogoUrl: string
@@ -125,10 +137,12 @@ export async function updateSiteSettings(input: Partial<SiteSettings>) {
   await getUserId()
   const entries = Object.entries(input)
   for (const [key, value] of entries) {
+    const stored =
+      IMAGE_SETTING_KEYS.has(key) && typeof value === "string" ? toStoredImagePath(value) : (value ?? "")
     await db
       .insert(siteSettings)
-      .values({ key, value: value ?? "" })
-      .onConflictDoUpdate({ target: siteSettings.key, set: { value: value ?? "", updatedAt: new Date() } })
+      .values({ key, value: stored })
+      .onConflictDoUpdate({ target: siteSettings.key, set: { value: stored, updatedAt: new Date() } })
   }
   revalidatePath("/", "layout")
 }

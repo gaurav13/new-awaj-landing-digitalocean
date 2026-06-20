@@ -8,6 +8,7 @@ import { getEventPeople } from "@/app/actions/people"
 import { dateParts } from "@/lib/format-date"
 import { buildPageMetadata, getEventSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
+import { resolveEventCardImage, resolveEventPosterImage } from "@/lib/images"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props) {
     path: `/events/${slug}`,
     title: event.title,
     description: event.excerpt,
-    image: event.imageUrl || event.bannerUrl,
+    image: resolveEventPosterImage({ slug, imageUrl: event.imageUrl, bannerUrl: event.bannerUrl }),
     type: "article",
   })
 }
@@ -54,7 +55,7 @@ export default async function EventPage({ params }: Props) {
       path: `/events/${slug}`,
       title: event.title,
       description: event.excerpt,
-      image: event.imageUrl || event.bannerUrl,
+      image: resolveEventPosterImage({ slug, imageUrl: event.imageUrl, bannerUrl: event.bannerUrl }),
       startDate: event.eventDate,
       location: event.location,
     }),
@@ -79,7 +80,7 @@ export default async function EventPage({ params }: Props) {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((e) => {
                 const d = dateParts(e.eventDate)
-                const cover = e.imageUrl || e.bannerUrl
+                const cover = resolveEventCardImage(e)
                 return (
                   <Link
                     key={e.id}
@@ -87,19 +88,11 @@ export default async function EventPage({ params }: Props) {
                     className="group flex flex-col overflow-hidden rounded-2xl border border-gold/20 bg-ivory transition-shadow hover:shadow-md"
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-beige">
-                      {cover ? (
-                        <img
-                          src={cover || "/placeholder.svg"}
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <img
-                          src="/images/event-night.png"
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      )}
+                      <img
+                        src={cover}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
                     <div className="flex flex-1 flex-col p-5">
                       <p className="text-xs font-semibold uppercase tracking-wide text-gold">

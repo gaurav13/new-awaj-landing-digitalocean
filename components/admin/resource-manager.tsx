@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
 import { MultiImageUpload } from "./multi-image-upload"
 import { RichTextEditor } from "./rich-text-editor"
+import { resolveImageUrl } from "@/lib/images"
 import type { GalleryItem } from "@/lib/db/schema"
 
 export type FieldType =
@@ -185,7 +186,13 @@ export function ResourceManager<T extends { id: number }>({
               return (
                 <li key={item.id} className="flex items-center gap-4 p-4 hover:bg-beige/30">
                   <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-beige">
-                    {img ? <img src={img || "/placeholder.svg"} alt="" className="h-full w-full object-cover" /> : null}
+                    {img ? (
+                      <img
+                        src={resolveImageUrl(img) || "/placeholder.svg"}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    ) : null}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

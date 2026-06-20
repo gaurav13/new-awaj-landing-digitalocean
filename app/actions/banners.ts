@@ -7,6 +7,8 @@ import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 
+import { resolveImageUrl } from "@/lib/images"
+
 // ---- Public read ----
 
 export async function getActiveBanners() {
@@ -16,7 +18,8 @@ export async function getActiveBanners() {
         .select()
         .from(banners)
         .where(eq(banners.isActive, true))
-        .orderBy(asc(banners.sortOrder), desc(banners.createdAt)),
+        .orderBy(asc(banners.sortOrder), desc(banners.createdAt))
+        .then((rows) => rows.map((r) => ({ ...r, imageUrl: resolveImageUrl(r.imageUrl) }))),
     [],
   )
 }

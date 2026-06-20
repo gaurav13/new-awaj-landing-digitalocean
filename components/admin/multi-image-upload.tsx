@@ -2,16 +2,8 @@
 
 import { useRef, useState } from "react"
 import { UploadCloud, X, Loader2, GripVertical } from "lucide-react"
-import { upload } from "@vercel/blob/client"
 import type { GalleryItem } from "@/lib/db/schema"
-
-async function uploadOne(file: File): Promise<string> {
-  const blob = await upload(`awaj/${file.name}`, file, {
-    access: "public",
-    handleUploadUrl: "/api/upload",
-  })
-  return blob.url
-}
+import { resolveImageUrl, uploadImageViaApi } from "@/lib/images"
 
 export function MultiImageUpload({
   value,
@@ -37,19 +29,18 @@ export function MultiImageUpload({
     let done = 0
     const added: GalleryItem[] = []
     try {
-      // Upload in small batches to keep things responsive without overwhelming the endpoint.
       const batchSize = 3
       for (let i = 0; i < list.length; i += batchSize) {
         const batch = list.slice(i, i + batchSize)
-        const urls = await Promise.all(
+        const paths = await Promise.all(
           batch.map(async (file) => {
-            const url = await uploadOne(file)
+            const path = await uploadImageViaApi(file)
             done += 1
             setProgress({ done, total: list.length })
-            return url
+            return path
           }),
         )
-        for (const url of urls) added.push({ imageUrl: url, caption: undefined })
+        for (const path of paths) added.push({ imageUrl: path, caption: undefined })
       }
       onChange([...photos, ...added])
     } catch (err) {
@@ -108,7 +99,7 @@ export function MultiImageUpload({
           <>
             <UploadCloud className="h-6 w-6" />
             <span className="text-sm font-medium">Click to upload photos in bulk</span>
-            <span className="text-xs text-navy-text/40">Select multiple images at once — PNG, JPG, or WebP</span>
+            <span className="text-xs text-navy-text/40">Select multiple images · DigitalOcean CDN</span>
           </>
         )}
       </button>
@@ -129,7 +120,11 @@ export function MultiImageUpload({
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-beige">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photo.imageUrl || "/placeholder.svg"} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={resolveImageUrl(photo.imageUrl) || "/placeholder.svg"}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
                 <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-navy/70 text-[11px] font-semibold text-white">
                   {index + 1}
                 </span>

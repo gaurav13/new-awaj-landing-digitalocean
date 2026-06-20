@@ -14,13 +14,14 @@ import { JoinCta } from "@/components/awaj/join-cta"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getSiteSettings } from "@/app/actions/settings"
 import { getActiveBanners } from "@/app/actions/banners"
+import { resolveImageUrl } from "@/lib/images"
 
 export default async function Page() {
   const [settings, banners] = await Promise.all([getSiteSettings(), getActiveBanners()])
   return (
     <main className="min-h-screen bg-ivory">
       <SiteHeader />
-      <Hero bannerUrl={settings.heroBannerUrl} banners={banners} />
+      <Hero bannerUrl={resolveImageUrl(settings.heroBannerUrl)} banners={banners} />
       <Stats />
       <GrowthJourney />
       <Team />

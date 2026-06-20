@@ -6,16 +6,31 @@ import { newsArticles } from "@/lib/db/schema"
 import { desc, eq, ne } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
+import { resolveOptionalImage } from "@/lib/images"
 
 // ---- Public reads ----
 
 export async function getAllNews() {
-  return withDb(() => db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt)), [])
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(newsArticles)
+        .orderBy(desc(newsArticles.publishedAt))
+        .then((rows) => rows.map((r) => ({ ...r, imageUrl: resolveOptionalImage(r.imageUrl) }))),
+    [],
+  )
 }
 
 export async function getLatestNews(limit = 4) {
   return withDb(
-    () => db.select().from(newsArticles).orderBy(desc(newsArticles.publishedAt)).limit(limit),
+    () =>
+      db
+        .select()
+        .from(newsArticles)
+        .orderBy(desc(newsArticles.publishedAt))
+        .limit(limit)
+        .then((rows) => rows.map((r) => ({ ...r, imageUrl: resolveOptionalImage(r.imageUrl) }))),
     [],
   )
 }
@@ -23,7 +38,8 @@ export async function getLatestNews(limit = 4) {
 export async function getNewsBySlug(slug: string) {
   return withDb(async () => {
     const rows = await db.select().from(newsArticles).where(eq(newsArticles.slug, slug)).limit(1)
-    return rows[0] ?? null
+    const row = rows[0]
+    return row ? { ...row, imageUrl: resolveOptionalImage(row.imageUrl) } : null
   }, null)
 }
 
@@ -35,7 +51,8 @@ export async function getRelatedNews(slug: string, limit = 3) {
         .from(newsArticles)
         .where(ne(newsArticles.slug, slug))
         .orderBy(desc(newsArticles.publishedAt))
-        .limit(limit),
+        .limit(limit)
+        .then((rows) => rows.map((r) => ({ ...r, imageUrl: resolveOptionalImage(r.imageUrl) }))),
     [],
   )
 }

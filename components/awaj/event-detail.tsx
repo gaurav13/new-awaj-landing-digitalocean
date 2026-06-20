@@ -18,8 +18,10 @@ import {
 } from "lucide-react"
 import { RichContent } from "./rich-content"
 import type { EventSponsor, EventSpeaker, EventHighlight, EventAgendaItem } from "@/lib/db/schema"
+import { resolveEventPosterImage, resolveImageUrl } from "@/lib/images"
 
 type EventData = {
+  slug: string
   title: string
   subtitle: string | null
   excerpt: string
@@ -76,7 +78,7 @@ function SectionHeading({
 }
 
 export function EventDetail({ event }: { event: EventData }) {
-  const poster = event.bannerUrl || event.imageUrl
+  const poster = resolveEventPosterImage(event)
   const d = dateBits(event.eventDate)
   const primaryLabel = event.joinLabel?.trim() || "Register Now"
 
@@ -108,17 +110,11 @@ export function EventDetail({ event }: { event: EventData }) {
           {/* Poster */}
           <div className="lg:sticky lg:top-6 lg:self-start">
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-beige ring-1 ring-gold/15">
-              {poster ? (
-                <img
-                  src={poster || "/placeholder.svg"}
-                  alt={event.title}
-                  className="absolute inset-0 h-full w-full object-contain"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <Calendar className="h-16 w-16 text-gold/30" />
-                </div>
-              )}
+              <img
+                src={poster}
+                alt={event.title}
+                className="absolute inset-0 h-full w-full object-contain"
+              />
             </div>
           </div>
 
@@ -227,9 +223,10 @@ export function EventDetail({ event }: { event: EventData }) {
                       <div className="awaj-marquee-mask group relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
                         <div className="awaj-marquee-track items-center gap-10 pr-10">
                           {loop.map((p, i) => {
-                            const inner = p.logoUrl ? (
+                            const logo = resolveImageUrl(p.logoUrl)
+                            const inner = logo ? (
                               <img
-                                src={p.logoUrl || "/placeholder.svg"}
+                                src={logo}
                                 alt={p.name}
                                 className="h-10 w-auto max-w-[150px] object-contain opacity-80 transition-opacity hover:opacity-100"
                               />
@@ -278,12 +275,14 @@ export function EventDetail({ event }: { event: EventData }) {
             <SectionHeading eyebrow="Meet the" title="Speakers" icon={Users} />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {event.speakers.map((s, i) => {
+                const photo = resolveImageUrl(s.imageUrl)
+                const companyLogo = resolveImageUrl(s.companyLogoUrl)
                 const inner = (
                   <div className="group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border border-gold/20 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                     <span className="absolute inset-x-0 top-0 h-1 bg-gold/70" />
                     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-beige ring-1 ring-gold/20">
-                      {s.imageUrl ? (
-                        <img src={s.imageUrl || "/placeholder.svg"} alt={s.name} className="h-full w-full object-cover" />
+                      {photo ? (
+                        <img src={photo} alt={s.name} className="h-full w-full object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center font-serif text-3xl font-bold text-gold">
                           {s.name.charAt(0)}
@@ -302,9 +301,9 @@ export function EventDetail({ event }: { event: EventData }) {
                       </h3>
                       {s.role ? <p className="mt-0.5 text-sm font-medium leading-snug text-navy-text/70">{s.role}</p> : null}
                       {s.company ? <p className="text-sm leading-snug text-navy-text/50">{s.company}</p> : null}
-                      {s.companyLogoUrl ? (
+                      {companyLogo ? (
                         <img
-                          src={s.companyLogoUrl || "/placeholder.svg"}
+                          src={companyLogo}
                           alt={s.company || ""}
                           className="mt-2 h-5 w-auto max-w-[100px] object-contain opacity-80"
                         />

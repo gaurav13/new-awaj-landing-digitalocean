@@ -7,11 +7,18 @@ import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 
+import { resolveGalleryRecord } from "@/lib/images"
+
 // ---- Public reads ----
 
 export async function getAllGalleries() {
   return withDb(
-    () => db.select().from(galleries).orderBy(asc(galleries.sortOrder), desc(galleries.createdAt)),
+    () =>
+      db
+        .select()
+        .from(galleries)
+        .orderBy(asc(galleries.sortOrder), desc(galleries.createdAt))
+        .then((rows) => rows.map(resolveGalleryRecord)),
     [],
   )
 }
@@ -24,7 +31,8 @@ export async function getFeaturedGalleries(limit = 6) {
         .from(galleries)
         .where(eq(galleries.isFeatured, true))
         .orderBy(asc(galleries.sortOrder), desc(galleries.createdAt))
-        .limit(limit),
+        .limit(limit)
+        .then((rows) => rows.map(resolveGalleryRecord)),
     [],
   )
 }

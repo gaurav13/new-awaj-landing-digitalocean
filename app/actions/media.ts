@@ -7,10 +7,26 @@ import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 
+import { resolveOptionalImage } from "@/lib/images"
+
 // ---- Public reads ----
 
 export async function getAllMedia() {
-  return withDb(() => db.select().from(media).orderBy(asc(media.sortOrder), desc(media.publishedAt)), [])
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(media)
+        .orderBy(asc(media.sortOrder), desc(media.publishedAt))
+        .then((rows) =>
+          rows.map((r) => ({
+            ...r,
+            thumbnailUrl: resolveOptionalImage(r.thumbnailUrl),
+            logoUrl: resolveOptionalImage(r.logoUrl),
+          })),
+        ),
+    [],
+  )
 }
 
 export async function getFeaturedMedia(limit = 4) {
@@ -21,7 +37,14 @@ export async function getFeaturedMedia(limit = 4) {
         .from(media)
         .where(eq(media.isFeatured, true))
         .orderBy(asc(media.sortOrder), desc(media.publishedAt))
-        .limit(limit),
+        .limit(limit)
+        .then((rows) =>
+          rows.map((r) => ({
+            ...r,
+            thumbnailUrl: resolveOptionalImage(r.thumbnailUrl),
+            logoUrl: resolveOptionalImage(r.logoUrl),
+          })),
+        ),
     [],
   )
 }
@@ -33,7 +56,14 @@ export async function getMediaByProgram(programId: number) {
         .select()
         .from(media)
         .where(eq(media.programId, programId))
-        .orderBy(asc(media.sortOrder), desc(media.publishedAt)),
+        .orderBy(asc(media.sortOrder), desc(media.publishedAt))
+        .then((rows) =>
+          rows.map((r) => ({
+            ...r,
+            thumbnailUrl: resolveOptionalImage(r.thumbnailUrl),
+            logoUrl: resolveOptionalImage(r.logoUrl),
+          })),
+        ),
     [],
   )
 }

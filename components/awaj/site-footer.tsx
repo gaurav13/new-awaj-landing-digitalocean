@@ -1,7 +1,9 @@
+import { resolveImageUrl } from "@/lib/images"
 import { Footer } from "./footer"
 import { getSiteSettings } from "@/app/actions/settings"
 
 export async function SiteFooter() {
   const settings = await getSiteSettings()
-  return <Footer logoUrl={settings.footerLogoUrl || undefined} />
+  const logoUrl = settings.footerLogoUrl ? resolveImageUrl(settings.footerLogoUrl) : undefined
+  return <Footer logoUrl={logoUrl} />
 }

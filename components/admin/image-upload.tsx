@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { UploadCloud, X, Loader2 } from "lucide-react"
-import { upload } from "@vercel/blob/client"
+import { resolveImageUrl, uploadImageViaApi } from "@/lib/images"
 
 export function ImageUpload({
   value,
@@ -14,16 +14,14 @@ export function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const previewUrl = value ? resolveImageUrl(value) : ""
 
   async function handleFile(file: File) {
     setError(null)
     setUploading(true)
     try {
-      const blob = await upload(`awaj/${file.name}`, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-      })
-      onChange(blob.url)
+      const path = await uploadImageViaApi(file)
+      onChange(path)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")
     } finally {
@@ -48,7 +46,7 @@ export function ImageUpload({
       {value ? (
         <div className="relative overflow-hidden rounded-xl border border-gold/30 bg-white">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value || "/placeholder.svg"} alt="Selected" className="h-40 w-full object-cover" />
+          <img src={previewUrl || "/placeholder.svg"} alt="Selected" className="h-40 w-full object-cover" />
           <div className="flex items-center justify-between gap-2 border-t border-gold/20 px-3 py-2">
             <button
               type="button"
@@ -84,7 +82,7 @@ export function ImageUpload({
             <>
               <UploadCloud className="h-6 w-6" />
               <span className="text-sm font-medium">Click to upload an image</span>
-              <span className="text-xs text-navy-text/40">PNG, JPG, or WebP</span>
+              <span className="text-xs text-navy-text/40">PNG, JPG, or WebP · DigitalOcean CDN</span>
             </>
           )}
         </button>

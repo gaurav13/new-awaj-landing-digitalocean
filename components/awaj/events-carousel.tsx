@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { dateParts } from "@/lib/format-date"
+import { resolveEventCardImage } from "@/lib/images"
 
 type CarouselEvent = {
   id: number
@@ -75,7 +76,7 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
         >
           {events.map((e) => {
             const d = dateParts(e.eventDate)
-            const cover = e.imageUrl || e.bannerUrl
+            const cover = resolveEventCardImage(e)
             const isPast = e.eventDate < new Date().toISOString().slice(0, 10)
             return (
               <div key={e.id} className="shrink-0 px-2" style={{ flex: `0 0 ${100 / perView}%` }}>
@@ -85,11 +86,9 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
                 >
                   <div className="relative aspect-[16/9] overflow-hidden bg-beige">
                     <img
-                      src={cover || "/images/event-night.png"}
+                      src={cover}
                       alt=""
-                      className={`absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105 ${
-                        cover ? "object-contain" : "object-cover"
-                      }`}
+                      className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute left-2.5 top-2.5 z-10 flex flex-col items-center rounded-md bg-white px-2 py-0.5 text-center shadow-md">
                       <span className="text-[9px] font-bold uppercase leading-tight text-awaj-red">{d.month}</span>

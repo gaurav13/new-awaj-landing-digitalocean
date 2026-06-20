@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllEvents } from "@/app/actions/events"
 import { dateParts, formatLongDate } from "@/lib/format-date"
+import { resolveEventCardImage } from "@/lib/images"
 
 export const metadata = {
   title: "Events | Asia Web3 & AI Alliance Japan",
@@ -54,7 +55,7 @@ export default async function EventsPage() {
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-beige lg:aspect-auto lg:min-h-[340px]">
                   <img
-                    src={featured.imageUrl || "/placeholder.svg?height=600&width=800&query=event"}
+                    src={resolveEventCardImage(featured)}
                     alt=""
                     className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
@@ -127,6 +128,7 @@ function EventCard({
   muted?: boolean
 }) {
   const d = dateParts(event.eventDate)
+  const cover = resolveEventCardImage(event)
   return (
     <Link
       href={`/events/${event.slug}`}
@@ -134,7 +136,7 @@ function EventCard({
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <img
-          src={event.imageUrl || "/placeholder.svg?height=400&width=600&query=event"}
+          src={cover}
           alt=""
           className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${muted ? "opacity-80 grayscale-[30%]" : ""}`}
         />
