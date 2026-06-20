@@ -17,6 +17,13 @@ import { createProgram, updateProgram, deleteProgram } from "@/app/actions/progr
 import { createTeamMember, updateTeamMember, deleteTeamMember } from "@/app/actions/team"
 import { createPartner, updatePartner, deletePartner } from "@/app/actions/partners"
 import { createMember, updateMember, deleteMember } from "@/app/actions/members"
+import {
+  createMembershipPlan,
+  updateMembershipPlan,
+  deleteMembershipPlan,
+} from "@/app/actions/membership"
+import { MembershipContentPanel } from "./membership-content-panel"
+import type { MembershipContent } from "@/lib/membership-content"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
@@ -65,6 +72,7 @@ type Gallery = {
   coverImageUrl: string | null
   photos: GalleryItem[]
   eventDate: string | null
+  location: string | null
   isFeatured: boolean
   sortOrder: number
 }
@@ -137,6 +145,23 @@ type Member = {
   contactUrl: string | null
   sortOrder: number
 }
+type MembershipPlan = {
+  id: number
+  name: string
+  icon: string
+  price: string
+  priceNote: string | null
+  periodLabel: string | null
+  badge: string | null
+  description: string
+  features: string[]
+  ctaLabel: string
+  ctaUrl: string | null
+  footnote: string | null
+  accent: string
+  isHighlighted: boolean
+  sortOrder: number
+}
 type Banner = {
   id: number
   title: string | null
@@ -168,6 +193,7 @@ const GALLERY_FIELDS: FieldDef[] = [
   { name: "title", label: "Activity / album title", type: "text", required: true, placeholder: "Japan Financial Innovation Program 2025" },
   { name: "category", label: "Category", type: "select", options: GALLERY_CATEGORIES },
   { name: "eventDate", label: "Date (optional)", type: "date", hint: "When this activity took place. Used for sorting and the album label." },
+  { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
   {
     name: "description",
     label: "Short description (optional)",
@@ -385,6 +411,58 @@ const MEMBER_FIELDS: FieldDef[] = [
   { name: "sortOrder", label: "Sort order", type: "number" },
 ]
 
+const MEMBERSHIP_ICONS = ["Users", "Rocket", "Building2", "Crown", "Globe", "Award", "Landmark", "Star"]
+
+const MEMBERSHIP_FIELDS: FieldDef[] = [
+  { name: "name", label: "Plan name", type: "text", required: true, placeholder: "Executive Member" },
+  {
+    name: "icon",
+    label: "Icon",
+    type: "select",
+    options: MEMBERSHIP_ICONS,
+    hint: "Shown in the circular badge at the top of the plan card.",
+  },
+  { name: "price", label: "Price", type: "text", required: true, placeholder: "Free or ¥600,000" },
+  { name: "priceNote", label: "Price note (optional)", type: "text", placeholder: "per year" },
+  { name: "periodLabel", label: "Period label (optional)", type: "text", placeholder: "1 Year Membership" },
+  {
+    name: "badge",
+    label: "Corner badge (optional)",
+    type: "text",
+    placeholder: "Premium Access",
+    hint: "Adds a ribbon badge to the top-right corner of the card.",
+  },
+  { name: "description", label: "Description", type: "textarea", rows: 3 },
+  {
+    name: "features",
+    label: "Included features",
+    type: "repeater",
+    addLabel: "Add feature",
+    hint: "Each feature shows with a check icon. Also used to build the comparison table.",
+    itemFields: [{ name: "text", label: "Feature", type: "text", placeholder: "Access to member directory" }],
+  },
+  { name: "ctaLabel", label: "Button text", type: "text", required: true, placeholder: "Join as Supporter" },
+  {
+    name: "ctaUrl",
+    label: "Button link (optional)",
+    type: "text",
+    placeholder: "/contact or https://...",
+    hint: "Where the plan button sends the user. Defaults to the contact page if empty.",
+  },
+  { name: "footnote", label: "Footnote (optional)", type: "textarea", rows: 2 },
+  {
+    name: "accent",
+    label: "Accent style",
+    type: "select",
+    optionItems: [
+      { value: "gold", label: "Gold (standard)" },
+      { value: "navy", label: "Navy (premium / highlighted)" },
+    ],
+  },
+  { name: "isHighlighted", label: "Highlight this plan (dark premium card)", type: "checkbox" },
+  { name: "sortOrder", label: "Sort order", type: "number" },
+]
+
 export function AdminDashboard({
   userName,
   currentUserId,
@@ -397,6 +475,8 @@ export function AdminDashboard({
   team,
   partners,
   members,
+  membershipPlans,
+  membershipContent,
   banners,
   messages,
   settings,
@@ -413,6 +493,8 @@ export function AdminDashboard({
   team: Team[]
   partners: Partner[]
   members: Member[]
+  membershipPlans: MembershipPlan[]
+  membershipContent: MembershipContent
   banners: Banner[]
   messages: Message[]
   settings: SiteSettings
@@ -554,6 +636,7 @@ export function AdminDashboard({
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
             <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
+            <TabsTrigger value="membership">Membership ({membershipPlans.length})</TabsTrigger>
             <TabsTrigger value="messages">
               Messages{messages.filter((m) => !m.isRead).length > 0 ? ` (${messages.filter((m) => !m.isRead).length})` : ""}
             </TabsTrigger>
@@ -653,6 +736,7 @@ export function AdminDashboard({
                 title: "",
                 category: "Event",
                 eventDate: "",
+                location: "",
                 description: "",
                 photos: [],
                 isFeatured: false,
@@ -662,6 +746,7 @@ export function AdminDashboard({
                 title: g.title,
                 category: g.category ?? "Event",
                 eventDate: g.eventDate ?? "",
+                location: g.location ?? "",
                 description: g.description ?? "",
                 photos: g.photos ?? [],
                 isFeatured: g.isFeatured,
@@ -882,6 +967,59 @@ export function AdminDashboard({
               onCreate={(d) => createMember(d)}
               onUpdate={(id, d) => updateMember(id, d)}
               onDelete={(id) => deleteMember(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="membership" className="mt-6">
+            <ResourceManager<MembershipPlan>
+              title="Membership plans"
+              singular="Plan"
+              items={membershipPlans}
+              fields={MEMBERSHIP_FIELDS}
+              emptyForm={{
+                name: "",
+                icon: "Users",
+                price: "Free",
+                priceNote: "",
+                periodLabel: "1 Year Membership",
+                badge: "",
+                description: "",
+                features: [],
+                ctaLabel: "Join Now",
+                ctaUrl: "/contact",
+                footnote: "",
+                accent: "gold",
+                isHighlighted: false,
+                sortOrder: 0,
+              }}
+              toForm={(p) => ({
+                name: p.name,
+                icon: p.icon,
+                price: p.price,
+                priceNote: p.priceNote ?? "",
+                periodLabel: p.periodLabel ?? "",
+                badge: p.badge ?? "",
+                description: p.description,
+                features: (p.features ?? []).map((text) => ({ text })),
+                ctaLabel: p.ctaLabel,
+                ctaUrl: p.ctaUrl ?? "",
+                footnote: p.footnote ?? "",
+                accent: p.accent,
+                isHighlighted: p.isHighlighted,
+                sortOrder: p.sortOrder,
+              })}
+              render={{
+                badge: (p) => (p.isHighlighted ? "Highlighted" : p.price),
+                meta: (p) => `${p.features?.length ?? 0} features`,
+                title: (p) => p.name,
+              }}
+              onCreate={(d) => createMembershipPlan(d)}
+              onUpdate={(id, d) => updateMembershipPlan(id, d)}
+              onDelete={(id) => deleteMembershipPlan(id)}
+            />
+            <MembershipContentPanel
+              content={membershipContent}
+              plans={membershipPlans.map((p) => ({ id: p.id, name: p.name }))}
             />
           </TabsContent>
 

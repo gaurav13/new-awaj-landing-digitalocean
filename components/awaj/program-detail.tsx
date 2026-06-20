@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft, Globe2, ArrowUpRight } from "lucide-react"
 import { RichContent } from "./rich-content"
-import { MediaCard } from "./media-card"
+import { MediaCard, type MediaItem } from "./media-card"
 import type { ProgramPartner, ProgramStartup, GalleryItem } from "@/lib/db/schema"
 
 type Program = {
@@ -16,17 +16,6 @@ type Program = {
   partners: ProgramPartner[]
   startups: ProgramStartup[]
   gallery: GalleryItem[]
-}
-
-type MediaItem = {
-  id: number
-  title: string
-  type: string
-  url: string | null
-  thumbnailUrl: string | null
-  logoUrl: string | null
-  source: string | null
-  excerpt: string | null
 }
 
 export function ProgramDetail({ program, media }: { program: Program; media: MediaItem[] }) {
