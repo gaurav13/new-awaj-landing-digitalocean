@@ -14,6 +14,7 @@ export async function FeaturedMedia() {
           title="Media Coverage"
           subtitle="Latest articles, interviews, and press releases featuring Asia Web3 Alliance Japan."
           ctaHref="/media"
+          variant="slider"
         />
       </div>
     </section>

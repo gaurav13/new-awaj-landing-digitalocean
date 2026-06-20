@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { Globe, ArrowRight } from "lucide-react"
+import { Globe, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { MediaCard, type MediaItem } from "./media-card"
 
 const FILTERS = [
@@ -26,13 +26,23 @@ export function MediaCoverage({
   title,
   subtitle,
   ctaHref,
+  variant = "grid",
 }: {
   items: MediaItem[]
   title: string
   subtitle?: string
   ctaHref?: string
+  variant?: "grid" | "slider"
 }) {
   const [active, setActive] = useState<FilterId>("all")
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  const scrollBy = (dir: 1 | -1) => {
+    const track = trackRef.current
+    if (!track) return
+    const amount = track.clientWidth * 0.85 * dir
+    track.scrollBy({ left: amount, behavior: "smooth" })
+  }
 
   // Only show filters that actually have matching content.
   const available = useMemo(() => {
@@ -54,35 +64,74 @@ export function MediaCoverage({
           {subtitle ? <p className="mt-3 text-pretty leading-relaxed text-navy-text/60">{subtitle}</p> : null}
         </div>
 
-        {available.length > 2 ? (
-          <div className="flex flex-wrap gap-2.5">
-            {available.map((f) => {
-              const isActive = active === f.id
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setActive(f.id)}
-                  aria-pressed={isActive}
-                  className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-                    isActive
-                      ? "bg-navy text-white"
-                      : "border border-navy/15 bg-white text-navy-text hover:border-navy/40"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              )
-            })}
-          </div>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {available.length > 2 ? (
+            <div className="flex flex-wrap gap-2.5">
+              {available.map((f) => {
+                const isActive = active === f.id
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setActive(f.id)}
+                    aria-pressed={isActive}
+                    className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                      isActive
+                        ? "bg-navy text-white"
+                        : "border border-navy/15 bg-white text-navy-text hover:border-navy/40"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                )
+              })}
+            </div>
+          ) : null}
+
+          {variant === "slider" && filtered.length > 1 ? (
+            <div className="hidden gap-2 sm:flex">
+              <button
+                type="button"
+                onClick={() => scrollBy(-1)}
+                aria-label="Previous"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-navy/15 bg-white text-navy-text transition-colors hover:border-navy/40"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollBy(1)}
+                aria-label="Next"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-navy/15 bg-white text-navy-text transition-colors hover:border-navy/40"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((m) => (
-          <MediaCard key={m.id} item={m} />
-        ))}
-      </div>
+      {variant === "slider" ? (
+        <div
+          ref={trackRef}
+          className="-mx-5 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-5 pb-2 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {filtered.map((m) => (
+            <div
+              key={m.id}
+              className="w-[85%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+            >
+              <MediaCard item={m} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((m) => (
+            <MediaCard key={m.id} item={m} />
+          ))}
+        </div>
+      )}
 
       {ctaHref ? (
         <div className="mt-10 flex flex-col items-start justify-between gap-5 rounded-2xl border border-gold/25 bg-white/60 px-7 py-6 sm:flex-row sm:items-center">

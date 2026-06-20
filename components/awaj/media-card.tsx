@@ -1,5 +1,4 @@
-import { Play, FileText, ArrowRight, Newspaper, Calendar } from "lucide-react"
-import { formatLongDate } from "@/lib/format-date"
+import { Play, FileText, ArrowRight, Newspaper } from "lucide-react"
 
 export type MediaItem = {
   id: number
@@ -36,13 +35,15 @@ export function MediaCard({ item }: { item: MediaItem }) {
       {/* Header: publisher logo (hero) + format badge */}
       <div className="flex items-center justify-between gap-3 px-6 pt-6">
         {item.logoUrl ? (
-          <img
-            src={item.logoUrl || "/placeholder.svg"}
-            alt={`${publisher} logo`}
-            className="h-8 w-auto max-w-[170px] object-contain object-left"
-          />
+          <span className="inline-flex items-center rounded-xl bg-beige/50 px-3 py-2 ring-1 ring-gold/10">
+            <img
+              src={item.logoUrl || "/placeholder.svg"}
+              alt={`${publisher} logo`}
+              className="h-8 w-auto max-w-[150px] object-contain object-left"
+            />
+          </span>
         ) : (
-          <span className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-xl bg-beige/50 px-3 py-2 ring-1 ring-gold/10">
             <Newspaper className="h-5 w-5 text-gold" />
             <span className="font-serif text-xl font-bold uppercase tracking-tight text-navy-text">{publisher}</span>
           </span>
@@ -52,16 +53,8 @@ export function MediaCard({ item }: { item: MediaItem }) {
         </span>
       </div>
 
-      {/* Date */}
-      {item.publishedAt ? (
-        <div className="mt-3 flex items-center gap-1.5 px-6 text-sm text-navy-text/50">
-          <Calendar className="h-4 w-4" />
-          <span>{formatLongDate(item.publishedAt)}</span>
-        </div>
-      ) : null}
-
       {/* Banner */}
-      <div className="mt-4 px-6">
+      <div className="mt-5 px-6">
         <div className="relative aspect-video overflow-hidden rounded-xl bg-beige">
           {item.thumbnailUrl ? (
             <img
@@ -87,14 +80,9 @@ export function MediaCard({ item }: { item: MediaItem }) {
 
       {/* Body */}
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="text-balance font-serif text-xl font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
+        <h3 className="flex-1 text-balance font-serif text-xl font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
           {item.title}
         </h3>
-        {item.excerpt ? (
-          <p className="mt-3 flex-1 text-pretty leading-relaxed text-navy-text/65">{item.excerpt}</p>
-        ) : (
-          <div className="flex-1" />
-        )}
         {item.url ? (
           <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
             {actionLabel(kind)}
