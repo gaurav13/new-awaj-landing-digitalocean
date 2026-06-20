@@ -83,7 +83,7 @@ export function GrowthJourney() {
 
           {/* Middle: feature grid in a bordered box with dividers */}
           <div className="lg:col-span-5 lg:px-2">
-            <div className="overflow-hidden rounded-2xl border border-gold/25">
+            <div className="overflow-hidden rounded-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2">
                 {FEATURES.map((f, i) => (
                   <div
