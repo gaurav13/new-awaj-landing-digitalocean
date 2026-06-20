@@ -36,6 +36,13 @@ export type MembershipPlan = {
   sortOrder: number
 }
 
+export type MembershipHeader = {
+  eyebrow: string
+  title: string
+  subtitle: string
+  heroUrl: string
+}
+
 const ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
   Users,
   Rocket,
@@ -50,6 +57,50 @@ const ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidt
 function PlanIcon({ name, className }: { name: string; className?: string }) {
   const Icon = ICONS[name] ?? Users
   return <Icon className={className} strokeWidth={1.5} aria-hidden="true" />
+}
+
+// Per-accent color styles for the light plan cards + comparison columns.
+type AccentStyle = {
+  iconBg: string
+  iconText: string
+  price: string
+  check: string
+  button: string
+}
+
+const ACCENTS: Record<string, AccentStyle> = {
+  gold: {
+    iconBg: "bg-gold/15",
+    iconText: "text-gold",
+    price: "text-gold",
+    check: "text-gold",
+    button: "border-gold/50 text-gold hover:bg-gold/10",
+  },
+  blue: {
+    iconBg: "bg-blue-50",
+    iconText: "text-blue-600",
+    price: "text-blue-600",
+    check: "text-blue-600",
+    button: "border-blue-300 text-blue-700 hover:bg-blue-50",
+  },
+  green: {
+    iconBg: "bg-emerald-50",
+    iconText: "text-emerald-600",
+    price: "text-emerald-600",
+    check: "text-emerald-600",
+    button: "border-emerald-300 text-emerald-700 hover:bg-emerald-50",
+  },
+  navy: {
+    iconBg: "bg-white/10",
+    iconText: "text-gold",
+    price: "text-gold",
+    check: "text-gold",
+    button: "bg-gold text-navy hover:opacity-90",
+  },
+}
+
+function accentOf(name: string): AccentStyle {
+  return ACCENTS[name] ?? ACCENTS.gold
 }
 
 const MINI_FEATURES = [
@@ -81,7 +132,7 @@ const INFO_BLOCKS = [
   },
 ]
 
-export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
+export function MembershipPackages({ plans, header }: { plans: MembershipPlan[]; header: MembershipHeader }) {
   // Build the comparison table from the union of all plan features (first-seen order).
   const allFeatures: string[] = []
   for (const plan of plans) {
@@ -96,14 +147,15 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
       {/* Hero */}
       <section className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">One Year Membership</p>
+          {header.eyebrow ? (
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">{header.eyebrow}</p>
+          ) : null}
           <h1 className="mt-3 text-balance font-serif text-4xl font-bold leading-tight text-navy-text md:text-5xl">
-            Membership Packages
+            {header.title}
           </h1>
-          <p className="mt-4 max-w-xl text-pretty leading-relaxed text-navy-text/70">
-            Join Asia Web3 Alliance Japan and become part of a trusted network driving innovation, collaboration, and
-            growth across the Web3 ecosystem.
-          </p>
+          {header.subtitle ? (
+            <p className="mt-4 max-w-xl text-pretty leading-relaxed text-navy-text/70">{header.subtitle}</p>
+          ) : null}
           <ul className="mt-8 grid gap-6 sm:grid-cols-3">
             {MINI_FEATURES.map((m) => (
               <li key={m.title} className="flex flex-col gap-2">
@@ -116,27 +168,28 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
             ))}
           </ul>
         </div>
-        <div className="relative overflow-hidden rounded-2xl">
-          <img
-            src="/images/membership-hero.png"
-            alt="Business professionals networking on a rooftop overlooking the Tokyo skyline"
-            className="h-64 w-full object-cover lg:h-80"
-          />
-        </div>
+        {header.heroUrl ? (
+          <div className="relative overflow-hidden rounded-2xl">
+            <img
+              src={header.heroUrl || "/placeholder.svg"}
+              alt="Asia Web3 Alliance Japan membership"
+              className="h-64 w-full object-cover lg:h-80"
+            />
+          </div>
+        ) : null}
       </section>
 
       {/* Plan cards */}
       <section className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {plans.map((plan) => {
           const highlighted = plan.isHighlighted || plan.accent === "navy"
+          const accent = accentOf(plan.accent)
           const href = plan.ctaUrl || "/contact"
           return (
             <div
               key={plan.id}
               className={`relative flex flex-col overflow-hidden rounded-2xl border p-7 ${
-                highlighted
-                  ? "border-gold/40 bg-navy text-white shadow-lg"
-                  : "border-gold/20 bg-white text-navy-text"
+                highlighted ? "border-gold/40 bg-navy text-white shadow-lg" : "border-navy/10 bg-white text-navy-text"
               }`}
             >
               {plan.badge ? (
@@ -145,19 +198,15 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
                 </span>
               ) : null}
 
-              <div
-                className={`flex h-14 w-14 items-center justify-center rounded-full ${
-                  highlighted ? "bg-white/10" : "bg-beige"
-                }`}
-              >
-                <PlanIcon name={plan.icon} className="h-7 w-7 text-gold" />
+              <div className={`flex h-14 w-14 items-center justify-center rounded-full ${accent.iconBg}`}>
+                <PlanIcon name={plan.icon} className={`h-7 w-7 ${accent.iconText}`} />
               </div>
 
               <h2 className={`mt-5 font-serif text-xl font-bold ${highlighted ? "text-white" : "text-navy-text"}`}>
                 {plan.name}
               </h2>
 
-              <p className="mt-2 font-serif text-3xl font-bold text-gold">{plan.price}</p>
+              <p className={`mt-2 font-serif text-3xl font-bold ${accent.price}`}>{plan.price}</p>
               {plan.priceNote ? (
                 <p className={`text-xs ${highlighted ? "text-white/60" : "text-navy-text/55"}`}>{plan.priceNote}</p>
               ) : null}
@@ -173,10 +222,14 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
                 </p>
               ) : null}
 
-              <ul className="mt-5 flex flex-col gap-2.5 border-t border-gold/20 pt-5">
+              <ul
+                className={`mt-5 flex flex-col gap-2.5 border-t pt-5 ${
+                  highlighted ? "border-white/15" : "border-navy/10"
+                }`}
+              >
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" strokeWidth={2.5} aria-hidden="true" />
+                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${accent.check}`} strokeWidth={2.5} aria-hidden="true" />
                     <span className={highlighted ? "text-white/85" : "text-navy-text/75"}>{f}</span>
                   </li>
                 ))}
@@ -185,10 +238,8 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
               <div className="mt-auto pt-6">
                 <Link
                   href={href}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90 ${
-                    highlighted
-                      ? "bg-gold text-navy"
-                      : "border border-gold/50 text-navy-text hover:bg-beige"
+                  className={`flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition-colors ${
+                    highlighted ? `border-transparent ${accent.button}` : accent.button
                   }`}
                 >
                   {plan.ctaLabel}
@@ -212,15 +263,17 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
       {allFeatures.length > 0 ? (
         <section className="mt-16">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Membership Benefits Comparison</p>
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-gold/20 bg-white">
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-navy/10 bg-white">
             <table className="w-full min-w-[640px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-gold/20 bg-beige/50">
-                  <th className="px-5 py-4 text-left font-semibold text-navy-text">Benefits</th>
+                <tr className="border-b border-navy/10 bg-beige/50">
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-navy-text">
+                    Benefits
+                  </th>
                   {plans.map((p) => (
                     <th key={p.id} className="px-4 py-4 text-center">
                       <span className="flex flex-col items-center gap-1.5">
-                        <PlanIcon name={p.icon} className="h-5 w-5 text-gold" />
+                        <PlanIcon name={p.icon} className={`h-5 w-5 ${accentOf(p.accent).iconText}`} />
                         <span className="text-xs font-semibold uppercase tracking-wide text-navy-text/80">
                           {p.name.replace(/\s*Member$/i, "")}
                         </span>
@@ -236,7 +289,11 @@ export function MembershipPackages({ plans }: { plans: MembershipPlan[] }) {
                     {plans.map((p, idx) => (
                       <td key={p.id} className="px-4 py-3 text-center">
                         {featureSets[idx].has(feature) ? (
-                          <Check className="mx-auto h-4 w-4 text-gold" strokeWidth={2.5} aria-label="Included" />
+                          <Check
+                            className={`mx-auto h-4 w-4 ${accentOf(p.accent).check}`}
+                            strokeWidth={2.5}
+                            aria-label="Included"
+                          />
                         ) : (
                           <Minus className="mx-auto h-4 w-4 text-navy-text/25" aria-label="Not included" />
                         )}

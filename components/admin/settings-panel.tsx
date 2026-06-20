@@ -177,6 +177,64 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
         </div>
       </section>
 
+      {/* Membership page header */}
+      <section className="mt-10">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Membership page header</h3>
+        <p className="mt-1 text-sm text-navy-text/60">
+          Edit the hero shown at the top of the public Membership page (the eyebrow, title, intro text, and banner
+          image).
+        </p>
+        <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-5 rounded-2xl border border-gold/20 bg-white p-5">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="membershipEyebrow">Eyebrow label</Label>
+              <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">
+                Small uppercase label above the title, e.g. “One Year Membership”.
+              </p>
+              <Input
+                id="membershipEyebrow"
+                value={form.membershipEyebrow}
+                placeholder="One Year Membership"
+                onChange={(e) => setForm({ ...form, membershipEyebrow: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="membershipTitle">Title</Label>
+              <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">Main heading of the membership page.</p>
+              <Input
+                id="membershipTitle"
+                value={form.membershipTitle}
+                placeholder="Membership Packages"
+                onChange={(e) => setForm({ ...form, membershipTitle: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="membershipSubtitle">Intro text</Label>
+              <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">
+                Supporting paragraph shown under the title.
+              </p>
+              <Textarea
+                id="membershipSubtitle"
+                rows={3}
+                value={form.membershipSubtitle}
+                placeholder="Join Asia Web3 Alliance Japan and become part of..."
+                onChange={(e) => setForm({ ...form, membershipSubtitle: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-gold/20 bg-white p-5">
+            <h4 className="font-semibold text-navy-text">Header banner image</h4>
+            <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">
+              Shown on the right side of the membership hero. Recommended 1200×800px (3:2) JPG or PNG.
+            </p>
+            <ImageUpload
+              value={form.membershipHeroUrl}
+              onChange={(url) => setForm({ ...form, membershipHeroUrl: url })}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Social sharing (Open Graph) */}
       <section className="mt-10">
         <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Social sharing (Open Graph)</h3>

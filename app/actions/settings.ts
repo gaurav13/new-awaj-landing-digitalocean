@@ -20,6 +20,11 @@ export type SiteSettings = {
   faviconUrl: string
   twitterHandle: string
   canonicalBaseUrl: string
+  // Membership page header
+  membershipEyebrow: string
+  membershipTitle: string
+  membershipSubtitle: string
+  membershipHeroUrl: string
 }
 
 const DEFAULTS: SiteSettings = {
@@ -36,6 +41,11 @@ const DEFAULTS: SiteSettings = {
   faviconUrl: "",
   twitterHandle: "",
   canonicalBaseUrl: "",
+  membershipEyebrow: "One Year Membership",
+  membershipTitle: "Membership Packages",
+  membershipSubtitle:
+    "Join Asia Web3 Alliance Japan and become part of a trusted network driving innovation, collaboration, and growth across the Web3 ecosystem.",
+  membershipHeroUrl: "/images/membership-hero.png",
 }
 
 // ---- Public read ----
@@ -57,6 +67,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       faviconUrl: map.faviconUrl || DEFAULTS.faviconUrl,
       twitterHandle: map.twitterHandle || DEFAULTS.twitterHandle,
       canonicalBaseUrl: map.canonicalBaseUrl || DEFAULTS.canonicalBaseUrl,
+      membershipEyebrow: map.membershipEyebrow || DEFAULTS.membershipEyebrow,
+      membershipTitle: map.membershipTitle || DEFAULTS.membershipTitle,
+      membershipSubtitle: map.membershipSubtitle || DEFAULTS.membershipSubtitle,
+      membershipHeroUrl: map.membershipHeroUrl || DEFAULTS.membershipHeroUrl,
     }
   }, DEFAULTS)
 }

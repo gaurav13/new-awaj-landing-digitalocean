@@ -7,11 +7,17 @@ import { buildPageMetadata, getBreadcrumbSchema, resolveBaseUrl } from "@/lib/se
 import { getSiteSettings } from "@/app/actions/settings"
 
 export async function generateMetadata() {
+  // SEO is generated automatically from the editable membership header + plan names.
+  const [settings, plans] = await Promise.all([getSiteSettings(), getAllMembershipPlans()])
+  const planNames = plans.map((p) => p.name.replace(/\s*Member$/i, "")).join(", ")
+  const description =
+    settings.membershipSubtitle ||
+    `Join Asia Web3 & AI Alliance Japan. Choose from ${planNames || "Supporter, Startup, Corporate, and Executive"} membership plans and become part of a trusted Web3 network across Asia and Japan.`
+
   return buildPageMetadata({
     path: "/membership",
-    title: "Membership Packages",
-    description:
-      "Join Asia Web3 & AI Alliance Japan. Choose from Supporter, Startup, Corporate, and Executive membership plans and become part of a trusted Web3 network across Asia and Japan.",
+    title: settings.membershipTitle || "Membership Packages",
+    description,
   })
 }
 
@@ -56,7 +62,15 @@ export default async function MembershipPage() {
           </div>
         </div>
       ) : (
-        <MembershipPackages plans={plans} />
+        <MembershipPackages
+          plans={plans}
+          header={{
+            eyebrow: settings.membershipEyebrow,
+            title: settings.membershipTitle,
+            subtitle: settings.membershipSubtitle,
+            heroUrl: settings.membershipHeroUrl,
+          }}
+        />
       )}
 
       <SiteFooter />
