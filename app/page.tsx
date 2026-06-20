@@ -9,6 +9,7 @@ import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
 import { Partners } from "@/components/awaj/partners"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
+import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getSiteSettings } from "@/app/actions/settings"
@@ -28,6 +29,7 @@ export default async function Page() {
       <Partners />
       <Pathways />
       <Team />
+      <GallerySection />
       <FeaturedMedia />
       <JoinCta />
       <SiteFooter />

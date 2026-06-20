@@ -160,6 +160,20 @@ export const media = pgTable("media", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const galleries = pgTable("galleries", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category").notNull().default("Event"),
+  coverImageUrl: text("cover_image_url"),
+  photos: jsonb("photos").$type<GalleryItem[]>().notNull().default([]),
+  eventDate: date("event_date"),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
 export const banners = pgTable("banners", {
   id: serial("id").primaryKey(),
   title: text("title"),
