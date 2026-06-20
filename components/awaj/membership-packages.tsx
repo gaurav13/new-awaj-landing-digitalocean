@@ -244,8 +244,12 @@ export function MembershipPackages({
                 </Link>
                 {plan.footnote ? (
                   <p
-                    className={`mt-3 text-center text-xs leading-relaxed ${
-                      highlighted ? "text-white/55" : "text-navy-text/50"
+                    className={`mt-3 text-center text-sm font-semibold leading-relaxed ${
+                      highlighted
+                        ? "text-[#ebbd00]"
+                        : plan.accent === "blue" || plan.accent === "green"
+                          ? "text-[#890b0b]"
+                          : "text-navy-text/50"
                     }`}
                   >
                     {plan.footnote}
