@@ -34,9 +34,12 @@ export default async function TeamPage() {
         </div>
       </section>
 
+      <div className="mx-auto max-w-[1280px] px-5 pt-12 lg:px-10 lg:pt-16">
+        <InstitutionsStrip />
+      </div>
+
       <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
         <PeopleDirectory people={people} />
-        <InstitutionsStrip />
       </div>
 
       <SiteFooter />
