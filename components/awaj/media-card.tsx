@@ -78,7 +78,7 @@ export function MediaCard({ item }: { item: MediaItem }) {
 
       {/* Body */}
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="flex-1 text-balance font-serif text-xl font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
+        <h3 className="flex-1 text-balance font-serif text-lg font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
           {item.title}
         </h3>
         {item.url ? (
