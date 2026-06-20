@@ -24,6 +24,8 @@ import {
 } from "@/app/actions/membership"
 import { MembershipContentPanel } from "./membership-content-panel"
 import type { MembershipContent } from "@/lib/membership-content"
+import { PeoplePanel } from "./people-panel"
+import type { Person } from "@/app/actions/people"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
@@ -98,6 +100,7 @@ type Event = {
   sponsors: EventSponsor[]
   speakers: EventSpeaker[]
   isFeatured: boolean
+  peopleIds?: number[]
 }
 type Program = {
   id: number
@@ -113,6 +116,7 @@ type Program = {
   startups: ProgramStartup[]
   gallery: GalleryItem[]
   sortOrder: number
+  peopleIds?: number[]
 }
 type Team = {
   id: number
@@ -312,6 +316,14 @@ const EVENT_FIELDS: FieldDef[] = [
       { name: "linkUrl", label: "Website (optional)", type: "text", placeholder: "https://..." },
     ],
   },
+
+  // — Connected people —
+  {
+    name: "peopleIds",
+    label: "Connected people",
+    type: "people",
+    hint: "Link speakers, mentors, and leaders from the central People directory. Shown on the event page.",
+  },
 ]
 
 const PROGRAM_FIELDS: FieldDef[] = [
@@ -358,6 +370,12 @@ const PROGRAM_FIELDS: FieldDef[] = [
       { name: "imageUrl", label: "Image", type: "image" },
       { name: "caption", label: "Caption (optional)", type: "text", placeholder: "Demo Day 2025" },
     ],
+  },
+  {
+    name: "peopleIds",
+    label: "Connected people",
+    type: "people",
+    hint: "Link mentors, advisors, and leaders from the central People directory. Shown on the program page.",
   },
 ]
 
@@ -477,6 +495,8 @@ export function AdminDashboard({
   members,
   membershipPlans,
   membershipContent,
+  people,
+  peopleCounts,
   banners,
   messages,
   settings,
@@ -495,6 +515,11 @@ export function AdminDashboard({
   members: Member[]
   membershipPlans: MembershipPlan[]
   membershipContent: MembershipContent
+  people: Person[]
+  peopleCounts: {
+    counts: { total: number; published: number; draft: number; homepage: number }
+    byRole: Record<string, number>
+  }
   banners: Banner[]
   messages: Message[]
   settings: SiteSettings
@@ -506,6 +531,12 @@ export function AdminDashboard({
     { value: "none", label: "— None —" },
     ...programs.map((p) => ({ value: String(p.id), label: p.title })),
   ]
+
+  const peopleOptions = people.map((p) => ({
+    id: p.id,
+    name: p.fullName,
+    subtitle: [p.jobTitle, p.companyName].filter(Boolean).join(" · ") || undefined,
+  }))
 
   const NEWS_FIELDS: FieldDef[] = [
     { name: "title", label: "Title", type: "text", required: true },
@@ -633,6 +664,7 @@ export function AdminDashboard({
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
+            <TabsTrigger value="people">People ({peopleCounts.counts.total})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
             <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
@@ -794,6 +826,7 @@ export function AdminDashboard({
                 sponsors: [],
                 speakers: [],
                 isFeatured: false,
+                peopleIds: [],
               }}
               toForm={(e) => ({
                 title: e.title,
@@ -815,6 +848,7 @@ export function AdminDashboard({
                 sponsors: e.sponsors ?? [],
                 speakers: e.speakers ?? [],
                 isFeatured: e.isFeatured,
+                peopleIds: e.peopleIds ?? [],
               })}
               render={{
                 image: (e) => e.imageUrl,
@@ -823,6 +857,7 @@ export function AdminDashboard({
                 title: (e) => e.title,
                 viewHref: (e) => `/events/${e.slug}`,
               }}
+              peopleOptions={peopleOptions}
               onCreate={(d) => createEvent(d)}
               onUpdate={(id, d) => updateEvent(id, d)}
               onDelete={(id) => deleteEvent(id)}
@@ -872,6 +907,10 @@ export function AdminDashboard({
               onUpdate={(id, d) => updateProgram(id, d)}
               onDelete={(id) => deleteProgram(id)}
             />
+          </TabsContent>
+
+          <TabsContent value="people" className="mt-6">
+            <PeoplePanel people={people} counts={peopleCounts.counts} byRole={peopleCounts.byRole} />
           </TabsContent>
 
           <TabsContent value="team" className="mt-6">

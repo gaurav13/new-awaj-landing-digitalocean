@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
 import {
   events,
+  eventsPeople,
   type EventSponsor,
   type EventSpeaker,
   type EventHighlight,
@@ -89,7 +90,15 @@ export async function getRelatedEvents(slug: string, limit = 3) {
 
 export async function getMyEvents() {
   await getUserId()
-  return db.select().from(events).orderBy(asc(events.eventDate))
+  const rows = await db.select().from(events).orderBy(asc(events.eventDate))
+  const links = await db.select().from(eventsPeople).orderBy(asc(eventsPeople.sortOrder))
+  const map = new Map<number, number[]>()
+  for (const l of links) {
+    const arr = map.get(l.eventId) ?? []
+    arr.push(l.personId)
+    map.set(l.eventId, arr)
+  }
+  return rows.map((r) => ({ ...r, peopleIds: map.get(r.id) ?? [] }))
 }
 
 type EventInput = {
@@ -112,6 +121,16 @@ type EventInput = {
   sponsors?: EventSponsor[]
   speakers?: EventSpeaker[]
   isFeatured?: boolean
+  peopleIds?: number[]
+}
+
+async function syncEventPeople(eventId: number, peopleIds?: number[]) {
+  if (!Array.isArray(peopleIds)) return
+  await db.delete(eventsPeople).where(eq(eventsPeople.eventId, eventId))
+  const ids = peopleIds.map(Number).filter((n) => Number.isFinite(n))
+  if (ids.length > 0) {
+    await db.insert(eventsPeople).values(ids.map((personId, i) => ({ eventId, personId, sortOrder: i })))
+  }
 }
 
 function cleanSponsors(items?: EventSponsor[]): EventSponsor[] {
@@ -178,7 +197,9 @@ async function uniqueSlug(base: string, excludeId?: number) {
 export async function createEvent(input: EventInput) {
   const userId = await getUserId()
   const slug = await uniqueSlug(slugify(input.title))
-  await db.insert(events).values({
+  const [created] = await db
+    .insert(events)
+    .values({
     title: input.title,
     subtitle: input.subtitle || null,
     slug,
@@ -200,7 +221,9 @@ export async function createEvent(input: EventInput) {
     speakers: cleanSpeakers(input.speakers),
     isFeatured: input.isFeatured ?? false,
     authorId: userId,
-  })
+    })
+    .returning({ id: events.id })
+  await syncEventPeople(created.id, input.peopleIds)
   revalidatePath("/")
   revalidatePath("/events")
 }
@@ -233,6 +256,7 @@ export async function updateEvent(id: number, input: EventInput) {
       isFeatured: input.isFeatured ?? false,
     })
     .where(eq(events.id, id))
+  await syncEventPeople(id, input.peopleIds)
   revalidatePath("/")
   revalidatePath("/events")
   revalidatePath(`/events/${slug}`)

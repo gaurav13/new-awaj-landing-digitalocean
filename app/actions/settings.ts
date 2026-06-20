@@ -25,6 +25,19 @@ export type SiteSettings = {
   membershipTitle: string
   membershipSubtitle: string
   membershipHeroUrl: string
+  // Leadership / President hero (homepage)
+  presidentEyebrow: string
+  presidentName: string
+  presidentTitle: string
+  presidentBio: string
+  presidentPhotoUrl: string
+  presidentBgUrl: string
+  presidentCtaLabel: string
+  presidentCtaUrl: string
+  leadershipStats: string // JSON: { value: string; label: string; icon: string }[]
+  leadershipSectionTitle: string
+  leadershipViewAllLabel: string
+  leadershipViewAllUrl: string
 }
 
 const DEFAULTS: SiteSettings = {
@@ -46,6 +59,25 @@ const DEFAULTS: SiteSettings = {
   membershipSubtitle:
     "Join Asia Web3 Alliance Japan and become part of a trusted network driving innovation, collaboration, and growth across the Web3 ecosystem.",
   membershipHeroUrl: "/images/membership-hero.png",
+  presidentEyebrow: "Led by builders who understand expansion",
+  presidentName: "Hinza Asif",
+  presidentTitle: "Asia Web3 Alliance Japan",
+  presidentBio:
+    "AWAJ was created to help startups navigate Japan's ecosystem and build meaningful relationships across government, investors, corporations, universities, and international markets.",
+  presidentPhotoUrl: "",
+  presidentBgUrl: "/images/hero-tokyo.png",
+  presidentCtaLabel: "Meet Leadership Team",
+  presidentCtaUrl: "/team",
+  leadershipStats: JSON.stringify([
+    { value: "500+", label: "Ecosystem Partners", icon: "Users" },
+    { value: "120+", label: "Corporate Members", icon: "Building2" },
+    { value: "200+", label: "Web3 Startups Supported", icon: "Rocket" },
+    { value: "25+", label: "Countries Connected", icon: "Globe" },
+    { value: "40+", label: "Events & Programs", icon: "Calendar" },
+  ]),
+  leadershipSectionTitle: "Ecosystem Leaders Connected with AWAJ",
+  leadershipViewAllLabel: "View All Leaders",
+  leadershipViewAllUrl: "/team",
 }
 
 // ---- Public read ----
@@ -71,6 +103,18 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       membershipTitle: map.membershipTitle || DEFAULTS.membershipTitle,
       membershipSubtitle: map.membershipSubtitle || DEFAULTS.membershipSubtitle,
       membershipHeroUrl: map.membershipHeroUrl || DEFAULTS.membershipHeroUrl,
+      presidentEyebrow: map.presidentEyebrow || DEFAULTS.presidentEyebrow,
+      presidentName: map.presidentName || DEFAULTS.presidentName,
+      presidentTitle: map.presidentTitle || DEFAULTS.presidentTitle,
+      presidentBio: map.presidentBio || DEFAULTS.presidentBio,
+      presidentPhotoUrl: map.presidentPhotoUrl || DEFAULTS.presidentPhotoUrl,
+      presidentBgUrl: map.presidentBgUrl || DEFAULTS.presidentBgUrl,
+      presidentCtaLabel: map.presidentCtaLabel || DEFAULTS.presidentCtaLabel,
+      presidentCtaUrl: map.presidentCtaUrl || DEFAULTS.presidentCtaUrl,
+      leadershipStats: map.leadershipStats || DEFAULTS.leadershipStats,
+      leadershipSectionTitle: map.leadershipSectionTitle || DEFAULTS.leadershipSectionTitle,
+      leadershipViewAllLabel: map.leadershipViewAllLabel || DEFAULTS.leadershipViewAllLabel,
+      leadershipViewAllUrl: map.leadershipViewAllUrl || DEFAULTS.leadershipViewAllUrl,
     }
   }, DEFAULTS)
 }

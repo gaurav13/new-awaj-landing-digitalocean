@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { programs, type ProgramPartner, type ProgramStartup, type GalleryItem } from "@/lib/db/schema"
+import { programs, programsPeople, type ProgramPartner, type ProgramStartup, type GalleryItem } from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
@@ -27,10 +27,18 @@ export async function getProgramBySlug(slug: string) {
 
 export async function getMyPrograms() {
   await getUserId()
-  return db
+  const rows = await db
     .select()
     .from(programs)
     .orderBy(asc(programs.sortOrder), asc(programs.id))
+  const links = await db.select().from(programsPeople).orderBy(asc(programsPeople.sortOrder))
+  const map = new Map<number, number[]>()
+  for (const l of links) {
+    const arr = map.get(l.programId) ?? []
+    arr.push(l.personId)
+    map.set(l.programId, arr)
+  }
+  return rows.map((r) => ({ ...r, peopleIds: map.get(r.id) ?? [] }))
 }
 
 type ProgramInput = {
@@ -45,6 +53,16 @@ type ProgramInput = {
   startups?: ProgramStartup[]
   gallery?: GalleryItem[]
   sortOrder?: number
+  peopleIds?: number[]
+}
+
+async function syncProgramPeople(programId: number, peopleIds?: number[]) {
+  if (!Array.isArray(peopleIds)) return
+  await db.delete(programsPeople).where(eq(programsPeople.programId, programId))
+  const ids = peopleIds.map(Number).filter((n) => Number.isFinite(n))
+  if (ids.length > 0) {
+    await db.insert(programsPeople).values(ids.map((personId, i) => ({ programId, personId, sortOrder: i })))
+  }
 }
 
 function cleanPartners(items?: ProgramPartner[]): ProgramPartner[] {
@@ -90,7 +108,9 @@ async function uniqueSlug(base: string, excludeId?: number) {
 export async function createProgram(input: ProgramInput) {
   const userId = await getUserId()
   const slug = await uniqueSlug(slugify(input.title))
-  await db.insert(programs).values({
+  const [created] = await db
+    .insert(programs)
+    .values({
     title: input.title,
     slug,
     excerpt: input.excerpt,
@@ -104,7 +124,9 @@ export async function createProgram(input: ProgramInput) {
     gallery: cleanGallery(input.gallery),
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
-  })
+    })
+    .returning({ id: programs.id })
+  await syncProgramPeople(created.id, input.peopleIds)
   revalidatePath("/")
   revalidatePath("/programs")
 }
@@ -129,6 +151,7 @@ export async function updateProgram(id: number, input: ProgramInput) {
       sortOrder: input.sortOrder ?? 0,
     })
     .where(eq(programs.id, id))
+  await syncProgramPeople(id, input.peopleIds)
   revalidatePath("/")
   revalidatePath("/programs")
   revalidatePath(`/programs/${slug}`)

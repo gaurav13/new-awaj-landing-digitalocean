@@ -11,6 +11,7 @@ import { getMyPartners } from "@/app/actions/partners"
 import { getMyMembers } from "@/app/actions/members"
 import { getMyMembershipPlans } from "@/app/actions/membership"
 import { getMembershipContent } from "@/app/actions/membership-content"
+import { getMyPeople, getPeopleCounts } from "@/app/actions/people"
 import { getMyMessages } from "@/app/actions/contact"
 import { getMyBanners } from "@/app/actions/banners"
 import { getAllUsers } from "@/app/actions/users"
@@ -39,6 +40,8 @@ export default async function AdminPage() {
     members,
     membershipPlans,
     membershipContent,
+    people,
+    peopleCounts,
     banners,
     messages,
     settings,
@@ -54,6 +57,8 @@ export default async function AdminPage() {
     getMyMembers(),
     getMyMembershipPlans(),
     getMembershipContent(),
+    getMyPeople(),
+    getPeopleCounts(),
     getMyBanners(),
     getMyMessages(),
     getSiteSettings(),
@@ -75,6 +80,8 @@ export default async function AdminPage() {
       members={members}
       membershipPlans={membershipPlans}
       membershipContent={membershipContent}
+      people={people}
+      peopleCounts={peopleCounts}
       banners={banners}
       messages={messages}
       settings={settings}
