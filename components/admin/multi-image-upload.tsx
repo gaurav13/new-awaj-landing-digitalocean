@@ -2,15 +2,15 @@
 
 import { useRef, useState } from "react"
 import { UploadCloud, X, Loader2, GripVertical } from "lucide-react"
+import { upload } from "@vercel/blob/client"
 import type { GalleryItem } from "@/lib/db/schema"
 
 async function uploadOne(file: File): Promise<string> {
-  const fd = new FormData()
-  fd.append("file", file)
-  const res = await fetch("/api/upload", { method: "POST", body: fd })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || "Upload failed")
-  return data.url as string
+  const blob = await upload(`awaj/${file.name}`, file, {
+    access: "public",
+    handleUploadUrl: "/api/upload",
+  })
+  return blob.url
 }
 
 export function MultiImageUpload({

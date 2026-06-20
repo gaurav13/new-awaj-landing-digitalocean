@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react"
 import { UploadCloud, X, Loader2 } from "lucide-react"
+import { upload } from "@vercel/blob/client"
 
 export function ImageUpload({
   value,
@@ -18,12 +19,11 @@ export function ImageUpload({
     setError(null)
     setUploading(true)
     try {
-      const fd = new FormData()
-      fd.append("file", file)
-      const res = await fetch("/api/upload", { method: "POST", body: fd })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Upload failed")
-      onChange(data.url)
+      const blob = await upload(`awaj/${file.name}`, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+      })
+      onChange(blob.url)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")
     } finally {
