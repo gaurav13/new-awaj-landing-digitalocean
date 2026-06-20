@@ -1,11 +1,11 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { getLatestNews } from "@/app/actions/news"
-import { getUpcomingEvents } from "@/app/actions/events"
+import { getHomeEvents } from "@/app/actions/events"
 import { EventsCarousel } from "@/components/awaj/events-carousel"
 
 export async function EventsNews() {
-  const [events, news] = await Promise.all([getUpcomingEvents(10), getLatestNews(4)])
+  const [events, news] = await Promise.all([getHomeEvents(10), getLatestNews(4)])
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">

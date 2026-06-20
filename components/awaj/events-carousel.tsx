@@ -76,6 +76,7 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
           {events.map((e) => {
             const d = dateParts(e.eventDate)
             const cover = e.imageUrl || e.bannerUrl
+            const isPast = e.eventDate < new Date().toISOString().slice(0, 10)
             return (
               <div key={e.id} className="shrink-0 px-2" style={{ flex: `0 0 ${100 / perView}%` }}>
                 <Link
@@ -94,6 +95,11 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
                       <span className="text-[9px] font-bold uppercase leading-tight text-awaj-red">{d.month}</span>
                       <span className="font-serif text-base font-bold leading-none text-navy-text">{d.day}</span>
                     </div>
+                    {isPast && (
+                      <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-navy-text/85 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-md">
+                        Past
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-1 flex-col p-3.5">
                     <h3 className="font-serif text-sm font-bold leading-snug text-navy-text">{e.title}</h3>
