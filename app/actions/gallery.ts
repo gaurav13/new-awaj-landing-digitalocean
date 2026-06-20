@@ -43,6 +43,7 @@ type GalleryInput = {
   coverImageUrl?: string
   photos?: GalleryItem[]
   eventDate?: string | null
+  location?: string
   isFeatured?: boolean
   sortOrder?: number
 }
@@ -64,6 +65,7 @@ export async function createGallery(input: GalleryInput) {
     coverImageUrl: input.coverImageUrl || photos[0]?.imageUrl || null,
     photos,
     eventDate: input.eventDate || null,
+    location: input.location || null,
     isFeatured: Boolean(input.isFeatured),
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
@@ -84,6 +86,7 @@ export async function updateGallery(id: number, input: GalleryInput) {
       coverImageUrl: input.coverImageUrl || photos[0]?.imageUrl || null,
       photos,
       eventDate: input.eventDate || null,
+      location: input.location || null,
       isFeatured: Boolean(input.isFeatured),
       sortOrder: input.sortOrder ?? 0,
     })

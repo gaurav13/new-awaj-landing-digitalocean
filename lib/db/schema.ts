@@ -169,6 +169,7 @@ export const galleries = pgTable("galleries", {
   coverImageUrl: text("cover_image_url"),
   photos: jsonb("photos").$type<GalleryItem[]>().notNull().default([]),
   eventDate: date("event_date"),
+  location: text("location"),
   isFeatured: boolean("is_featured").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),

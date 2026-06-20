@@ -65,6 +65,7 @@ type Gallery = {
   coverImageUrl: string | null
   photos: GalleryItem[]
   eventDate: string | null
+  location: string | null
   isFeatured: boolean
   sortOrder: number
 }
@@ -168,6 +169,7 @@ const GALLERY_FIELDS: FieldDef[] = [
   { name: "title", label: "Activity / album title", type: "text", required: true, placeholder: "Japan Financial Innovation Program 2025" },
   { name: "category", label: "Category", type: "select", options: GALLERY_CATEGORIES },
   { name: "eventDate", label: "Date (optional)", type: "date", hint: "When this activity took place. Used for sorting and the album label." },
+  { name: "location", label: "Location (optional)", type: "text", placeholder: "Tokyo, Japan" },
   {
     name: "description",
     label: "Short description (optional)",
@@ -653,6 +655,7 @@ export function AdminDashboard({
                 title: "",
                 category: "Event",
                 eventDate: "",
+                location: "",
                 description: "",
                 photos: [],
                 isFeatured: false,
@@ -662,6 +665,7 @@ export function AdminDashboard({
                 title: g.title,
                 category: g.category ?? "Event",
                 eventDate: g.eventDate ?? "",
+                location: g.location ?? "",
                 description: g.description ?? "",
                 photos: g.photos ?? [],
                 isFeatured: g.isFeatured,
