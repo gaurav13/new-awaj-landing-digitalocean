@@ -3,9 +3,7 @@ import { notFound } from "next/navigation"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { EventDetail } from "@/components/awaj/event-detail"
-import { ConnectedPeople } from "@/components/awaj/connected-people"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
-import { getPeopleForEvent } from "@/app/actions/people"
 import { dateParts } from "@/lib/format-date"
 import { buildPageMetadata, getEventSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
@@ -31,7 +29,6 @@ export default async function EventPage({ params }: Props) {
   if (!event) notFound()
 
   const related = await getRelatedEvents(slug, 3)
-  const eventPeople = await getPeopleForEvent(event.id)
 
   const [eventSchema, breadcrumbSchema] = await Promise.all([
     getEventSchema({
@@ -55,12 +52,6 @@ export default async function EventPage({ params }: Props) {
       <SiteHeader />
 
       <EventDetail event={event} />
-
-      <ConnectedPeople
-        people={eventPeople}
-        title="Speakers & Guests"
-        subtitle="Leaders and experts connected with this event."
-      />
 
       {related.length > 0 && (
         <section className="border-t border-gold/20 bg-white">

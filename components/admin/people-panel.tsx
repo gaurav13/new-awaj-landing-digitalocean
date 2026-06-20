@@ -59,6 +59,7 @@ export function PeoplePanel({
   const [form, setForm] = useState<PersonInput>(EMPTY)
   const [tagsText, setTagsText] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -207,11 +208,33 @@ export function PeoplePanel({
             One central place for leadership, advisors, speakers, mentors, and ecosystem leaders.
           </p>
         </div>
-        <Button onClick={openCreate} className="rounded-full bg-awaj-red text-white hover:bg-awaj-red/90">
-          <Plus className="mr-1.5 h-4 w-4" />
-          New Person
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            onClick={handleImport}
+            disabled={isPending}
+            variant="outline"
+            className="rounded-full border-gold/40 text-navy-text hover:bg-beige"
+          >
+            <Download className="mr-1.5 h-4 w-4" />
+            Import team &amp; speakers
+          </Button>
+          <Button onClick={openCreate} className="rounded-full bg-awaj-red text-white hover:bg-awaj-red/90">
+            <Plus className="mr-1.5 h-4 w-4" />
+            New Person
+          </Button>
+        </div>
       </div>
+
+      {notice ? (
+        <div className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-navy-text">
+          {notice}
+        </div>
+      ) : null}
+      {error ? (
+        <div className="mt-4 rounded-xl border border-awaj-red/30 bg-awaj-red/10 px-4 py-3 text-sm text-awaj-red">
+          {error}
+        </div>
+      ) : null}
 
       {/* Counters */}
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -260,6 +283,12 @@ export function PeoplePanel({
         </select>
       </div>
 
+      <p className="mt-2 text-xs text-navy-text/50">
+        {reorderEnabled
+          ? "Use the arrows on each row to change a person's position. Order is reflected on the homepage and the Team page."
+          : "Clear search and filters (All Roles / All statuses) to reorder people with the arrow controls."}
+      </p>
+
       {/* List */}
       <div className="mt-5 overflow-hidden rounded-2xl border border-gold/20 bg-white">
         {filtered.length === 0 ? (
@@ -297,7 +326,10 @@ export function PeoplePanel({
                   {(p.roleTypes ?? []).length > 0 ? (
                     <div className="mt-1 flex flex-wrap gap-1">
                       {(p.roleTypes ?? []).map((r) => (
-                        <span key={r} className="rounded bg-beige px-1.5 py-0.5 text-[10px] text-navy-text/60">
+                        <span
+                          key={r}
+                          className="rounded bg-navy-text px-1.5 py-0.5 text-[10px] font-medium text-white"
+                        >
                           {r}
                         </span>
                       ))}
@@ -305,6 +337,28 @@ export function PeoplePanel({
                   ) : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
+                  {reorderEnabled ? (
+                    <div className="mr-1 flex flex-col">
+                      <button
+                        type="button"
+                        onClick={() => handleReorder(p.id, "up")}
+                        disabled={isPending}
+                        className="rounded p-0.5 text-navy-text/50 transition-colors hover:bg-beige hover:text-navy-text disabled:opacity-40"
+                        aria-label="Move up"
+                      >
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReorder(p.id, "down")}
+                        disabled={isPending}
+                        className="rounded p-0.5 text-navy-text/50 transition-colors hover:bg-beige hover:text-navy-text disabled:opacity-40"
+                        aria-label="Move down"
+                      >
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => openEdit(p)}

@@ -1,13 +1,17 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Search, ExternalLink, CalendarDays, Layers } from "lucide-react"
 import type { DirectoryPerson } from "@/app/actions/people"
 
+const PAGE_SIZE = 24
+
 export function PeopleDirectory({ people }: { people: DirectoryPerson[] }) {
   const [query, setQuery] = useState("")
   const [activeRole, setActiveRole] = useState("All")
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const roles = useMemo(() => {
     const set = new Set<string>()
@@ -23,6 +27,31 @@ export function PeopleDirectory({ people }: { people: DirectoryPerson[] }) {
       return matchesRole && matchesQuery
     })
   }, [people, activeRole, query])
+
+  // Reset paging whenever the filtered set changes.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE)
+  }, [query, activeRole])
+
+  const visible = filtered.slice(0, visibleCount)
+  const hasMore = visibleCount < filtered.length
+
+  // Infinite scroll: load the next page when the sentinel enters the viewport.
+  useEffect(() => {
+    if (!hasMore) return
+    const node = sentinelRef.current
+    if (!node) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisibleCount((c) => Math.min(c + PAGE_SIZE, filtered.length))
+        }
+      },
+      { rootMargin: "400px" },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [hasMore, filtered.length])
 
   return (
     <div>
@@ -68,11 +97,24 @@ export function PeopleDirectory({ people }: { people: DirectoryPerson[] }) {
           <p className="mt-2 text-sm text-navy-text/60">Try a different search or filter.</p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((person) => (
-            <PersonCard key={person.id} person={person} />
-          ))}
-        </div>
+        <>
+          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {visible.map((person) => (
+              <PersonCard key={person.id} person={person} />
+            ))}
+          </div>
+          {hasMore ? (
+            <div ref={sentinelRef} className="mt-8 flex justify-center py-6" aria-hidden="true">
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
+            </div>
+          ) : (
+            filtered.length > PAGE_SIZE && (
+              <p className="mt-8 text-center text-sm text-navy-text/50">
+                You&apos;ve reached the end · {filtered.length} people
+              </p>
+            )
+          )}
+        </>
       )}
     </div>
   )
@@ -114,7 +156,7 @@ function PersonCard({ person }: { person: DirectoryPerson }) {
         {roles.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
             {roles.slice(0, 2).map((r) => (
-              <span key={r} className="rounded-full bg-gold/10 px-2 py-0.5 text-[10px] font-medium text-gold">
+              <span key={r} className="rounded-full bg-navy-text px-2 py-0.5 text-[10px] font-semibold text-white">
                 {r}
               </span>
             ))}

@@ -259,11 +259,180 @@ export async function getPeopleForProgram(programId: number): Promise<Person[]> 
   }, [])
 }
 
+// ---- Import & ordering ----
+
+const ROLE_KEYWORDS: { role: string; re: RegExp }[] = [
+  {
+    role: "Government",
+    re: /(govern|ministr|jetro|meti|embassy|public sector|prefectur|city of|municipal|minister|diplomat|ambassador|senator|parliament)/i,
+  },
+  { role: "Investor", re: /(invest|capital|ventures?|\bvc\b|\bfund\b|angel|\blp\b|\bgp\b)/i },
+  { role: "Startup Founder", re: /(founder|co-?founder|\bceo\b|\bcto\b|startup)/i },
+  { role: "Advisor", re: /(advisor|advisory|board member)/i },
+  { role: "Mentor", re: /mentor/i },
+]
+
+function detectRoles(...parts: (string | null | undefined)[]): string[] {
+  const text = parts.filter(Boolean).join(" ")
+  const roles: string[] = []
+  for (const { role, re } of ROLE_KEYWORDS) if (re.test(text)) roles.push(role)
+  roles.push("Speaker")
+  return Array.from(new Set(roles))
+}
+
+// Ordering priority: team first, then government, then everyone else.
+function rolePriority(roles: string[]): number {
+  if (roles.includes("Team") || roles.includes("Leadership")) return 0
+  if (roles.includes("Government")) return 1
+  return 2
+}
+
+/**
+ * One-time (idempotent) import that pulls every legacy "person" surface into the central
+ * `people` table: team members and free-text event speakers. People are deduplicated by
+ * name, event connections are created in the junction table, and the whole table is
+ * renumbered so the default order is Team → Government → everyone else.
+ */
+export async function importPeopleFromSources() {
+  const userId = await getUserId()
+  const [existing, teamRows, eventRows] = await Promise.all([
+    db.select().from(people),
+    db.select().from(teamMembers).orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id)),
+    db.select().from(events).orderBy(asc(events.eventDate)),
+  ])
+
+  const byName = new Map<string, { id: number }>()
+  for (const p of existing) byName.set(normalizeName(p.fullName), { id: p.id })
+
+  let imported = 0
+
+  // 1) Team members → people (roleType "Team")
+  for (const t of teamRows) {
+    const key = normalizeName(t.name)
+    if (byName.has(key)) continue
+    const [row] = await db
+      .insert(people)
+      .values({
+        fullName: t.name,
+        profilePhoto: t.imageUrl || null,
+        jobTitle: t.role || null,
+        companyName: t.company || null,
+        companyLogo: null,
+        linkedinUrl: t.linkedinUrl || null,
+        email: null,
+        country: null,
+        bio: t.bio || null,
+        roleTypes: ["Team"],
+        tags: [],
+        featured: false,
+        status: "published",
+        sortOrder: 0,
+        showOnHomepage: false,
+        showCompanyLogo: false,
+        showLinkedin: true,
+        showRoleBadge: true,
+        authorId: userId,
+      })
+      .returning({ id: people.id })
+    byName.set(key, { id: row.id })
+    imported++
+  }
+
+  // 2) Free-text event speakers → people + event connection (deduped by name)
+  for (const e of eventRows) {
+    for (const s of e.speakers ?? []) {
+      if (!s.name?.trim()) continue
+      const key = normalizeName(s.name)
+      let person = byName.get(key)
+      if (!person) {
+        const [row] = await db
+          .insert(people)
+          .values({
+            fullName: s.name.trim(),
+            profilePhoto: s.imageUrl || null,
+            jobTitle: s.role || null,
+            companyName: s.company || null,
+            companyLogo: s.companyLogoUrl || null,
+            linkedinUrl: s.linkUrl || null,
+            email: null,
+            country: null,
+            bio: null,
+            roleTypes: detectRoles(s.role, s.badge, s.company),
+            tags: [],
+            featured: false,
+            status: "published",
+            sortOrder: 0,
+            showOnHomepage: false,
+            showCompanyLogo: Boolean(s.companyLogoUrl),
+            showLinkedin: Boolean(s.linkUrl),
+            showRoleBadge: true,
+            authorId: userId,
+          })
+          .returning({ id: people.id })
+        person = { id: row.id }
+        byName.set(key, person)
+        imported++
+      }
+      // ensure a single junction per (event, person)
+      const link = await db
+        .select({ id: eventsPeople.id })
+        .from(eventsPeople)
+        .where(and(eq(eventsPeople.eventId, e.id), eq(eventsPeople.personId, person.id)))
+      if (link.length === 0) {
+        await db.insert(eventsPeople).values({
+          eventId: e.id,
+          personId: person.id,
+          roleAtEvent: s.role || s.badge || null,
+          sortOrder: 0,
+        })
+      }
+    }
+  }
+
+  // 3) Renumber sortOrder globally: Team → Government → rest (preserving existing order within groups)
+  const all = await db.select().from(people)
+  const sorted = all.sort((a, b) => {
+    const pa = rolePriority(a.roleTypes ?? [])
+    const pb = rolePriority(b.roleTypes ?? [])
+    if (pa !== pb) return pa - pb
+    if (a.featured !== b.featured) return a.featured ? -1 : 1
+    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder
+    return a.id - b.id
+  })
+  for (let i = 0; i < sorted.length; i++) {
+    if (sorted[i].sortOrder !== i) {
+      await db.update(people).set({ sortOrder: i }).where(eq(people.id, sorted[i].id))
+    }
+  }
+
+  revalidatePath("/")
+  revalidatePath("/team")
+  return { imported, total: sorted.length }
+}
+
+/** Move a person up or down one position in the global ordering. */
+export async function reorderPerson(id: number, direction: "up" | "down") {
+  await getUserId()
+  const all = await db.select().from(people).orderBy(asc(people.sortOrder), asc(people.id))
+  const idx = all.findIndex((p) => p.id === id)
+  if (idx === -1) return
+  const swapIdx = direction === "up" ? idx - 1 : idx + 1
+  if (swapIdx < 0 || swapIdx >= all.length) return
+  ;[all[idx], all[swapIdx]] = [all[swapIdx], all[idx]]
+  for (let i = 0; i < all.length; i++) {
+    if (all[i].sortOrder !== i) {
+      await db.update(people).set({ sortOrder: i }).where(eq(people.id, all[i].id))
+    }
+  }
+  revalidatePath("/")
+  revalidatePath("/team")
+}
+
 // ---- Admin reads ----
 
 export async function getMyPeople(): Promise<Person[]> {
   await getUserId()
-  return db.select().from(people).orderBy(asc(people.sortOrder), desc(people.id))
+  return db.select().from(people).orderBy(asc(people.sortOrder), asc(people.id))
 }
 
 export async function getPeopleCounts() {
