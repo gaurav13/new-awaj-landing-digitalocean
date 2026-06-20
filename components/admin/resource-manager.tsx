@@ -10,7 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
+import { MultiImageUpload } from "./multi-image-upload"
 import { RichTextEditor } from "./rich-text-editor"
+import type { GalleryItem } from "@/lib/db/schema"
 
 export type FieldType =
   | "text"
@@ -22,6 +24,7 @@ export type FieldType =
   | "image"
   | "richtext"
   | "repeater"
+  | "gallery"
 
 export type RepeaterSubField = {
   name: string
@@ -303,6 +306,18 @@ export function ResourceManager<T extends { id: number }>({
                       <ImageUpload
                         value={String(form[f.name] ?? "")}
                         onChange={(url) => setForm({ ...form, [f.name]: url })}
+                      />
+                    </div>
+                  )
+                }
+                if (f.type === "gallery") {
+                  return (
+                    <div key={f.name} className="flex flex-col gap-2">
+                      <Label>{f.label}</Label>
+                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
+                      <MultiImageUpload
+                        value={Array.isArray(form[f.name]) ? (form[f.name] as GalleryItem[]) : []}
+                        onChange={(photos) => setForm({ ...form, [f.name]: photos })}
                       />
                     </div>
                   )

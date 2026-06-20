@@ -19,6 +19,7 @@ import { createPartner, updatePartner, deletePartner } from "@/app/actions/partn
 import { createMember, updateMember, deleteMember } from "@/app/actions/members"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
+import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
 import { MEMBER_CATEGORIES, memberCategoryLabel } from "@/lib/member-categories"
 import type { SiteSettings } from "@/app/actions/settings"
 import type {
@@ -48,12 +49,24 @@ type Media = {
   type: string
   url: string | null
   thumbnailUrl: string | null
+  logoUrl: string | null
   source: string | null
   excerpt: string | null
   programId: number | null
   isFeatured: boolean
   sortOrder: number
   publishedAt: Date | string
+}
+type Gallery = {
+  id: number
+  title: string
+  description: string | null
+  category: string
+  coverImageUrl: string | null
+  photos: GalleryItem[]
+  eventDate: string | null
+  isFeatured: boolean
+  sortOrder: number
 }
 type Event = {
   id: number
@@ -149,6 +162,28 @@ type Message = {
 const NEWS_CATEGORIES = ["News", "Partnerships", "Programs", "Events", "Announcements"]
 const MEDIA_TYPES = ["Article", "Video", "Podcast", "Press Release", "Interview", "Report"]
 const PROGRAM_ICONS = ["Rocket", "Building2", "Share2", "Globe", "GraduationCap", "Users", "Award", "Landmark"]
+const GALLERY_CATEGORIES = ["Event", "Program", "Conference", "Workshop", "Meetup", "Award", "Other"]
+
+const GALLERY_FIELDS: FieldDef[] = [
+  { name: "title", label: "Activity / album title", type: "text", required: true, placeholder: "Japan Financial Innovation Program 2025" },
+  { name: "category", label: "Category", type: "select", options: GALLERY_CATEGORIES },
+  { name: "eventDate", label: "Date (optional)", type: "date", hint: "When this activity took place. Used for sorting and the album label." },
+  {
+    name: "description",
+    label: "Short description (optional)",
+    type: "textarea",
+    rows: 3,
+    placeholder: "A few words about this activity, shown under the album title.",
+  },
+  {
+    name: "photos",
+    label: "Photos",
+    type: "gallery",
+    hint: "Upload all the photos for this activity at once. Drag to reorder — the first photo becomes the album cover.",
+  },
+  { name: "isFeatured", label: "Feature this album on the homepage gallery", type: "checkbox" },
+  { name: "sortOrder", label: "Sort order", type: "number" },
+]
 
 const EVENT_FIELDS: FieldDef[] = [
   // — Basics —
@@ -356,6 +391,7 @@ export function AdminDashboard({
   isSuperAdmin,
   news,
   media,
+  galleries,
   events,
   programs,
   team,
@@ -371,6 +407,7 @@ export function AdminDashboard({
   isSuperAdmin: boolean
   news: News[]
   media: Media[]
+  galleries: Gallery[]
   events: Event[]
   programs: Program[]
   team: Team[]
@@ -414,9 +451,16 @@ export function AdminDashboard({
     },
     {
       name: "source",
-      label: "Source / publisher (optional)",
+      label: "Source / publisher",
       type: "text",
       placeholder: "Nikkei, CoinDesk, Bloomberg...",
+      hint: "Shown prominently on the media card. The outlet name appears first.",
+    },
+    {
+      name: "logoUrl",
+      label: "Publisher logo",
+      type: "image",
+      hint: "The media outlet's logo, shown first on the card. Square or wide logo, transparent PNG preferred, under 200KB.",
     },
     {
       name: "url",
@@ -427,7 +471,7 @@ export function AdminDashboard({
     },
     {
       name: "thumbnailUrl",
-      label: "Thumbnail image",
+      label: "Banner / cover image",
       type: "image",
       hint: "Recommended 1200×675px (16:9), JPG or PNG, under 500KB.",
     },
@@ -503,6 +547,7 @@ export function AdminDashboard({
           <TabsList className="bg-beige">
             <TabsTrigger value="news">News ({news.length})</TabsTrigger>
             <TabsTrigger value="media">Media ({media.length})</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery ({galleries.length})</TabsTrigger>
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
@@ -565,6 +610,7 @@ export function AdminDashboard({
                 source: "",
                 url: "",
                 thumbnailUrl: "",
+                logoUrl: "",
                 programId: "none",
                 publishedAt: "",
                 isFeatured: false,
@@ -577,6 +623,7 @@ export function AdminDashboard({
                 source: m.source ?? "",
                 url: m.url ?? "",
                 thumbnailUrl: m.thumbnailUrl ?? "",
+                logoUrl: m.logoUrl ?? "",
                 programId: m.programId ? String(m.programId) : "none",
                 publishedAt: new Date(m.publishedAt).toISOString().slice(0, 10),
                 isFeatured: m.isFeatured,
@@ -593,6 +640,46 @@ export function AdminDashboard({
               onCreate={(d) => createMedia(d)}
               onUpdate={(id, d) => updateMedia(id, d)}
               onDelete={(id) => deleteMedia(id)}
+            />
+          </TabsContent>
+
+          <TabsContent value="gallery" className="mt-6">
+            <ResourceManager<Gallery>
+              title="Photo galleries"
+              singular="Album"
+              items={galleries}
+              fields={GALLERY_FIELDS}
+              emptyForm={{
+                title: "",
+                category: "Event",
+                eventDate: "",
+                description: "",
+                photos: [],
+                isFeatured: false,
+                sortOrder: 0,
+              }}
+              toForm={(g) => ({
+                title: g.title,
+                category: g.category ?? "Event",
+                eventDate: g.eventDate ?? "",
+                description: g.description ?? "",
+                photos: g.photos ?? [],
+                isFeatured: g.isFeatured,
+                sortOrder: g.sortOrder,
+              })}
+              render={{
+                image: (g) => g.coverImageUrl ?? g.photos?.[0]?.imageUrl ?? null,
+                badge: (g) => (g.isFeatured ? `Featured · ${g.category}` : g.category),
+                meta: (g) =>
+                  [g.eventDate ? formatLongDate(g.eventDate) : null, `${g.photos?.length ?? 0} photos`]
+                    .filter(Boolean)
+                    .join(" · "),
+                title: (g) => g.title,
+                viewHref: () => "/gallery",
+              }}
+              onCreate={(d) => createGallery(d)}
+              onUpdate={(id, d) => updateGallery(id, d)}
+              onDelete={(id) => deleteGallery(id)}
             />
           </TabsContent>
 
