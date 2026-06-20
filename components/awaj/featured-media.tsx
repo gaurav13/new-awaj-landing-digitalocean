@@ -1,3 +1,5 @@
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { MediaCarousel } from "./media-carousel"
 import { getFeaturedMedia } from "@/app/actions/media"
 
@@ -17,6 +19,16 @@ export async function FeaturedMedia() {
         </div>
 
         <MediaCarousel items={media} />
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/media"
+            className="group inline-flex items-center gap-2 rounded-full bg-navy px-7 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
+          >
+            Read More Coverage
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
       </div>
     </section>
   )

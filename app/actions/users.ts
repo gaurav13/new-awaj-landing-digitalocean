@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
 import { user as userTable } from "@/lib/db/schema"
-import { asc } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 import { getSessionUser, requireSuperAdmin } from "@/lib/admin-helpers"
@@ -80,6 +80,31 @@ export async function createAdminUser(input: CreateUserInput) {
     return { ok: true as const }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create user"
+    return { ok: false as const, error: message }
+  }
+}
+
+export async function updateAdminUser(userId: string, input: { name: string; email: string }) {
+  await requireSuperAdmin()
+  const name = input.name.trim()
+  const email = input.email.trim().toLowerCase()
+  if (!name || !email) {
+    return { ok: false as const, error: "Name and email are required." }
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false as const, error: "Please enter a valid email address." }
+  }
+  try {
+    // Ensure the email isn't already taken by a different account.
+    const existing = await db.select({ id: userTable.id }).from(userTable).where(eq(userTable.email, email))
+    if (existing.some((row) => row.id !== userId)) {
+      return { ok: false as const, error: "That email is already in use by another account." }
+    }
+    await db.update(userTable).set({ name, email, updatedAt: new Date() }).where(eq(userTable.id, userId))
+    revalidatePath("/admin")
+    return { ok: true as const }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update user"
     return { ok: false as const, error: message }
   }
 }

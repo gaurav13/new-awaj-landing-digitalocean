@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Members | Asia Web3 & AI Alliance Japan",
   description:
     "Meet the corporate members, startups, program sponsors, and government partners of Asia Web3 & AI Alliance Japan.",
+  alternates: { canonical: "/members" },
 }
 
 type Member = Awaited<ReturnType<typeof getAllMembers>>[number]

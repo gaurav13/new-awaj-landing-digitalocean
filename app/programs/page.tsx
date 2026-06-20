@@ -20,6 +20,7 @@ import { getAllPrograms } from "@/app/actions/programs"
 export const metadata = {
   title: "Programs | Asia Web3 & AI Alliance Japan",
   description: "Explore the accelerator, innovation, and ecosystem programs offered by AWAJ.",
+  alternates: { canonical: "/programs" },
 }
 
 const ICONS: Record<string, LucideIcon> = {

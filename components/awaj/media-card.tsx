@@ -10,7 +10,7 @@ type MediaItem = {
   excerpt: string | null
 }
 
-export function MediaCard({ item }: { item: MediaItem }) {
+export function MediaCard({ item, compact = false }: { item: MediaItem; compact?: boolean }) {
   const isVideo = /video|podcast|interview/i.test(item.type)
 
   const inner = (
@@ -24,34 +24,48 @@ export function MediaCard({ item }: { item: MediaItem }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-gold/40">
-            {isVideo ? <Play className="h-10 w-10" /> : <FileText className="h-10 w-10" />}
+            {isVideo ? <Play className={compact ? "h-8 w-8" : "h-10 w-10"} /> : <FileText className={compact ? "h-8 w-8" : "h-10 w-10"} />}
           </div>
         )}
-        <span className="absolute left-3 top-3 rounded-full bg-navy/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
+        <span className="absolute left-2.5 top-2.5 rounded-full bg-navy/85 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
           {item.type}
         </span>
         {isVideo && item.thumbnailUrl ? (
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-navy shadow-lg">
-              <Play className="h-5 w-5 translate-x-0.5 fill-current" />
+            <span className={`flex items-center justify-center rounded-full bg-white/90 text-navy shadow-lg ${compact ? "h-10 w-10" : "h-12 w-12"}`}>
+              <Play className={`translate-x-0.5 fill-current ${compact ? "h-4 w-4" : "h-5 w-5"}`} />
             </span>
           </span>
         ) : null}
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-5"}`}>
         {item.source ? (
-          <span className="text-xs font-semibold uppercase tracking-wide text-gold">{item.source}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-gold">{item.source}</span>
         ) : null}
-        <h3 className="mt-1.5 font-serif text-lg font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
+        <h3
+          className={`mt-1 font-serif font-bold leading-snug text-navy-text transition-colors group-hover:text-gold ${
+            compact ? "text-sm line-clamp-2" : "mt-1.5 text-lg"
+          }`}
+        >
           {item.title}
         </h3>
         {item.excerpt ? (
-          <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-navy-text/70">{item.excerpt}</p>
+          <p
+            className={`mt-2 flex-1 leading-relaxed text-navy-text/70 ${
+              compact ? "line-clamp-2 text-xs" : "line-clamp-3 text-sm"
+            }`}
+          >
+            {item.excerpt}
+          </p>
         ) : null}
         {item.url ? (
-          <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
+          <span
+            className={`mt-3 inline-flex items-center gap-1.5 font-semibold text-awaj-red ${
+              compact ? "text-xs" : "mt-4 text-sm"
+            }`}
+          >
             {isVideo ? "Watch" : "Read more"}
-            <ArrowUpRight className="h-4 w-4" />
+            <ArrowUpRight className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
           </span>
         ) : null}
       </div>

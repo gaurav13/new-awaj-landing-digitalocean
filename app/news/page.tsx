@@ -6,6 +6,7 @@ import { getAllNews } from "@/app/actions/news"
 export const metadata = {
   title: "News",
   description: "The latest news, partnerships, and program updates from Asia Web3 & AI Alliance Japan (AWAJ).",
+  alternates: { canonical: "/news" },
 }
 
 export default async function NewsPage() {
