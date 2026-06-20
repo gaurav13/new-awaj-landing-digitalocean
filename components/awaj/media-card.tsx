@@ -61,34 +61,40 @@ export function MediaCard({ item, compact = false }: { item: MediaItem; compact?
         ) : null}
 
         {/* Publisher logo chip — the media company is the hero of the card */}
-        <div
-          className={`absolute bottom-3 left-3 flex items-center gap-2 rounded-xl bg-white/95 shadow-md backdrop-blur ${
-            compact ? "px-2 py-1.5" : "px-3 py-2"
-          }`}
-        >
-          <span
-            className={`flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-beige/60 ${
-              compact ? "h-7 w-7" : "h-9 w-9"
+        {item.logoUrl ? (
+          <div
+            className={`absolute bottom-3 left-3 flex items-center rounded-xl bg-white/95 shadow-md backdrop-blur ${
+              compact ? "px-3 py-2" : "px-4 py-2.5"
             }`}
           >
-            {item.logoUrl ? (
-              <img
-                src={item.logoUrl || "/placeholder.svg"}
-                alt={`${publisher} logo`}
-                className="h-full w-full object-contain p-0.5"
-              />
-            ) : (
+            <img
+              src={item.logoUrl || "/placeholder.svg"}
+              alt={`${publisher} logo`}
+              className={`w-auto object-contain ${compact ? "h-6 max-w-[120px]" : "h-9 max-w-[180px]"}`}
+            />
+          </div>
+        ) : (
+          <div
+            className={`absolute bottom-3 left-3 flex items-center gap-2 rounded-xl bg-white/95 shadow-md backdrop-blur ${
+              compact ? "px-2.5 py-1.5" : "px-3 py-2"
+            }`}
+          >
+            <span
+              className={`flex shrink-0 items-center justify-center rounded-md bg-beige/60 ${
+                compact ? "h-7 w-7" : "h-9 w-9"
+              }`}
+            >
               <Newspaper className={compact ? "h-3.5 w-3.5 text-gold" : "h-4 w-4 text-gold"} />
-            )}
-          </span>
-          <span
-            className={`truncate font-bold uppercase tracking-wide text-navy-text ${
-              compact ? "max-w-[90px] text-[10px]" : "max-w-[150px] text-xs"
-            }`}
-          >
-            {publisher}
-          </span>
-        </div>
+            </span>
+            <span
+              className={`truncate font-bold uppercase tracking-wide text-navy-text ${
+                compact ? "max-w-[110px] text-[11px]" : "max-w-[170px] text-sm"
+              }`}
+            >
+              {publisher}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Header: short description + read more */}
