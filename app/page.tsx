@@ -3,7 +3,7 @@ import { Hero } from "@/components/awaj/hero"
 import { Stats } from "@/components/awaj/stats"
 import { GrowthJourney } from "@/components/awaj/growth-journey"
 import { Programs } from "@/components/awaj/programs"
-import { EventsNews } from "@/components/awaj/events-news"
+import { UpcomingEvents, LatestNews } from "@/components/awaj/events-news"
 import { Offerings } from "@/components/awaj/offerings"
 import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
@@ -24,8 +24,9 @@ export default async function Page() {
       <Stats />
       <GrowthJourney />
       <Programs />
-      <EventsNews />
+      <UpcomingEvents />
       <GallerySection />
+      <LatestNews />
       <Offerings />
       <Partners />
       <Pathways />
