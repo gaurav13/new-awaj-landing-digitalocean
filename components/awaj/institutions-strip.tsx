@@ -30,7 +30,7 @@ function PartnerLogo({ p }: { p: Partner }) {
  * the reference design (heading left, "View All Partners" right, single logo row).
  */
 export async function InstitutionsStrip({
-  title = "Speaker Support & Leading Institutions",
+  title = "EcoSystem Partners and",
 }: {
   title?: string
 }) {
