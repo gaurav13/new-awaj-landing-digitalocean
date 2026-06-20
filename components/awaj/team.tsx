@@ -1,66 +1,133 @@
-import { getAllTeam } from "@/app/actions/team"
+import Link from "next/link"
+import { ArrowRight, Users, Building2, Rocket, Globe, Calendar, Award, Briefcase, type LucideIcon } from "lucide-react"
+import { getHomepageLeaders } from "@/app/actions/people"
+import { getSiteSettings } from "@/app/actions/settings"
+import { LeadersSlider } from "@/components/awaj/leaders-slider"
+import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 
-function Linkedin({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
-    </svg>
-  )
+const STAT_ICONS: Record<string, LucideIcon> = {
+  Users,
+  Building2,
+  Rocket,
+  Globe,
+  Calendar,
+  Award,
+  Briefcase,
+}
+
+type Stat = { value: string; label: string; icon?: string }
+
+function parseStats(raw: string): Stat[] {
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
 }
 
 export async function Team() {
-  const members = await getAllTeam()
-  if (members.length === 0) return null
+  const [leaders, settings] = await Promise.all([getHomepageLeaders(14), getSiteSettings()])
+
+  const stats = parseStats(settings.leadershipStats)
 
   return (
-    <section id="team" className="border-t border-gold/15 bg-beige/40">
-      <div className="mx-auto max-w-[1280px] px-5 py-14 lg:px-10">
-        <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">Our People</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-navy-text md:text-4xl">
-            Meet the Team
-          </h2>
-          <div className="mx-auto mt-3 h-px w-20 bg-gold/60" />
+    <section id="team" className="bg-ivory">
+      {/* President hero */}
+      <div className="relative overflow-hidden bg-navy-text">
+        {settings.presidentBgUrl ? (
+          <img
+            src={settings.presidentBgUrl || "/placeholder.svg"}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-50"
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-gradient-to-r from-navy-text via-navy-text/85 to-navy-text/40" />
+
+        <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-end gap-8 px-5 pt-12 lg:grid-cols-[300px_1fr] lg:px-10 lg:pt-0">
+          {/* Portrait */}
+          <div className="relative mx-auto flex h-full w-full max-w-[300px] items-end justify-center lg:mx-0">
+            {settings.presidentPhotoUrl ? (
+              <img
+                src={settings.presidentPhotoUrl || "/placeholder.svg"}
+                alt={`Portrait of ${settings.presidentName}`}
+                className="h-auto w-full max-w-[300px] object-contain object-bottom drop-shadow-2xl"
+              />
+            ) : null}
+          </div>
+
+          {/* Copy */}
+          <div className="pb-12 lg:py-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+              {settings.presidentEyebrow}
+            </p>
+            <h2 className="mt-4 font-serif text-4xl font-bold leading-none tracking-tight text-white md:text-6xl">
+              {settings.presidentName}
+            </h2>
+            <p className="mt-3 text-lg font-medium text-white/85 md:text-xl">{settings.presidentTitle}</p>
+            <div className="mt-5 h-0.5 w-16 bg-gold" />
+            <p className="mt-5 max-w-xl text-pretty text-sm leading-relaxed text-white/75 md:text-base">
+              {settings.presidentBio}
+            </p>
+            {settings.presidentCtaLabel ? (
+              <Link
+                href={settings.presidentCtaUrl || "/team"}
+                className="mt-7 inline-flex items-center gap-2 rounded-lg bg-gold px-6 py-3 text-sm font-semibold text-navy-text shadow-lg transition hover:bg-gold/90"
+              >
+                {settings.presidentCtaLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : null}
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-          {members.map((m) => (
-            <article
-              key={m.id}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white text-center shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="aspect-square w-full overflow-hidden bg-beige">
-                {m.imageUrl ? (
-                  <img
-                    src={m.imageUrl || "/placeholder.svg"}
-                    alt={`Portrait of ${m.name}`}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center font-serif text-3xl font-bold text-gold/40">
-                    {m.name.charAt(0)}
+        {/* Stats bar */}
+        {stats.length > 0 ? (
+          <div className="relative mx-auto -mb-px max-w-[1280px] px-5 pb-8 lg:px-10">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6 rounded-2xl border border-white/10 bg-navy-text/60 p-6 backdrop-blur sm:grid-cols-3 lg:grid-cols-5">
+              {stats.map((s, i) => {
+                const Icon = (s.icon && STAT_ICONS[s.icon]) || Users
+                return (
+                  <div key={i} className="flex items-center gap-3">
+                    <Icon className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.5} />
+                    <div className="min-w-0">
+                      <div className="font-serif text-2xl font-bold leading-none text-white">{s.value}</div>
+                      <div className="mt-1 text-xs leading-tight text-white/70">{s.label}</div>
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="flex flex-1 flex-col p-4">
-                <h3 className="font-serif text-base font-bold leading-snug text-navy-text">{m.name}</h3>
-                <p className="mt-1 text-xs font-medium uppercase tracking-wide text-gold">{m.role}</p>
-                {m.company && <p className="mt-0.5 text-xs font-medium text-navy-text/70">{m.company}</p>}
-                {m.bio && <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-navy-text/65">{m.bio}</p>}
-                {m.linkedinUrl && (
-                  <a
-                    href={m.linkedinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-navy-text/70 transition-colors hover:text-gold"
-                  >
-                    <Linkedin className="h-3.5 w-3.5" />
-                    LinkedIn
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
+                )
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Ecosystem leaders slider */}
+      {leaders.length > 0 ? (
+        <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <h3 className="text-balance font-serif text-2xl font-bold tracking-tight text-navy-text md:text-4xl">
+              {settings.leadershipSectionTitle}
+            </h3>
+            {settings.leadershipViewAllLabel ? (
+              <Link
+                href={settings.leadershipViewAllUrl || "/team"}
+                className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-gold transition hover:text-gold/80"
+              >
+                {settings.leadershipViewAllLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : null}
+          </div>
+
+          <LeadersSlider leaders={leaders} />
+        </div>
+      ) : null}
+
+      {/* Speaker support & leading institutions strip */}
+      <div className="border-t border-gold/15">
+        <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+          <InstitutionsStrip />
         </div>
       </div>
     </section>

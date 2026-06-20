@@ -249,6 +249,62 @@ export const membershipPlans = pgTable("membership_plans", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const people = pgTable("people", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  profilePhoto: text("profile_photo"),
+  jobTitle: text("job_title"),
+  companyName: text("company_name"),
+  companyLogo: text("company_logo"),
+  linkedinUrl: text("linkedin_url"),
+  email: text("email"),
+  country: text("country"),
+  bio: text("bio"),
+  roleTypes: jsonb("role_types").$type<string[]>().notNull().default([]),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  featured: boolean("featured").notNull().default(false),
+  status: text("status").notNull().default("published"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  showOnHomepage: boolean("show_on_homepage").notNull().default(false),
+  showCompanyLogo: boolean("show_company_logo").notNull().default(true),
+  showLinkedin: boolean("show_linkedin").notNull().default(true),
+  showRoleBadge: boolean("show_role_badge").notNull().default(false),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+
+export const eventsPeople = pgTable("events_people", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(),
+  personId: integer("person_id").notNull(),
+  roleAtEvent: text("role_at_event"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const programsPeople = pgTable("programs_people", {
+  id: serial("id").primaryKey(),
+  programId: integer("program_id").notNull(),
+  personId: integer("person_id").notNull(),
+  roleAtProgram: text("role_at_program"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const PEOPLE_ROLE_TYPES = [
+  "Leadership",
+  "Advisor",
+  "Speaker",
+  "Mentor",
+  "Investor",
+  "Ecosystem Partner",
+  "Government",
+  "Startup Founder",
+  "Team",
+] as const
+export type PeopleRoleType = (typeof PEOPLE_ROLE_TYPES)[number]
+
 export const siteSettings = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value"),

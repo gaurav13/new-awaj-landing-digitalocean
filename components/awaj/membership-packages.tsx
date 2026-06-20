@@ -179,7 +179,7 @@ export function MembershipPackages({
       </section>
 
       {/* Partner logos — auto-sliding, synced with the editable Partners section */}
-      <PartnersMarquee />
+      <PartnersMarquee embedded />
 
       {/* Plan cards */}
       <section className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">

@@ -25,6 +25,9 @@ export type FieldType =
   | "richtext"
   | "repeater"
   | "gallery"
+  | "people"
+
+export type PeopleOption = { id: number; name: string; subtitle?: string }
 
 export type RepeaterSubField = {
   name: string
@@ -67,6 +70,7 @@ type Props<T extends { id: number }> = {
   onCreate: (data: any) => Promise<void>
   onUpdate: (id: number, data: any) => Promise<void>
   onDelete: (id: number) => Promise<void>
+  peopleOptions?: PeopleOption[]
 }
 
 export function ResourceManager<T extends { id: number }>({
@@ -80,6 +84,7 @@ export function ResourceManager<T extends { id: number }>({
   onCreate,
   onUpdate,
   onDelete,
+  peopleOptions = [],
 }: Props<T>) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -298,6 +303,17 @@ export function ResourceManager<T extends { id: number }>({
                     />
                   )
                 }
+                if (f.type === "people") {
+                  return (
+                    <PeopleSelectField
+                      key={f.name}
+                      field={f}
+                      options={peopleOptions}
+                      value={Array.isArray(form[f.name]) ? (form[f.name] as number[]) : []}
+                      onChange={(ids) => setForm({ ...form, [f.name]: ids })}
+                    />
+                  )
+                }
                 if (f.type === "image") {
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
@@ -490,6 +506,71 @@ function RepeaterField({
         <Plus className="mr-1.5 h-4 w-4" />
         {field.addLabel ?? "Add item"}
       </Button>
+    </div>
+  )
+}
+
+function PeopleSelectField({
+  field,
+  options,
+  value,
+  onChange,
+}: {
+  field: FieldDef
+  options: PeopleOption[]
+  value: number[]
+  onChange: (ids: number[]) => void
+}) {
+  const [query, setQuery] = useState("")
+  const selected = new Set(value)
+  const filtered = options.filter(
+    (o) =>
+      !query.trim() ||
+      `${o.name} ${o.subtitle ?? ""}`.toLowerCase().includes(query.toLowerCase()),
+  )
+
+  function toggle(id: number) {
+    onChange(selected.has(id) ? value.filter((v) => v !== id) : [...value, id])
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-gold/25 bg-white/60 p-4">
+      <div className="flex items-center justify-between">
+        <Label>{field.label}</Label>
+        <span className="text-xs text-navy-text/50">
+          {value.length} selected
+        </span>
+      </div>
+      {field.hint ? <p className="-mt-1 text-xs text-navy-text/55">{field.hint}</p> : null}
+      {options.length === 0 ? (
+        <p className="text-xs text-navy-text/55">No people yet. Add people in the People tab first.</p>
+      ) : (
+        <>
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search people..." />
+          <div className="max-h-56 overflow-y-auto rounded-lg border border-gold/20 bg-white">
+            <ul className="divide-y divide-gold/10">
+              {filtered.map((o) => (
+                <li key={o.id}>
+                  <label className="flex cursor-pointer items-center gap-2.5 px-3 py-2 hover:bg-beige/40">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(o.id)}
+                      onChange={() => toggle(o.id)}
+                      className="h-4 w-4 rounded border-input accent-awaj-red"
+                    />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium text-navy-text">{o.name}</span>
+                      {o.subtitle ? (
+                        <span className="block truncate text-xs text-navy-text/55">{o.subtitle}</span>
+                      ) : null}
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   )
 }

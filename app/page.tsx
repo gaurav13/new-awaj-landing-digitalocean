@@ -3,11 +3,11 @@ import { Hero } from "@/components/awaj/hero"
 import { Stats } from "@/components/awaj/stats"
 import { GrowthJourney } from "@/components/awaj/growth-journey"
 import { Programs } from "@/components/awaj/programs"
-import { UpcomingEvents, LatestNews } from "@/components/awaj/events-news"
+import { EventsNews } from "@/components/awaj/events-news"
 import { Offerings } from "@/components/awaj/offerings"
 import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
-import { Partners } from "@/components/awaj/partners"
+import { PartnersMarquee } from "@/components/awaj/partners-marquee"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
@@ -23,14 +23,13 @@ export default async function Page() {
       <Hero bannerUrl={settings.heroBannerUrl} banners={banners} />
       <Stats />
       <GrowthJourney />
-      <Programs />
-      <UpcomingEvents />
-      <GallerySection />
-      <LatestNews />
-      <Offerings />
-      <Partners />
-      <Pathways />
       <Team />
+      <Programs />
+      <Pathways />
+      <Offerings />
+      <PartnersMarquee />
+      <EventsNews />
+      <GallerySection />
       <FeaturedMedia />
       <JoinCta />
       <SiteFooter />

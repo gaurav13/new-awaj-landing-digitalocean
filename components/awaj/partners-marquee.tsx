@@ -65,15 +65,21 @@ function Tier({ label, items, reverse }: { label: string; items: Partner[]; reve
   )
 }
 
-export async function PartnersMarquee() {
+export async function PartnersMarquee({ embedded = false }: { embedded?: boolean }) {
   const all = await getAllPartners()
   const institutions = all.filter((p) => p.tier === "institution")
   const strategic = all.filter((p) => p.tier !== "institution")
 
   if (all.length === 0) return null
 
+  // `embedded` is used when the marquee sits inside an already-padded container
+  // (e.g. the membership page). Standalone usage (homepage) gets its own section spacing.
+  const sectionClass = embedded
+    ? "mt-12"
+    : "mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16"
+
   return (
-    <section aria-label="Our partners" className="mt-12">
+    <section id="partners" aria-label="Our partners" className={sectionClass}>
       <div className="rounded-3xl border border-gold/25 bg-white px-4 py-12 shadow-sm md:px-10">
         <Tier label="Supported by Leading Institutions" items={institutions} />
         {institutions.length > 0 && strategic.length > 0 && (

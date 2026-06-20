@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 
 export function JoinCta() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-16 lg:px-10">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <div className="relative overflow-hidden rounded-3xl bg-navy">
         {/* Network backdrop */}
         <img
