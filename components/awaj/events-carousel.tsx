@@ -104,8 +104,8 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
                   <div className="flex flex-1 flex-col p-3.5">
                     <h3 className="font-serif text-sm font-bold leading-snug text-navy-text">{e.title}</h3>
                     {e.location && <p className="mt-1 text-[11px] font-semibold text-gold">{e.location}</p>}
-                    <p className="mt-1.5 line-clamp-2 flex-1 text-xs leading-relaxed text-navy-text/70">{e.excerpt}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-awaj-red">
+                    <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-navy-text/70">{e.excerpt}</p>
+                    <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-semibold text-awaj-red">
                       Learn More
                       <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                     </span>
