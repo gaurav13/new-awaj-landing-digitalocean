@@ -64,8 +64,8 @@ const DEFAULTS: SiteSettings = {
   presidentTitle: "Asia Web3 Alliance Japan",
   presidentBio:
     "AWAJ was created to help startups navigate Japan's ecosystem and build meaningful relationships across government, investors, corporations, universities, and international markets.",
-  presidentPhotoUrl: "",
-  presidentBgUrl: "/images/hero-tokyo.png",
+  presidentPhotoUrl: "/images/president-hinza.png",
+  presidentBgUrl: "/images/leadership-map-bg.png",
   presidentCtaLabel: "Meet Leadership Team",
   presidentCtaUrl: "/team",
   leadershipStats: JSON.stringify([

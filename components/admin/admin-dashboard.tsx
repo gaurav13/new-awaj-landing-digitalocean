@@ -882,6 +882,7 @@ export function AdminDashboard({
                 partners: [],
                 startups: [],
                 gallery: [],
+                peopleIds: [],
               }}
               toForm={(p) => ({
                 title: p.title,
@@ -895,6 +896,7 @@ export function AdminDashboard({
                 partners: p.partners ?? [],
                 startups: p.startups ?? [],
                 gallery: p.gallery ?? [],
+                peopleIds: p.peopleIds ?? [],
               })}
               render={{
                 image: (p) => p.imageUrl,
@@ -903,6 +905,7 @@ export function AdminDashboard({
                 title: (p) => p.title,
                 viewHref: (p) => `/programs/${p.slug}`,
               }}
+              peopleOptions={peopleOptions}
               onCreate={(d) => createProgram(d)}
               onUpdate={(id, d) => updateProgram(id, d)}
               onDelete={(id) => deleteProgram(id)}

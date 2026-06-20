@@ -3,8 +3,10 @@ import type { Metadata } from "next"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { ProgramDetail } from "@/components/awaj/program-detail"
+import { ConnectedPeople } from "@/components/awaj/connected-people"
 import { getProgramBySlug } from "@/app/actions/programs"
 import { getMediaByProgram } from "@/app/actions/media"
+import { getPeopleForProgram } from "@/app/actions/people"
 import { buildPageMetadata, getArticleSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
 
@@ -31,6 +33,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   if (!program) notFound()
 
   const media = await getMediaByProgram(program.id)
+  const programPeople = await getPeopleForProgram(program.id)
 
   const [programSchema, breadcrumbSchema] = await Promise.all([
     getArticleSchema({
@@ -51,6 +54,11 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <JsonLd data={[programSchema, breadcrumbSchema]} />
       <SiteHeader />
       <ProgramDetail program={program} media={media} />
+      <ConnectedPeople
+        people={programPeople}
+        title="Mentors & Leaders"
+        subtitle="People connected with this program."
+      />
       <SiteFooter />
     </main>
   )

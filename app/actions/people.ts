@@ -57,6 +57,42 @@ export async function getPublishedPeople(): Promise<Person[]> {
   )
 }
 
+export async function getPeopleForEvent(eventId: number): Promise<Person[]> {
+  return withDb(async () => {
+    const links = await db
+      .select()
+      .from(eventsPeople)
+      .where(eq(eventsPeople.eventId, eventId))
+      .orderBy(asc(eventsPeople.sortOrder))
+    const ids = links.map((l) => l.personId)
+    if (ids.length === 0) return []
+    const rows = await db
+      .select()
+      .from(people)
+      .where(and(inArray(people.id, ids), eq(people.status, "published")))
+    const order = new Map(ids.map((id, i) => [id, i]))
+    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+  }, [])
+}
+
+export async function getPeopleForProgram(programId: number): Promise<Person[]> {
+  return withDb(async () => {
+    const links = await db
+      .select()
+      .from(programsPeople)
+      .where(eq(programsPeople.programId, programId))
+      .orderBy(asc(programsPeople.sortOrder))
+    const ids = links.map((l) => l.personId)
+    if (ids.length === 0) return []
+    const rows = await db
+      .select()
+      .from(people)
+      .where(and(inArray(people.id, ids), eq(people.status, "published")))
+    const order = new Map(ids.map((id, i) => [id, i]))
+    return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+  }, [])
+}
+
 // ---- Admin reads ----
 
 export async function getMyPeople(): Promise<Person[]> {
@@ -69,7 +105,7 @@ export async function getPeopleCounts() {
   return withDb(
     async () => {
       const rows = await db.select().from(people)
-      const counts: Record<string, number> = { total: rows.length, published: 0, draft: 0, homepage: 0 }
+      const counts = { total: rows.length, published: 0, draft: 0, homepage: 0 }
       const byRole: Record<string, number> = {}
       for (const r of rows) {
         if (r.status === "published") counts.published++
