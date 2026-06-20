@@ -23,13 +23,13 @@ export default async function Page() {
       <Hero bannerUrl={settings.heroBannerUrl} banners={banners} />
       <Stats />
       <GrowthJourney />
+      <Team />
       <Programs />
-      <EventsNews />
-      <GallerySection />
+      <Pathways />
       <Offerings />
       <Partners />
-      <Pathways />
-      <Team />
+      <EventsNews />
+      <GallerySection />
       <FeaturedMedia />
       <JoinCta />
       <SiteFooter />

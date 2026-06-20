@@ -156,7 +156,7 @@ export function ProgramsCarousel({ programs }: { programs: CarouselProgram[] }) 
         {/* Track */}
         <div
           ref={trackRef}
-          className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {programs.map((p) => {
             const Icon = ICONS[p.icon] ?? Rocket
@@ -164,11 +164,11 @@ export function ProgramsCarousel({ programs }: { programs: CarouselProgram[] }) 
             return (
               <div
                 key={p.id}
-                className="flex shrink-0 basis-[85%] snap-start sm:basis-[45%] lg:basis-[31%] xl:basis-[22%]"
+                className="flex shrink-0 basis-[72%] snap-start sm:basis-[42%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.4%]"
               >
                 <Link
                   href={`/programs/${p.slug}`}
-                  className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm transition-shadow hover:shadow-lg"
+                  className="group flex h-full w-full flex-col overflow-hidden rounded-xl border border-gold/20 bg-white shadow-sm transition-shadow hover:shadow-lg"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-beige">
                     {cover ? (
@@ -179,25 +179,25 @@ export function ProgramsCarousel({ programs }: { programs: CarouselProgram[] }) 
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-gold/40">
-                        <Icon className="h-12 w-12" strokeWidth={1.25} />
+                        <Icon className="h-10 w-10" strokeWidth={1.25} />
                       </div>
                     )}
                   </div>
 
-                  <div className="flex flex-1 flex-col p-5">
+                  <div className="flex flex-1 flex-col p-3.5">
                     {p.regions ? (
-                      <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gold">
-                        <Globe2 className="h-3.5 w-3.5" />
+                      <span className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-gold">
+                        <Globe2 className="h-3 w-3" />
                         {p.regions}
                       </span>
                     ) : null}
-                    <h3 className="font-serif text-lg font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
+                    <h3 className="font-serif text-sm font-bold leading-snug text-navy-text transition-colors group-hover:text-gold">
                       {p.title}
                     </h3>
-                    <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-navy-text/70">{p.excerpt}</p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red">
+                    <p className="mt-1.5 line-clamp-3 flex-1 text-xs leading-relaxed text-navy-text/70">{p.excerpt}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-awaj-red">
                       Learn More
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </Link>

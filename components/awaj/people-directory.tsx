@@ -16,6 +16,8 @@ export function PeopleDirectory({ people }: { people: DirectoryPerson[] }) {
   const roles = useMemo(() => {
     const set = new Set<string>()
     for (const p of people) for (const r of p.roleTypes ?? []) set.add(r)
+    // "Ecosystem Partner" stays as a tag on cards but is not offered as a filter chip.
+    set.delete("Ecosystem Partner")
     return ["All", ...Array.from(set).sort()]
   }, [people])
 

@@ -5,7 +5,7 @@ export async function Programs() {
   const programs = await getAllPrograms()
   if (programs.length === 0) return null
 
-  const items: CarouselProgram[] = programs.map((p) => ({
+  const items: CarouselProgram[] = programs.slice(0, 10).map((p) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
