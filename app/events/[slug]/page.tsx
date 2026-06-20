@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { EventDetail } from "@/components/awaj/event-detail"
 import { getEventBySlug, getRelatedEvents } from "@/app/actions/events"
+import { getEventPeople } from "@/app/actions/people"
 import { dateParts } from "@/lib/format-date"
 import { buildPageMetadata, getEventSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
@@ -30,6 +31,24 @@ export default async function EventPage({ params }: Props) {
 
   const related = await getRelatedEvents(slug, 3)
 
+  // Render the speakers section from the connected People records (single source of truth),
+  // so any edit made in the People admin is reflected here. Falls back to the event's own
+  // free-text speakers for events that haven't been re-saved/synced yet.
+  const connected = await getEventPeople(event.id)
+  const connectedSpeakers = connected.map((p) => ({
+    name: p.fullName,
+    badge: p.roleAtContext || undefined,
+    role: p.jobTitle || undefined,
+    company: p.companyName || undefined,
+    companyLogoUrl: p.showCompanyLogo && p.companyLogo ? p.companyLogo : undefined,
+    imageUrl: p.profilePhoto || undefined,
+    linkUrl: p.showLinkedin && p.linkedinUrl ? p.linkedinUrl : undefined,
+  }))
+  const eventForDetail = {
+    ...event,
+    speakers: connectedSpeakers.length > 0 ? connectedSpeakers : event.speakers,
+  }
+
   const [eventSchema, breadcrumbSchema] = await Promise.all([
     getEventSchema({
       path: `/events/${slug}`,
@@ -51,7 +70,7 @@ export default async function EventPage({ params }: Props) {
       <JsonLd data={[eventSchema, breadcrumbSchema]} />
       <SiteHeader />
 
-      <EventDetail event={event} />
+      <EventDetail event={eventForDetail} />
 
       {related.length > 0 && (
         <section className="border-t border-gold/20 bg-white">

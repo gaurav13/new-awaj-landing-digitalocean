@@ -13,6 +13,7 @@ import {
 import { asc, desc, eq, ne, gte, lt } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
+import { syncEventSpeakerPeople } from "@/lib/people-sync"
 
 // ---- Public reads ----
 
@@ -124,15 +125,6 @@ type EventInput = {
   peopleIds?: number[]
 }
 
-async function syncEventPeople(eventId: number, peopleIds?: number[]) {
-  if (!Array.isArray(peopleIds)) return
-  await db.delete(eventsPeople).where(eq(eventsPeople.eventId, eventId))
-  const ids = peopleIds.map(Number).filter((n) => Number.isFinite(n))
-  if (ids.length > 0) {
-    await db.insert(eventsPeople).values(ids.map((personId, i) => ({ eventId, personId, sortOrder: i })))
-  }
-}
-
 function cleanSponsors(items?: EventSponsor[]): EventSponsor[] {
   if (!Array.isArray(items)) return []
   return items
@@ -197,6 +189,7 @@ async function uniqueSlug(base: string, excludeId?: number) {
 export async function createEvent(input: EventInput) {
   const userId = await getUserId()
   const slug = await uniqueSlug(slugify(input.title))
+  const speakers = cleanSpeakers(input.speakers)
   const [created] = await db
     .insert(events)
     .values({
@@ -218,19 +211,22 @@ export async function createEvent(input: EventInput) {
     highlights: cleanHighlights(input.highlights),
     agenda: cleanAgenda(input.agenda),
     sponsors: cleanSponsors(input.sponsors),
-    speakers: cleanSpeakers(input.speakers),
+    speakers,
     isFeatured: input.isFeatured ?? false,
     authorId: userId,
     })
     .returning({ id: events.id })
-  await syncEventPeople(created.id, input.peopleIds)
+  // Upsert speakers into the central People table + connect them (and any picked people).
+  await syncEventSpeakerPeople(created.id, speakers, input.peopleIds ?? [])
   revalidatePath("/")
   revalidatePath("/events")
+  revalidatePath("/team")
 }
 
 export async function updateEvent(id: number, input: EventInput) {
   await getUserId()
   const slug = await uniqueSlug(slugify(input.title), id)
+  const speakers = cleanSpeakers(input.speakers)
   await db
     .update(events)
     .set({
@@ -252,14 +248,16 @@ export async function updateEvent(id: number, input: EventInput) {
       highlights: cleanHighlights(input.highlights),
       agenda: cleanAgenda(input.agenda),
       sponsors: cleanSponsors(input.sponsors),
-      speakers: cleanSpeakers(input.speakers),
+      speakers,
       isFeatured: input.isFeatured ?? false,
     })
     .where(eq(events.id, id))
-  await syncEventPeople(id, input.peopleIds)
+  // Upsert speakers into the central People table + connect them (and any picked people).
+  await syncEventSpeakerPeople(id, speakers, input.peopleIds ?? [])
   revalidatePath("/")
   revalidatePath("/events")
   revalidatePath(`/events/${slug}`)
+  revalidatePath("/team")
 }
 
 export async function deleteEvent(id: number) {

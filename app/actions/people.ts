@@ -3,9 +3,10 @@
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
 import { people, eventsPeople, programsPeople, events, programs, teamMembers } from "@/lib/db/schema"
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
+import { findOrCreatePersonByName, renumberPeopleByPriority, syncEventSpeakerPeople } from "@/lib/people-sync"
 
 export type Person = typeof people.$inferSelect
 
@@ -39,7 +40,7 @@ export async function getHomepageLeaders(limit = 12): Promise<Person[]> {
         .select()
         .from(people)
         .where(and(eq(people.showOnHomepage, true), eq(people.status, "published")))
-        .orderBy(desc(people.featured), asc(people.sortOrder), asc(people.id))
+        .orderBy(asc(people.sortOrder), asc(people.id))
         .limit(limit),
     [],
   )
@@ -52,7 +53,7 @@ export async function getPublishedPeople(): Promise<Person[]> {
         .select()
         .from(people)
         .where(eq(people.status, "published"))
-        .orderBy(desc(people.featured), asc(people.sortOrder), asc(people.id)),
+        .orderBy(asc(people.sortOrder), asc(people.id)),
     [],
   )
 }
@@ -75,38 +76,27 @@ export type DirectoryPerson = {
   programs: PersonConnection[]
 }
 
-function normalizeName(name: string) {
-  return name.trim().toLowerCase()
-}
-
 function pushUnique(list: PersonConnection[], conn: PersonConnection) {
   if (!list.some((c) => c.id === conn.id)) list.push(conn)
 }
 
 /**
- * Unified people directory. Aggregates every "person" surface across the site:
- *  - the central `people` table (with their connected events/programs)
- *  - the legacy `team_members` table
- *  - free-text event `speakers` (so every event speaker is connected here too)
- * Entries are deduplicated by name and merged so each person shows all of their connections.
+ * Public people directory. The central `people` table is the single source of truth —
+ * team members and event speakers are synced into it (see lib/people-sync). Each person is
+ * returned with the events and programs they are connected to, ordered by the global
+ * sortOrder (Team → Government → Ecosystem/Investor → Startup Founder → rest).
  */
 export async function getPeopleDirectory(): Promise<DirectoryPerson[]> {
   return withDb(async () => {
-    const [peopleRows, teamRows, eventRows] = await Promise.all([
-      db
-        .select()
-        .from(people)
-        .where(eq(people.status, "published"))
-        .orderBy(desc(people.featured), asc(people.sortOrder), asc(people.id)),
-      db.select().from(teamMembers).orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id)),
-      db.select().from(events).orderBy(asc(events.eventDate)),
-    ])
+    const peopleRows = await db
+      .select()
+      .from(people)
+      .where(eq(people.status, "published"))
+      .orderBy(asc(people.sortOrder), asc(people.id))
+    if (peopleRows.length === 0) return []
 
-    const byName = new Map<string, DirectoryPerson>()
     const byPersonId = new Map<number, DirectoryPerson>()
-
-    // 1) Central people table
-    for (const p of peopleRows) {
+    const result: DirectoryPerson[] = peopleRows.map((p) => {
       const entry: DirectoryPerson = {
         id: `person-${p.id}`,
         fullName: p.fullName,
@@ -123,103 +113,35 @@ export async function getPeopleDirectory(): Promise<DirectoryPerson[]> {
         events: [],
         programs: [],
       }
-      byName.set(normalizeName(p.fullName), entry)
       byPersonId.set(p.id, entry)
-    }
-
-    // Connected events/programs (junction tables) → attach to people-table entries
-    const ids = peopleRows.map((r) => r.id)
-    if (ids.length > 0) {
-      const [eventLinks, programLinks] = await Promise.all([
-        db
-          .select({ personId: eventsPeople.personId, id: events.id, title: events.title, slug: events.slug })
-          .from(eventsPeople)
-          .innerJoin(events, eq(events.id, eventsPeople.eventId))
-          .where(inArray(eventsPeople.personId, ids))
-          .orderBy(asc(eventsPeople.sortOrder)),
-        db
-          .select({ personId: programsPeople.personId, id: programs.id, title: programs.title, slug: programs.slug })
-          .from(programsPeople)
-          .innerJoin(programs, eq(programs.id, programsPeople.programId))
-          .where(inArray(programsPeople.personId, ids))
-          .orderBy(asc(programsPeople.sortOrder)),
-      ])
-      for (const l of eventLinks) {
-        const entry = byPersonId.get(l.personId)
-        if (entry) pushUnique(entry.events, { id: l.id, title: l.title, slug: l.slug })
-      }
-      for (const l of programLinks) {
-        const entry = byPersonId.get(l.personId)
-        if (entry) pushUnique(entry.programs, { id: l.id, title: l.title, slug: l.slug })
-      }
-    }
-
-    // 2) Legacy team members
-    let order = peopleRows.length
-    for (const t of teamRows) {
-      const key = normalizeName(t.name)
-      if (byName.has(key)) continue
-      byName.set(key, {
-        id: `team-${t.id}`,
-        fullName: t.name,
-        profilePhoto: t.imageUrl,
-        jobTitle: t.role,
-        companyName: t.company,
-        companyLogo: null,
-        linkedinUrl: t.linkedinUrl,
-        showLinkedin: true,
-        showCompanyLogo: false,
-        roleTypes: ["Team"],
-        featured: false,
-        sortOrder: order++,
-        events: [],
-        programs: [],
-      })
-    }
-
-    // 3) Free-text event speakers → merge into matching person or create a new entry
-    for (const e of eventRows) {
-      for (const s of e.speakers ?? []) {
-        if (!s.name?.trim()) continue
-        const key = normalizeName(s.name)
-        let entry = byName.get(key)
-        if (!entry) {
-          entry = {
-            id: `speaker-${e.id}-${key}`,
-            fullName: s.name.trim(),
-            profilePhoto: s.imageUrl ?? null,
-            jobTitle: s.role ?? null,
-            companyName: s.company ?? null,
-            companyLogo: s.companyLogoUrl ?? null,
-            linkedinUrl: s.linkUrl ?? null,
-            showLinkedin: Boolean(s.linkUrl),
-            showCompanyLogo: Boolean(s.companyLogoUrl),
-            roleTypes: ["Speaker"],
-            featured: false,
-            sortOrder: order++,
-            events: [],
-            programs: [],
-          }
-          byName.set(key, entry)
-        } else {
-          // fill in any gaps from the speaker record
-          if (!entry.profilePhoto && s.imageUrl) entry.profilePhoto = s.imageUrl
-          if (!entry.jobTitle && s.role) entry.jobTitle = s.role
-          if (!entry.companyName && s.company) entry.companyName = s.company
-          if (!entry.companyLogo && s.companyLogoUrl) {
-            entry.companyLogo = s.companyLogoUrl
-            entry.showCompanyLogo = true
-          }
-          if (!entry.roleTypes.includes("Speaker")) entry.roleTypes.push("Speaker")
-        }
-        pushUnique(entry.events, { id: e.id, title: e.title, slug: e.slug })
-      }
-    }
-
-    return Array.from(byName.values()).sort((a, b) => {
-      if (a.featured !== b.featured) return a.featured ? -1 : 1
-      return a.sortOrder - b.sortOrder
+      return entry
     })
+
+    const ids = peopleRows.map((r) => r.id)
+    const [eventLinks, programLinks] = await Promise.all([
+      db
+        .select({ personId: eventsPeople.personId, id: events.id, title: events.title, slug: events.slug })
+        .from(eventsPeople)
+        .innerJoin(events, eq(events.id, eventsPeople.eventId))
+        .where(inArray(eventsPeople.personId, ids))
+        .orderBy(asc(eventsPeople.sortOrder)),
+      db
+        .select({ personId: programsPeople.personId, id: programs.id, title: programs.title, slug: programs.slug })
+        .from(programsPeople)
+        .innerJoin(programs, eq(programs.id, programsPeople.programId))
+        .where(inArray(programsPeople.personId, ids))
+        .orderBy(asc(programsPeople.sortOrder)),
+    ])
+    for (const l of eventLinks) {
+      const entry = byPersonId.get(l.personId)
+      if (entry) pushUnique(entry.events, { id: l.id, title: l.title, slug: l.slug })
+    }
+    for (const l of programLinks) {
+      const entry = byPersonId.get(l.personId)
+      if (entry) pushUnique(entry.programs, { id: l.id, title: l.title, slug: l.slug })
+    }
+
+    return result
   }, [])
 }
 
@@ -261,153 +183,54 @@ export async function getPeopleForProgram(programId: number): Promise<Person[]> 
 
 // ---- Import & ordering ----
 
-const ROLE_KEYWORDS: { role: string; re: RegExp }[] = [
-  {
-    role: "Government",
-    re: /(govern|ministr|jetro|meti|embassy|public sector|prefectur|city of|municipal|minister|diplomat|ambassador|senator|parliament)/i,
-  },
-  { role: "Investor", re: /(invest|capital|ventures?|\bvc\b|\bfund\b|angel|\blp\b|\bgp\b)/i },
-  { role: "Startup Founder", re: /(founder|co-?founder|\bceo\b|\bcto\b|startup)/i },
-  { role: "Advisor", re: /(advisor|advisory|board member)/i },
-  { role: "Mentor", re: /mentor/i },
-]
-
-function detectRoles(...parts: (string | null | undefined)[]): string[] {
-  const text = parts.filter(Boolean).join(" ")
-  const roles: string[] = []
-  for (const { role, re } of ROLE_KEYWORDS) if (re.test(text)) roles.push(role)
-  roles.push("Speaker")
-  return Array.from(new Set(roles))
-}
-
-// Ordering priority: team first, then government, then everyone else.
-function rolePriority(roles: string[]): number {
-  if (roles.includes("Team") || roles.includes("Leadership")) return 0
-  if (roles.includes("Government")) return 1
-  return 2
-}
-
 /**
- * One-time (idempotent) import that pulls every legacy "person" surface into the central
- * `people` table: team members and free-text event speakers. People are deduplicated by
- * name, event connections are created in the junction table, and the whole table is
- * renumbered so the default order is Team → Government → everyone else.
+ * Idempotent import that pulls every legacy "person" surface into the central `people`
+ * table: team members and free-text event speakers. People are deduplicated by name (via
+ * findOrCreatePersonByName), event connections are (re)built, and the whole table is
+ * renumbered to the global order (Team → Government → Ecosystem/Investor → Startup → rest).
  */
 export async function importPeopleFromSources() {
-  const userId = await getUserId()
-  const [existing, teamRows, eventRows] = await Promise.all([
-    db.select().from(people),
+  await getUserId()
+  const before = await db.select({ id: people.id }).from(people)
+  const beforeCount = before.length
+
+  const [teamRows, eventRows] = await Promise.all([
     db.select().from(teamMembers).orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id)),
     db.select().from(events).orderBy(asc(events.eventDate)),
   ])
 
-  const byName = new Map<string, { id: number }>()
-  for (const p of existing) byName.set(normalizeName(p.fullName), { id: p.id })
-
-  let imported = 0
-
-  // 1) Team members → people (roleType "Team")
+  // 1) Team members → people (explicit "Team" role)
   for (const t of teamRows) {
-    const key = normalizeName(t.name)
-    if (byName.has(key)) continue
-    const [row] = await db
-      .insert(people)
-      .values({
-        fullName: t.name,
-        profilePhoto: t.imageUrl || null,
-        jobTitle: t.role || null,
-        companyName: t.company || null,
-        companyLogo: null,
-        linkedinUrl: t.linkedinUrl || null,
-        email: null,
-        country: null,
-        bio: t.bio || null,
-        roleTypes: ["Team"],
-        tags: [],
-        featured: false,
-        status: "published",
-        sortOrder: 0,
-        showOnHomepage: false,
-        showCompanyLogo: false,
-        showLinkedin: true,
-        showRoleBadge: true,
-        authorId: userId,
-      })
-      .returning({ id: people.id })
-    byName.set(key, { id: row.id })
-    imported++
+    if (!t.name?.trim()) continue
+    await findOrCreatePersonByName({
+      fullName: t.name,
+      jobTitle: t.role,
+      companyName: t.company,
+      profilePhoto: t.imageUrl,
+      linkedinUrl: t.linkedinUrl,
+      roleTypes: ["Team"],
+    })
   }
 
-  // 2) Free-text event speakers → people + event connection (deduped by name)
+  // 2) Event speakers → people + rebuilt event connections (preserves any picked people)
   for (const e of eventRows) {
-    for (const s of e.speakers ?? []) {
-      if (!s.name?.trim()) continue
-      const key = normalizeName(s.name)
-      let person = byName.get(key)
-      if (!person) {
-        const [row] = await db
-          .insert(people)
-          .values({
-            fullName: s.name.trim(),
-            profilePhoto: s.imageUrl || null,
-            jobTitle: s.role || null,
-            companyName: s.company || null,
-            companyLogo: s.companyLogoUrl || null,
-            linkedinUrl: s.linkUrl || null,
-            email: null,
-            country: null,
-            bio: null,
-            roleTypes: detectRoles(s.role, s.badge, s.company),
-            tags: [],
-            featured: false,
-            status: "published",
-            sortOrder: 0,
-            showOnHomepage: false,
-            showCompanyLogo: Boolean(s.companyLogoUrl),
-            showLinkedin: Boolean(s.linkUrl),
-            showRoleBadge: true,
-            authorId: userId,
-          })
-          .returning({ id: people.id })
-        person = { id: row.id }
-        byName.set(key, person)
-        imported++
-      }
-      // ensure a single junction per (event, person)
-      const link = await db
-        .select({ id: eventsPeople.id })
-        .from(eventsPeople)
-        .where(and(eq(eventsPeople.eventId, e.id), eq(eventsPeople.personId, person.id)))
-      if (link.length === 0) {
-        await db.insert(eventsPeople).values({
-          eventId: e.id,
-          personId: person.id,
-          roleAtEvent: s.role || s.badge || null,
-          sortOrder: 0,
-        })
-      }
-    }
+    const existingLinks = await db
+      .select({ personId: eventsPeople.personId })
+      .from(eventsPeople)
+      .where(eq(eventsPeople.eventId, e.id))
+    await syncEventSpeakerPeople(
+      e.id,
+      e.speakers ?? [],
+      existingLinks.map((l) => l.personId),
+    )
   }
 
-  // 3) Renumber sortOrder globally: Team → Government → rest (preserving existing order within groups)
-  const all = await db.select().from(people)
-  const sorted = all.sort((a, b) => {
-    const pa = rolePriority(a.roleTypes ?? [])
-    const pb = rolePriority(b.roleTypes ?? [])
-    if (pa !== pb) return pa - pb
-    if (a.featured !== b.featured) return a.featured ? -1 : 1
-    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder
-    return a.id - b.id
-  })
-  for (let i = 0; i < sorted.length; i++) {
-    if (sorted[i].sortOrder !== i) {
-      await db.update(people).set({ sortOrder: i }).where(eq(people.id, sorted[i].id))
-    }
-  }
+  await renumberPeopleByPriority()
+  const total = (await db.select({ id: people.id }).from(people)).length
 
   revalidatePath("/")
   revalidatePath("/team")
-  return { imported, total: sorted.length }
+  return { imported: total - beforeCount, total }
 }
 
 /** Move a person up or down one position in the global ordering. */

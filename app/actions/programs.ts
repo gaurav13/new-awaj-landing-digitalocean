@@ -129,6 +129,7 @@ export async function createProgram(input: ProgramInput) {
   await syncProgramPeople(created.id, input.peopleIds)
   revalidatePath("/")
   revalidatePath("/programs")
+  revalidatePath("/team")
 }
 
 export async function updateProgram(id: number, input: ProgramInput) {
@@ -155,6 +156,7 @@ export async function updateProgram(id: number, input: ProgramInput) {
   revalidatePath("/")
   revalidatePath("/programs")
   revalidatePath(`/programs/${slug}`)
+  revalidatePath("/team")
 }
 
 export async function deleteProgram(id: number) {
