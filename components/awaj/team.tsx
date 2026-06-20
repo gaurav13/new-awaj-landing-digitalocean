@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { ArrowRight, Users, Building2, Rocket, Globe, Calendar, Award, Briefcase, type LucideIcon } from "lucide-react"
 import { getHomepageLeaders } from "@/app/actions/people"
-import { getAllPartners } from "@/app/actions/partners"
 import { getSiteSettings } from "@/app/actions/settings"
 import { LeadersSlider } from "@/components/awaj/leaders-slider"
+import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 
 const STAT_ICONS: Record<string, LucideIcon> = {
   Users,
@@ -27,14 +27,9 @@ function parseStats(raw: string): Stat[] {
 }
 
 export async function Team() {
-  const [leaders, partners, settings] = await Promise.all([
-    getHomepageLeaders(14),
-    getAllPartners(),
-    getSiteSettings(),
-  ])
+  const [leaders, settings] = await Promise.all([getHomepageLeaders(14), getSiteSettings()])
 
   const stats = parseStats(settings.leadershipStats)
-  const logoPartners = partners.filter((p) => p.logoUrl)
 
   return (
     <section id="team" className="bg-ivory">
@@ -129,28 +124,12 @@ export async function Team() {
         </div>
       ) : null}
 
-      {/* Partner logos strip */}
-      {logoPartners.length > 0 ? (
-        <div className="border-t border-gold/15">
-          <div className="mx-auto flex max-w-[1280px] flex-col items-center gap-6 px-5 py-8 lg:flex-row lg:gap-10 lg:px-10">
-            <p className="shrink-0 text-xs font-semibold uppercase leading-tight tracking-[0.2em] text-navy-text/60">
-              Our Ecosystem
-              <br className="hidden lg:block" /> Partners
-            </p>
-            <div className="flex flex-1 flex-wrap items-center justify-center gap-x-8 gap-y-5 lg:justify-start">
-              {logoPartners.slice(0, 9).map((p) => (
-                <img
-                  key={p.id}
-                  src={p.logoUrl || "/placeholder.svg"}
-                  alt={`${p.name} logo`}
-                  className="max-h-7 w-auto max-w-[120px] object-contain opacity-80 transition hover:opacity-100"
-                />
-              ))}
-              <span className="text-xs font-semibold uppercase tracking-wide text-navy-text/50">And more</span>
-            </div>
-          </div>
+      {/* Speaker support & leading institutions strip */}
+      <div className="border-t border-gold/15">
+        <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
+          <InstitutionsStrip />
         </div>
-      ) : null}
+      </div>
     </section>
   )
 }
