@@ -15,8 +15,12 @@ export default async function EventsPage() {
   const events = await getAllEvents()
   const today = new Date()
   today.setUTCHours(0, 0, 0, 0)
+  // Upcoming: soonest first (getAllEvents already returns ascending by date).
   const upcoming = events.filter((e) => new Date(e.eventDate) >= today)
-  const past = events.filter((e) => new Date(e.eventDate) < today)
+  // Past: most recent first.
+  const past = events
+    .filter((e) => new Date(e.eventDate) < today)
+    .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
   const [featured, ...restUpcoming] = upcoming
 
   return (

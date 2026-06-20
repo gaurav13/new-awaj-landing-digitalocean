@@ -9,7 +9,7 @@ import {
   type EventHighlight,
   type EventAgendaItem,
 } from "@/lib/db/schema"
-import { asc, eq, ne } from "drizzle-orm"
+import { asc, eq, ne, gte } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
 
@@ -20,7 +20,18 @@ export async function getAllEvents() {
 }
 
 export async function getUpcomingEvents(limit = 4) {
-  return withDb(() => db.select().from(events).orderBy(asc(events.eventDate)).limit(limit), [])
+  // Only events happening today or in the future, soonest first.
+  const today = new Date().toISOString().slice(0, 10)
+  return withDb(
+    () =>
+      db
+        .select()
+        .from(events)
+        .where(gte(events.eventDate, today))
+        .orderBy(asc(events.eventDate))
+        .limit(limit),
+    [],
+  )
 }
 
 export async function getFeaturedEvent() {
