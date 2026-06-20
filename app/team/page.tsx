@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { PeopleDirectory } from "@/components/awaj/people-directory"
+import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 import { getPeopleDirectory } from "@/app/actions/people"
 import { getSiteSettings } from "@/app/actions/settings"
 
@@ -35,6 +36,7 @@ export default async function TeamPage() {
 
       <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
         <PeopleDirectory people={people} />
+        <InstitutionsStrip />
       </div>
 
       <SiteFooter />
