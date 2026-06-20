@@ -2,73 +2,154 @@ import {
   Globe,
   Handshake,
   Landmark,
-  LifeBuoy,
+  Network,
+  Building2,
   Target,
+  FileText,
+  TrendingUp,
   Lightbulb,
-  ClipboardCheck,
-  CircleDollarSign,
+  Users,
   BarChart3,
-  Flag,
   ArrowRight,
   type LucideIcon,
 } from "lucide-react"
 
-const VALUE_PROPS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Globe, title: "Gateway to Asia-Pacific", desc: "Connect to 4B+ consumers" },
-  { icon: Handshake, title: "Strong Network of Investors", desc: "Access to global capital" },
-  { icon: Landmark, title: "Trusted by Institutions", desc: "Supported by government, corporations & universities" },
-  { icon: LifeBuoy, title: "End-to-End Growth Support", desc: "From idea to IPO and beyond" },
-  { icon: Target, title: "Global Impact", desc: "Real opportunities, real outcomes" },
+const FEATURES: { icon: LucideIcon; title: string; desc: string }[] = [
+  {
+    icon: Handshake,
+    title: "Neutral & Independent",
+    desc: "AWAJ is a neutral platform that connects startups with the right opportunities without bias.",
+  },
+  {
+    icon: Landmark,
+    title: "Government Supported",
+    desc: "Supported by key government institutions and public organizations to drive innovation and economic growth.",
+  },
+  {
+    icon: Network,
+    title: "Deep & Real Network",
+    desc: "Strong relationships with top-tier investors, corporations, government bodies, and ecosystem partners.",
+  },
+  {
+    icon: Building2,
+    title: "Corporate Collaboration",
+    desc: "Strategic partnerships with leading enterprises for pilots, PoCs, and go-to-market opportunities.",
+  },
+  {
+    icon: Target,
+    title: "Execution-Focused",
+    desc: "We don't just connect—we support startups through execution, expansion, and long-term success.",
+  },
+  {
+    icon: Globe,
+    title: "Global Impact",
+    desc: "Helping startups from around the world scale into high-growth markets across Asia-Pacific and beyond.",
+  },
 ]
 
-const STEPS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Lightbulb, title: "Ideate", desc: "Validate your idea and market" },
-  { icon: ClipboardCheck, title: "Build & Validate", desc: "Refine your model with mentors and experts" },
-  { icon: CircleDollarSign, title: "Fund", desc: "Access investors and secure capital" },
-  { icon: BarChart3, title: "Scale", desc: "Grow your business in Japan and APAC" },
-  { icon: Globe, title: "Expand", desc: "Enter new markets and build partnerships" },
-  { icon: Flag, title: "IPO & Beyond", desc: "Achieve long-term value and global impact" },
+const STATS: { highlight: string; line1: string; line2: string }[] = [
+  { highlight: "25+", line1: "Countries", line2: "Across APAC" },
+  { highlight: "Strategic", line1: "Global", line2: "Partnerships" },
+  { highlight: "Cross-Border", line1: "Investor", line2: "Network" },
+  { highlight: "Diverse", line1: "Industry", line2: "Ecosystem" },
+]
+
+const STEPS: { icon: LucideIcon; num: string; title: string; desc: string }[] = [
+  { icon: FileText, num: "01", title: "Foundation", desc: "Build strong fundamentals and scalable business model" },
+  { icon: TrendingUp, num: "02", title: "Growth", desc: "Achieve product-market fit and accelerate revenue" },
+  { icon: Lightbulb, num: "03", title: "Expansion", desc: "Scale operations and enter new high-potential markets" },
+  { icon: Users, num: "04", title: "Maturity", desc: "Strengthen governance, financials and organizational structure" },
+  { icon: Handshake, num: "05", title: "IPO Readiness", desc: "Prepare for public markets with strategy, compliance and positioning" },
+  { icon: BarChart3, num: "06", title: "IPO & Value Creation", desc: "Go public and create long-term value for all stakeholders" },
 ]
 
 export function GrowthJourney() {
   return (
     <section className="mt-4">
-      {/* Top value-prop band */}
+      {/* Why leading organizations choose AWAJ — navy band */}
       <div className="bg-navy">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-gold/20 lg:px-10">
-          {VALUE_PROPS.map((v) => (
-            <div key={v.title} className="flex items-start gap-3 lg:px-5 lg:first:pl-0">
-              <v.icon className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.5} aria-hidden="true" />
-              <div>
-                <p className="font-serif text-sm font-bold leading-snug text-white">{v.title}</p>
-                <p className="mt-1 text-xs leading-relaxed text-white/60">{v.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Unique value + journey */}
-      <div className="mx-auto max-w-[1440px] px-5 py-16 lg:px-10 lg:py-20">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 px-5 py-16 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
           {/* Left intro */}
-          <div className="lg:col-span-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-awaj-red">Our Unique Value</p>
-            <h2 className="mt-3 text-balance font-serif text-3xl font-bold leading-tight tracking-tight text-navy-text md:text-4xl">
-              We Support Every Step of Your Growth Journey
+          <div className="lg:col-span-3">
+            <h2 className="text-balance font-serif text-3xl font-bold leading-tight tracking-tight text-white md:text-4xl">
+              Why Leading Organizations Choose <span className="text-awaj-red">AWAJ</span>
             </h2>
-            <p className="mt-5 max-w-md text-pretty leading-relaxed text-navy-text/70">
-              Startups don&apos;t just need funding. They need the right connections, resources, and ecosystem to grow
-              and succeed globally.
+            <div className="mt-5 h-0.5 w-12 bg-awaj-red" />
+            <p className="mt-6 text-pretty leading-relaxed text-white/65">
+              AWAJ is a neutral, trusted, and impact-driven platform. We bring together all key players in the
+              innovation ecosystem to create real value for startups and the economy.
             </p>
           </div>
 
-          {/* Right journey steps */}
-          <div className="lg:col-span-8">
-            <ol className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-2">
+          {/* Middle: feature grid */}
+          <div className="lg:col-span-5 lg:px-6">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2">
+              {FEATURES.map((f) => (
+                <div key={f.title} className="flex gap-4">
+                  <f.icon className="h-7 w-7 shrink-0 text-gold" strokeWidth={1.5} aria-hidden="true" />
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-white">{f.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-white/55">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: global reach + map + stats */}
+          <div className="lg:col-span-4">
+            <h3 className="font-serif text-2xl font-bold leading-tight text-white md:text-3xl">
+              Global Reach. Real Impact.
+            </h3>
+            <p className="mt-4 text-pretty leading-relaxed text-white/65">
+              AWAJ connects startups to opportunities across Asia-Pacific and the world.
+            </p>
+
+            <img
+              src="/awaj-world-map-dotted.png"
+              alt="Dotted world map highlighting AWAJ's reach across the Asia-Pacific region"
+              className="mt-6 w-full opacity-90 mix-blend-lighten"
+            />
+
+            <dl className="mt-6 grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-gold/20">
+              {STATS.map((s, i) => (
+                <div key={s.highlight} className={i > 0 ? "sm:pl-4" : "sm:pr-4"}>
+                  <dt
+                    className={`font-serif font-bold leading-none text-awaj-red ${
+                      i === 0 ? "text-3xl" : "text-base"
+                    }`}
+                  >
+                    {s.highlight}
+                  </dt>
+                  <dd className="mt-2 text-sm leading-snug text-white/75">
+                    {s.line1}
+                    <br />
+                    {s.line2}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      {/* Your path to IPO — light band */}
+      <div className="bg-ivory">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 px-5 py-16 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
+          {/* Left intro */}
+          <div className="lg:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-awaj-red">Your Path to IPO</p>
+            <h2 className="mt-3 text-balance font-serif text-3xl font-bold leading-tight tracking-tight text-navy-text md:text-4xl">
+              From Startup to Public Company
+            </h2>
+          </div>
+
+          {/* Right: steps */}
+          <div className="lg:col-span-9">
+            <ol className="grid grid-cols-1 gap-x-2 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
               {STEPS.map((s, i) => (
-                <li key={s.title} className="relative flex flex-col items-center text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/30 bg-beige/40">
+                <li key={s.num} className="relative flex flex-col items-center text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/30 bg-white">
                     <s.icon className="h-7 w-7 text-gold" strokeWidth={1.5} aria-hidden="true" />
                   </div>
                   {i < STEPS.length - 1 && (
@@ -77,8 +158,9 @@ export function GrowthJourney() {
                       aria-hidden="true"
                     />
                   )}
-                  <h3 className="mt-4 font-serif text-base font-bold text-navy-text">{s.title}</h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-navy-text/60">{s.desc}</p>
+                  <p className="mt-4 text-sm font-semibold text-gold">{s.num}</p>
+                  <h3 className="mt-1 font-serif text-base font-bold text-navy-text">{s.title}</h3>
+                  <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-navy-text/60">{s.desc}</p>
                 </li>
               ))}
             </ol>
