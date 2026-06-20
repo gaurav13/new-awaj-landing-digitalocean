@@ -7,7 +7,7 @@ import { EventsNews } from "@/components/awaj/events-news"
 import { Offerings } from "@/components/awaj/offerings"
 import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
-import { Partners } from "@/components/awaj/partners"
+import { PartnersMarquee } from "@/components/awaj/partners-marquee"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
@@ -27,7 +27,7 @@ export default async function Page() {
       <Programs />
       <Pathways />
       <Offerings />
-      <Partners />
+      <PartnersMarquee />
       <EventsNews />
       <GallerySection />
       <FeaturedMedia />
