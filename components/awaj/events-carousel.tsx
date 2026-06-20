@@ -83,7 +83,7 @@ export function EventsCarousel({ events }: { events: CarouselEvent[] }) {
                   href={`/events/${e.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-xl border border-gold/15 bg-white shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-beige">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-beige">
                     <img
                       src={cover || "/images/event-night.png"}
                       alt=""
