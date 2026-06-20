@@ -104,7 +104,7 @@ export async function Team() {
 
       {/* Ecosystem leaders slider */}
       {leaders.length > 0 ? (
-        <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
+        <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
           <div className="mb-8 flex items-end justify-between gap-4">
             <h3 className="text-balance font-serif text-2xl font-bold tracking-tight text-navy-text md:text-4xl">
               {settings.leadershipSectionTitle}
@@ -126,7 +126,7 @@ export async function Team() {
 
       {/* Speaker support & leading institutions strip */}
       <div className="border-t border-gold/15">
-        <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
+        <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
           <InstitutionsStrip />
         </div>
       </div>

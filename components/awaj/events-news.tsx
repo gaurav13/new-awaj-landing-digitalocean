@@ -8,7 +8,7 @@ export async function EventsNews() {
   const [events, news] = await Promise.all([getHomeEvents(10), getLatestNews(4)])
 
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <div className="overflow-hidden rounded-3xl border border-gold/15 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[1fr_340px] xl:gap-12">
         {/* Events column */}

@@ -49,7 +49,7 @@ export async function Partners() {
   if (all.length === 0) return null
 
   return (
-    <section id="partners" className="mx-auto max-w-[1280px] px-5 py-16 lg:px-10">
+    <section id="partners" className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <Link
         href="/members"
         className="group/card block rounded-3xl border border-gold/25 bg-white px-6 py-12 shadow-sm transition-shadow hover:shadow-md md:px-10"

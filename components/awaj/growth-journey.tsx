@@ -68,7 +68,7 @@ export function GrowthJourney() {
     <section className="mt-4">
       {/* Why leading organizations choose AWAJ — navy band */}
       <div className="bg-navy">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 px-5 py-16 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-5 py-12 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
           {/* Left intro */}
           <div className="lg:col-span-3">
             <h2 className="text-balance font-serif text-3xl font-bold leading-tight tracking-tight text-white md:text-4xl">
@@ -142,7 +142,7 @@ export function GrowthJourney() {
 
       {/* Your path to IPO — light band */}
       <div className="bg-ivory">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 px-5 py-16 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-5 py-12 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-20">
           {/* Left intro */}
           <div className="lg:col-span-3">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-awaj-red">Your Path to IPO</p>

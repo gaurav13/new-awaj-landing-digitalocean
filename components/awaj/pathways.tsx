@@ -91,8 +91,8 @@ const ACCENT: Record<
 
 export function Pathways() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-16 lg:px-10">
-      <div className="mb-10 text-center">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+      <div className="mb-8 text-center lg:mb-10">
         <h2 className="font-sans text-sm font-semibold uppercase tracking-[0.25em] text-navy-text">
           Three Pathways. One Ecosystem.
         </h2>

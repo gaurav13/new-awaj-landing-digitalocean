@@ -42,7 +42,7 @@ export async function InstitutionsStrip({
   const loop = [...ordered, ...ordered]
 
   return (
-    <section aria-label={title} className="mt-12">
+    <section aria-label={title}>
       <div className="mb-5 flex items-center justify-between gap-4">
         <h2 className="font-sans text-sm font-bold uppercase tracking-[0.18em] text-navy-text md:text-base">{title}</h2>
         <Link

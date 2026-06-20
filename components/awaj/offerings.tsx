@@ -22,8 +22,8 @@ const OFFERS: Offer[] = [
 
 export function Offerings() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-16 lg:px-10">
-      <div className="mb-12 text-center">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+      <div className="mb-8 text-center lg:mb-12">
         <h2 className="font-serif text-3xl font-bold tracking-tight text-navy-text md:text-4xl">
           What We Offer Startups
         </h2>
