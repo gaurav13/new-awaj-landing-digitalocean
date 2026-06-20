@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { MembershipPackages } from "@/components/awaj/membership-packages"
 import { JsonLd } from "@/components/seo/json-ld"
 import { getAllMembershipPlans } from "@/app/actions/membership"
+import { getMembershipContent } from "@/app/actions/membership-content"
 import { buildPageMetadata, getBreadcrumbSchema, resolveBaseUrl } from "@/lib/seo"
 import { getSiteSettings } from "@/app/actions/settings"
 
@@ -22,7 +23,11 @@ export async function generateMetadata() {
 }
 
 export default async function MembershipPage() {
-  const [plans, settings] = await Promise.all([getAllMembershipPlans(), getSiteSettings()])
+  const [plans, settings, membershipContent] = await Promise.all([
+    getAllMembershipPlans(),
+    getSiteSettings(),
+    getMembershipContent(),
+  ])
   const base = resolveBaseUrl(settings.canonicalBaseUrl)
 
   const breadcrumb = await getBreadcrumbSchema([
@@ -70,6 +75,7 @@ export default async function MembershipPage() {
             subtitle: settings.membershipSubtitle,
             heroUrl: settings.membershipHeroUrl,
           }}
+          content={membershipContent}
         />
       )}
 

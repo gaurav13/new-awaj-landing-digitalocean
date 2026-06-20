@@ -22,6 +22,8 @@ import {
   updateMembershipPlan,
   deleteMembershipPlan,
 } from "@/app/actions/membership"
+import { MembershipContentPanel } from "./membership-content-panel"
+import type { MembershipContent } from "@/lib/membership-content"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
@@ -474,6 +476,7 @@ export function AdminDashboard({
   partners,
   members,
   membershipPlans,
+  membershipContent,
   banners,
   messages,
   settings,
@@ -491,6 +494,7 @@ export function AdminDashboard({
   partners: Partner[]
   members: Member[]
   membershipPlans: MembershipPlan[]
+  membershipContent: MembershipContent
   banners: Banner[]
   messages: Message[]
   settings: SiteSettings
@@ -1012,6 +1016,10 @@ export function AdminDashboard({
               onCreate={(d) => createMembershipPlan(d)}
               onUpdate={(id, d) => updateMembershipPlan(id, d)}
               onDelete={(id) => deleteMembershipPlan(id)}
+            />
+            <MembershipContentPanel
+              content={membershipContent}
+              plans={membershipPlans.map((p) => ({ id: p.id, name: p.name }))}
             />
           </TabsContent>
 

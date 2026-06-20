@@ -16,7 +16,10 @@ import {
   BadgeCheck,
   CircleDollarSign,
   ShieldCheck,
+  Calendar,
+  CreditCard,
 } from "lucide-react"
+import type { MembershipContent } from "@/lib/membership-content"
 
 export type MembershipPlan = {
   id: number
@@ -52,9 +55,16 @@ const ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidt
   Award,
   Landmark,
   Star,
+  Handshake,
+  HeartHandshake,
+  BadgeCheck,
+  CircleDollarSign,
+  ShieldCheck,
+  Calendar,
+  CreditCard,
 }
 
-function PlanIcon({ name, className }: { name: string; className?: string }) {
+function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = ICONS[name] ?? Users
   return <Icon className={className} strokeWidth={1.5} aria-hidden="true" />
 }
@@ -109,38 +119,26 @@ const MINI_FEATURES = [
   { icon: Globe, title: "Contribute", desc: "Shape the future of Web3 together" },
 ]
 
-const INFO_BLOCKS = [
-  {
-    icon: CircleDollarSign,
-    title: "Pay When You Need",
-    desc: "All members (Supporter, Startup and Corporate) enjoy free membership and pay only for matching services, introductions or programs when you need them.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "One Year Membership",
-    desc: "All membership plans are valid for one year from the date of joining. Renew annually to continue enjoying member benefits.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Flexible & Transparent",
-    desc: "No hidden fees. You choose the services you need and pay only for the value you receive.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Trusted Network",
-    desc: "Join a trusted community of innovators, investors, enterprises and policymakers building the future of Web3 in Japan and Asia.",
-  },
-]
-
-export function MembershipPackages({ plans, header }: { plans: MembershipPlan[]; header: MembershipHeader }) {
-  // Build the comparison table from the union of all plan features (first-seen order).
-  const allFeatures: string[] = []
-  for (const plan of plans) {
-    for (const f of plan.features) {
-      if (!allFeatures.includes(f)) allFeatures.push(f)
-    }
+function ComparisonCell({ value, accent }: { value: string; accent: AccentStyle }) {
+  if (value === "yes") {
+    return <Check className={`mx-auto h-4 w-4 ${accent.check}`} strokeWidth={2.5} aria-label="Included" />
   }
-  const featureSets = plans.map((p) => new Set(p.features))
+  if (value === "no" || value === "" || value === "-" || value === "—") {
+    return <Minus className="mx-auto h-4 w-4 text-navy-text/25" aria-label="Not included" />
+  }
+  return <span className="text-xs font-medium text-navy-text/70">{value}</span>
+}
+
+export function MembershipPackages({
+  plans,
+  header,
+  content,
+}: {
+  plans: MembershipPlan[]
+  header: MembershipHeader
+  content: MembershipContent
+}) {
+  const { comparison, infoBlocks, cta } = content
 
   return (
     <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
@@ -199,7 +197,7 @@ export function MembershipPackages({ plans, header }: { plans: MembershipPlan[];
               ) : null}
 
               <div className={`flex h-14 w-14 items-center justify-center rounded-full ${accent.iconBg}`}>
-                <PlanIcon name={plan.icon} className={`h-7 w-7 ${accent.iconText}`} />
+                <DynamicIcon name={plan.icon} className={`h-7 w-7 ${accent.iconText}`} />
               </div>
 
               <h2 className={`mt-5 font-serif text-xl font-bold ${highlighted ? "text-white" : "text-navy-text"}`}>
@@ -259,8 +257,8 @@ export function MembershipPackages({ plans, header }: { plans: MembershipPlan[];
         })}
       </section>
 
-      {/* Comparison table */}
-      {allFeatures.length > 0 ? (
+      {/* Comparison table (admin-editable) */}
+      {comparison.length > 0 && plans.length > 0 ? (
         <section className="mt-16">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Membership Benefits Comparison</p>
           <div className="mt-4 overflow-x-auto rounded-2xl border border-navy/10 bg-white">
@@ -273,7 +271,7 @@ export function MembershipPackages({ plans, header }: { plans: MembershipPlan[];
                   {plans.map((p) => (
                     <th key={p.id} className="px-4 py-4 text-center">
                       <span className="flex flex-col items-center gap-1.5">
-                        <PlanIcon name={p.icon} className={`h-5 w-5 ${accentOf(p.accent).iconText}`} />
+                        <DynamicIcon name={p.icon} className={`h-5 w-5 ${accentOf(p.accent).iconText}`} />
                         <span className="text-xs font-semibold uppercase tracking-wide text-navy-text/80">
                           {p.name.replace(/\s*Member$/i, "")}
                         </span>
@@ -283,20 +281,12 @@ export function MembershipPackages({ plans, header }: { plans: MembershipPlan[];
                 </tr>
               </thead>
               <tbody>
-                {allFeatures.map((feature, i) => (
-                  <tr key={feature} className={i % 2 === 1 ? "bg-beige/20" : ""}>
-                    <td className="px-5 py-3 text-navy-text/80">{feature}</td>
+                {comparison.map((row, i) => (
+                  <tr key={`${row.label}-${i}`} className={i % 2 === 1 ? "bg-beige/20" : ""}>
+                    <td className="px-5 py-3 text-navy-text/80">{row.label}</td>
                     {plans.map((p, idx) => (
                       <td key={p.id} className="px-4 py-3 text-center">
-                        {featureSets[idx].has(feature) ? (
-                          <Check
-                            className={`mx-auto h-4 w-4 ${accentOf(p.accent).check}`}
-                            strokeWidth={2.5}
-                            aria-label="Included"
-                          />
-                        ) : (
-                          <Minus className="mx-auto h-4 w-4 text-navy-text/25" aria-label="Not included" />
-                        )}
+                        <ComparisonCell value={row.values[idx] ?? "no"} accent={accentOf(p.accent)} />
                       </td>
                     ))}
                   </tr>
@@ -307,39 +297,71 @@ export function MembershipPackages({ plans, header }: { plans: MembershipPlan[];
         </section>
       ) : null}
 
-      {/* Info blocks */}
-      <section className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-gold/20 bg-gold/15 sm:grid-cols-2 lg:grid-cols-4">
-        {INFO_BLOCKS.map((b) => (
-          <div key={b.title} className="flex flex-col gap-3 bg-beige/40 p-6">
-            <b.icon className="h-7 w-7 text-gold" strokeWidth={1.5} aria-hidden="true" />
-            <h3 className="font-serif text-sm font-bold uppercase tracking-wide text-navy-text">{b.title}</h3>
-            <p className="text-xs leading-relaxed text-navy-text/65">{b.desc}</p>
-          </div>
-        ))}
-      </section>
+      {/* Value highlights — dark premium band */}
+      {infoBlocks.length > 0 ? (
+        <section className="mt-14 overflow-hidden rounded-3xl border border-gold/30 bg-navy p-2 shadow-lg">
+          <div className="grid gap-px sm:grid-cols-2 lg:grid-cols-4">
+            {infoBlocks.map((b, i) => (
+              <div
+                key={`${b.title}-${i}`}
+                className="flex flex-col items-center px-6 py-9 text-center lg:[&:not(:last-child)]:border-r lg:[&:not(:last-child)]:border-gold/15"
+              >
+                {/* Glowing gold icon medallion */}
+                <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
+                  <span
+                    className="absolute inset-0 rounded-full border border-gold/40 bg-gradient-to-b from-gold/15 to-transparent"
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="absolute inset-2 rounded-full bg-navy shadow-[0_0_20px_rgba(212,175,55,0.35)] ring-1 ring-gold/30"
+                    aria-hidden="true"
+                  />
+                  <DynamicIcon name={b.icon} className="relative h-8 w-8 text-gold" />
+                </div>
 
-      {/* CTA banner */}
+                <h3 className="font-serif text-sm font-bold uppercase tracking-wide text-white">{b.title}</h3>
+                <span className="mt-2 h-px w-10 bg-gold" aria-hidden="true" />
+
+                <p className="mt-4 text-sm leading-relaxed text-white/65">{b.desc}</p>
+
+                {b.chipText ? (
+                  <span className="mt-6 inline-flex items-center gap-2 rounded-lg border border-gold/40 bg-gold/5 px-3 py-2 text-xs font-medium text-white/85">
+                    <DynamicIcon name={b.chipIcon} className="h-4 w-4 text-gold" />
+                    {b.chipText}
+                  </span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* CTA banner (admin-editable) */}
       <section className="mt-12">
         <div className="flex flex-col items-start gap-6 rounded-2xl bg-navy px-6 py-10 md:flex-row md:items-center md:justify-between md:px-12">
           <div>
-            <h2 className="font-serif text-2xl font-bold text-white md:text-3xl">Ready to be part of the future?</h2>
-            <p className="mt-2 text-white/70">Join Asia Web3 Alliance Japan today.</p>
+            <h2 className="font-serif text-2xl font-bold text-white md:text-3xl">{cta.title}</h2>
+            {cta.subtitle ? <p className="mt-2 text-white/70">{cta.subtitle}</p> : null}
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/contact"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition-opacity hover:opacity-90"
-            >
-              Join Now
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              href="/contact"
-              className="group inline-flex items-center justify-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-gold"
-            >
-              Or Contact Us for More Information
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            {cta.primaryLabel ? (
+              <Link
+                href={cta.primaryUrl || "/contact"}
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition-opacity hover:opacity-90"
+              >
+                {cta.primaryLabel}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            ) : null}
+            {cta.secondaryLabel ? (
+              <Link
+                href={cta.secondaryUrl || "/contact"}
+                className="group inline-flex items-center justify-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-gold"
+              >
+                {cta.secondaryLabel}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
