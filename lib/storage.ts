@@ -1,4 +1,5 @@
 import "server-only"
+import { randomUUID } from "crypto"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { IMAGE_CDN_BASE_URL } from "@/lib/images"
 
@@ -65,10 +66,10 @@ function getSpacesClient(): S3Client {
 
 function sanitizeFilename(name: string): string {
   const base = name.replace(/[^a-zA-Z0-9._-]/g, "-").replace(/-+/g, "-")
-  const stamp = Date.now().toString(36)
+  const unique = randomUUID().slice(0, 8)
   const dot = base.lastIndexOf(".")
-  if (dot > 0) return `${base.slice(0, dot)}-${stamp}${base.slice(dot)}`
-  return `${base}-${stamp}`
+  if (dot > 0) return `${base.slice(0, dot)}-${unique}${base.slice(dot)}`
+  return `${base}-${unique}`
 }
 
 export type UploadImageResult = {
@@ -76,7 +77,7 @@ export type UploadImageResult = {
   publicUrl: string
 }
 
-export async function uploadImageToSpaces(file: File): Promise<UploadImageResult> {
+export async function uploadImageToSpaces(file: File, contentType?: string): Promise<UploadImageResult> {
   const client = getSpacesClient()
   const filename = sanitizeFilename(file.name || "upload.jpg")
   const objectKey = `images/${filename}`
@@ -87,7 +88,7 @@ export async function uploadImageToSpaces(file: File): Promise<UploadImageResult
       Bucket: SPACES_BUCKET,
       Key: objectKey,
       Body: fileBuffer,
-      ContentType: file.type || "application/octet-stream",
+      ContentType: contentType || file.type || "application/octet-stream",
       ACL: "public-read",
     }),
   )

@@ -207,14 +207,35 @@ export function resolvePersonRecord<
 }
 
 /** Client-side upload helper — stores a relative `/images/...` path in the database. */
-export async function uploadImageViaApi(file: File): Promise<string> {
+export async function uploadImageViaApi(file: File, retries = 2): Promise<string> {
   const formData = new FormData()
   formData.append("file", file)
-  const res = await fetch("/api/upload", { method: "POST", body: formData })
-  if (!res.ok) {
-    const body = (await res.json().catch(() => null)) as { error?: string } | null
-    throw new Error(body?.error || "Upload failed")
+
+  let lastError = "Upload failed"
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      if (res.ok) {
+        const data = (await res.json()) as { path: string }
+        return data.path
+      }
+
+      const body = (await res.json().catch(() => null)) as { error?: string } | null
+      lastError = body?.error || `Upload failed (${res.status})`
+
+      // Don't retry client errors (bad type, too large, unauthorized).
+      if (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429) {
+        break
+      }
+    } catch {
+      lastError = "Network error while uploading"
+    }
+
+    if (attempt < retries) {
+      await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
+    }
   }
-  const data = (await res.json()) as { path: string }
-  return data.path
+
+  throw new Error(`${file.name}: ${lastError}`)
 }

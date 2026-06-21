@@ -5,6 +5,14 @@ import { UploadCloud, X, Loader2, GripVertical } from "lucide-react"
 import type { GalleryItem } from "@/lib/db/schema"
 import { resolveImageUrl, uploadImageViaApi } from "@/lib/images"
 
+const MAX_BYTES = 25 * 1024 * 1024
+const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|heic|heif|bmp|tiff?)$/i
+
+function isImageFile(file: File): boolean {
+  if (file.type.startsWith("image/")) return true
+  return IMAGE_EXT.test(file.name)
+}
+
 export function MultiImageUpload({
   value,
   onChange,
@@ -21,35 +29,50 @@ export function MultiImageUpload({
   const photos = Array.isArray(value) ? value : []
 
   async function handleFiles(files: FileList) {
-    const list = Array.from(files).filter((f) => f.type.startsWith("image/"))
-    if (list.length === 0) return
+    const list = Array.from(files).filter(isImageFile)
+    if (list.length === 0) {
+      setError("No supported image files selected.")
+      return
+    }
+
+    const oversized = list.filter((f) => f.size > MAX_BYTES)
+    if (oversized.length > 0) {
+      setError(
+        `${oversized.length} file${oversized.length === 1 ? "" : "s"} exceed 25 MB: ${oversized.map((f) => f.name).join(", ")}`,
+      )
+      return
+    }
+
     setError(null)
     setUploading(true)
     setProgress({ done: 0, total: list.length })
-    let done = 0
+
     const added: GalleryItem[] = []
-    try {
-      const batchSize = 3
-      for (let i = 0; i < list.length; i += batchSize) {
-        const batch = list.slice(i, i + batchSize)
-        const paths = await Promise.all(
-          batch.map(async (file) => {
-            const path = await uploadImageViaApi(file)
-            done += 1
-            setProgress({ done, total: list.length })
-            return path
-          }),
-        )
-        for (const path of paths) added.push({ imageUrl: path, caption: undefined })
+    const failed: string[] = []
+
+    // Upload one at a time — avoids DO Spaces throttling and filename collisions.
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i]
+      try {
+        const path = await uploadImageViaApi(file)
+        added.push({ imageUrl: path, caption: undefined })
+      } catch (err) {
+        failed.push(err instanceof Error ? err.message : `${file.name}: Upload failed`)
       }
-      onChange([...photos, ...added])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Some images failed to upload")
-      if (added.length) onChange([...photos, ...added])
-    } finally {
-      setUploading(false)
-      setProgress(null)
+      setProgress({ done: i + 1, total: list.length })
     }
+
+    if (added.length) onChange([...photos, ...added])
+
+    if (failed.length) {
+      const uploaded = `${added.length}/${list.length} uploaded`
+      const detail = failed.slice(0, 3).join(" · ")
+      const more = failed.length > 3 ? ` · +${failed.length - 3} more` : ""
+      setError(`${uploaded}. Failed: ${detail}${more}`)
+    }
+
+    setUploading(false)
+    setProgress(null)
   }
 
   function updateCaption(index: number, caption: string) {

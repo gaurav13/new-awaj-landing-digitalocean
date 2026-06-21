@@ -5,6 +5,7 @@ import { headers } from "next/headers"
 import { uploadImageToSpaces } from "@/lib/storage"
 
 export const runtime = "nodejs"
+export const maxDuration = 60
 
 const ALLOWED_TYPES = new Set([
   "image/png",
@@ -13,9 +14,37 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
   "image/gif",
   "image/avif",
+  "image/heic",
+  "image/heif",
+  "image/bmp",
+  "image/tiff",
 ])
 
+const EXT_TO_MIME: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  gif: "image/gif",
+  avif: "image/avif",
+  heic: "image/heic",
+  heif: "image/heif",
+  bmp: "image/bmp",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+}
+
 const MAX_BYTES = 25 * 1024 * 1024
+
+function inferContentType(file: File): string | null {
+  const type = file.type?.toLowerCase()
+  if (type && ALLOWED_TYPES.has(type)) return type
+
+  const ext = file.name.split(".").pop()?.toLowerCase()
+  if (ext && EXT_TO_MIME[ext]) return EXT_TO_MIME[ext]
+
+  return null
+}
 
 function getUploadErrorMessage(uploadError: unknown): string {
   if (uploadError instanceof S3ServiceException) {
@@ -48,15 +77,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    if (!ALLOWED_TYPES.has(file.type)) {
-      return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
+    const contentType = inferContentType(file)
+    if (!contentType) {
+      return NextResponse.json(
+        { error: `Unsupported file type: ${file.name || "unknown"}` },
+        { status: 400 },
+      )
     }
 
     if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: "File exceeds 25 MB limit" }, { status: 400 })
+      return NextResponse.json(
+        { error: `${file.name || "File"} exceeds 25 MB limit` },
+        { status: 400 },
+      )
     }
 
-    const uploadResult = await uploadImageToSpaces(file)
+    const uploadResult = await uploadImageToSpaces(file, contentType)
     return NextResponse.json({ path: uploadResult.path, url: uploadResult.publicUrl })
   } catch (uploadError: unknown) {
     console.error("[upload] DigitalOcean Spaces error:", uploadError)
