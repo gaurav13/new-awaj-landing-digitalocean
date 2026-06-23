@@ -16,6 +16,8 @@ import {
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllPrograms } from "@/app/actions/programs"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 export const metadata = {
   title: "Programs | Asia Web3 & AI Alliance Japan",
@@ -52,6 +54,8 @@ export default async function ProgramsPage() {
           </p>
         </div>
       </section>
+
+      <AdSlot page="programs" placement="top" className="px-5 pt-10 lg:px-10" />
 
       <section className="mx-auto max-w-[1280px] px-5 py-16 lg:px-10">
         {programs.length === 0 ? (
@@ -109,7 +113,10 @@ export default async function ProgramsPage() {
         )}
       </section>
 
+      <AdSlot page="programs" placement="bottom" className="px-5 pb-12 lg:px-10" />
+
       <SiteFooter />
+      <PageAds page="programs" />
     </main>
   )
 }
