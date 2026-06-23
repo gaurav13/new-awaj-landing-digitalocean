@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Building2, Globe, ArrowUpRight, Search, X } from "lucide-react"
-import type { DirectoryOrganization } from "@/app/actions/organizations"
+import type { DirectoryOrganization } from "@/lib/organization-types"
 
 type FilterKey = "type" | "country" | "industry" | "event" | "program"
 

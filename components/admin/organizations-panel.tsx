@@ -17,9 +17,8 @@ import {
   deleteOrganization,
   setOrganizationStatus,
   importOrganizations,
-  type AdminOrganization,
-  type OrganizationInput,
 } from "@/app/actions/organizations"
+import type { AdminOrganization, OrganizationInput } from "@/lib/organization-types"
 
 type Counts = { total: number; approved: number; pending: number; hidden: number }
 

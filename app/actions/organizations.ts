@@ -16,17 +16,15 @@ import { getUserId } from "@/lib/admin-helpers"
 import { resolveOptionalImage } from "@/lib/images"
 import { findOrCreateOrganizationByName, normalizeName } from "@/lib/organizations-sync"
 import { importExistingOrganizations } from "@/lib/organizations-import"
-
-export type { Organization }
+import type {
+  OrgConnection,
+  DirectoryOrganization,
+  AdminOrganization,
+  OrganizationInput,
+} from "@/lib/organization-types"
 
 function resolveOrg<T extends { logoUrl?: string | null }>(row: T): T {
   return { ...row, logoUrl: resolveOptionalImage(row.logoUrl ?? null) }
-}
-
-export type OrgConnection = { id: number; title: string; slug: string }
-export type DirectoryOrganization = Organization & {
-  events: OrgConnection[]
-  programs: OrgConnection[]
 }
 
 function pushUnique(list: OrgConnection[], conn: OrgConnection) {
@@ -132,8 +130,6 @@ export async function getOrganizationsForProgram(programId: number): Promise<Org
 
 // ---- Admin reads ----
 
-export type AdminOrganization = Organization & { eventCount: number; programCount: number }
-
 export async function getMyOrganizations(): Promise<AdminOrganization[]> {
   await getUserId()
   return withDb(async () => {
@@ -202,19 +198,6 @@ export async function getOrganizationCounts() {
 }
 
 // ---- Admin writes ----
-
-export type OrganizationInput = {
-  name: string
-  type?: string
-  logoUrl?: string
-  websiteUrl?: string
-  country?: string
-  industry?: string
-  description?: string
-  status?: string
-  featured?: boolean
-  sortOrder?: number
-}
 
 /** Throw if another organization (besides `excludeId`) already uses this name. */
 async function assertNoDuplicate(name: string, excludeId?: number) {
