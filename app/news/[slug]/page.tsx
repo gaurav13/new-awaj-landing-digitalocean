@@ -8,6 +8,8 @@ import { getNewsBySlug, getRelatedNews } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 import { buildPageMetadata, getArticleSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -94,6 +96,8 @@ export default async function ArticlePage({ params }: Props) {
 
         {article.content ? <RichContent html={article.content} className="mt-6" /> : null}
 
+        <AdSlot page="news" placement="in-content" className="mt-10" />
+
         {article.externalUrl ? (
           <div className="mt-8 rounded-2xl border border-gold/20 bg-white p-6">
             <p className="text-sm text-navy-text/70">
@@ -151,6 +155,7 @@ export default async function ArticlePage({ params }: Props) {
       )}
 
       <SiteFooter />
+      <PageAds page="news" />
     </main>
   )
 }

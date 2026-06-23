@@ -3,6 +3,8 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getOrganizationsDirectory } from "@/app/actions/organizations"
 import { MembersDirectory } from "@/components/awaj/members-directory"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 export const metadata: Metadata = {
   title: "Members | Asia Web3 & AI Alliance Japan",
@@ -34,6 +36,8 @@ export default async function MembersPage() {
         </div>
       </section>
 
+      <AdSlot page="members" placement="top" className="px-5 pt-10 lg:px-10" />
+
       <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
         {organizations.length === 0 ? (
           <div className="rounded-2xl border border-gold/20 bg-white p-12 text-center">
@@ -48,7 +52,10 @@ export default async function MembersPage() {
         )}
       </div>
 
+      <AdSlot page="members" placement="bottom" className="px-5 pb-12 lg:px-10" />
+
       <SiteFooter />
+      <PageAds page="members" />
     </main>
   )
 }
