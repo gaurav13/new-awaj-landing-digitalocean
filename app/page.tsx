@@ -15,8 +15,13 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { getSiteSettings } from "@/app/actions/settings"
 import { getActiveBanners } from "@/app/actions/banners"
 import { resolveImageUrl } from "@/lib/images"
+import { buildPageMetadata } from "@/lib/seo"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
+
+export async function generateMetadata() {
+  return buildPageMetadata({ path: "/" })
+}
 
 export default async function Page() {
   const [settings, banners] = await Promise.all([getSiteSettings(), getActiveBanners()])

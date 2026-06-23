@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getSiteSettings } from "@/app/actions/settings"
+import { getSiteSettings, type SiteSettings } from "@/app/actions/settings"
 import { resolveImageUrl } from "@/lib/images"
 
 /**
@@ -19,6 +19,33 @@ export function resolveBaseUrl(canonicalBaseUrl?: string): string {
 
   const withProtocol = /^https?:\/\//.test(candidate) ? candidate : `https://${candidate}`
   return withProtocol.replace(/\/+$/, "")
+}
+
+/** Picks the best social preview image: page image → OG image → hero banner. */
+export function resolveSocialImage(
+  settings: Pick<SiteSettings, "ogImageUrl" | "heroBannerUrl" | "siteTitle">,
+  override?: string | null,
+): { url: string; alt: string } | undefined {
+  for (const raw of [override, settings.ogImageUrl, settings.heroBannerUrl]) {
+    const url = resolveImageUrl(raw ?? "")
+    if (url.startsWith("https://")) {
+      return { url, alt: settings.siteTitle }
+    }
+  }
+  return undefined
+}
+
+function buildSocialImages(image: { url: string; alt: string } | undefined) {
+  if (!image) return undefined
+  return [
+    {
+      url: image.url,
+      width: 1200,
+      height: 630,
+      alt: image.alt,
+      type: image.url.match(/\.png($|\?)/i) ? "image/png" : "image/jpeg",
+    },
+  ]
 }
 
 type PageSeoInput = {
@@ -46,11 +73,13 @@ export async function buildPageMetadata(input: PageSeoInput): Promise<Metadata> 
   const title = input.title || settings.siteTitle
   const description = input.description || settings.ogDescription || settings.siteDescription
   const ogTitle = input.title || settings.ogTitle || settings.siteTitle
-  const imageRaw = input.image || settings.ogImageUrl || undefined
-  const image = imageRaw ? resolveImageUrl(imageRaw) : undefined
+  const socialImage = resolveSocialImage(settings, input.image)
+  const images = buildSocialImages(socialImage)
   const canonical = input.path === "/" ? "/" : input.path
+  const pageUrl = `${base}${canonical === "/" ? "" : canonical}`
 
   return {
+    metadataBase: new URL(base),
     title,
     description,
     alternates: { canonical },
@@ -58,15 +87,16 @@ export async function buildPageMetadata(input: PageSeoInput): Promise<Metadata> 
       title: ogTitle,
       description,
       type: input.type || "website",
-      url: `${base}${canonical === "/" ? "" : canonical}`,
+      url: pageUrl,
       siteName: settings.siteTitle,
-      images: image ? [{ url: image }] : undefined,
+      locale: "en_US",
+      images,
     },
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
       description,
-      images: image ? [image] : undefined,
+      images: socialImage ? [socialImage.url] : undefined,
       site: settings.twitterHandle || undefined,
     },
   }

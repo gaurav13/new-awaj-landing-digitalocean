@@ -2,7 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { getSiteSettings } from '@/app/actions/settings'
-import { resolveBaseUrl, getOrganizationSchema, getWebSiteSchema } from '@/lib/seo'
+import { getOrganizationSchema, getWebSiteSchema, resolveBaseUrl, resolveSocialImage } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/json-ld'
 import './globals.css'
 
@@ -26,7 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = settings.siteDescription
   const ogTitle = settings.ogTitle || title
   const ogDescription = settings.ogDescription || description
-  const ogImages = settings.ogImageUrl ? [{ url: settings.ogImageUrl }] : undefined
+  const socialImage = resolveSocialImage(settings)
+  const ogImages = socialImage
+    ? [{ url: socialImage.url, width: 1200, height: 630, alt: socialImage.alt }]
+    : undefined
   const baseUrl = resolveBaseUrl(settings.canonicalBaseUrl)
 
   // A custom favicon set in admin overrides the bundled icons.
@@ -57,13 +60,14 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       url: baseUrl,
       siteName: title,
+      locale: 'en_US',
       images: ogImages,
     },
     twitter: {
       card: 'summary_large_image',
       title: ogTitle,
       description: ogDescription,
-      images: settings.ogImageUrl ? [settings.ogImageUrl] : undefined,
+      images: socialImage ? [socialImage.url] : undefined,
       site: settings.twitterHandle || undefined,
     },
     icons: {

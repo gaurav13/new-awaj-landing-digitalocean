@@ -5,13 +5,17 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllEvents } from "@/app/actions/events"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 import { resolveEventCardImage } from "@/lib/images"
+import { buildPageMetadata } from "@/lib/seo"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
 
-export const metadata = {
-  title: "Events | Asia Web3 & AI Alliance Japan",
-  description: "Upcoming events, demo days, and VC Connect sessions from Asia Web3 & AI Alliance Japan (AWAJ).",
-  alternates: { canonical: "/events" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/events",
+    title: "Events",
+    description:
+      "Upcoming events, demo days, and VC Connect sessions from Asia Web3 & AI Alliance Japan (AWAJ).",
+  })
 }
 
 export default async function EventsPage() {

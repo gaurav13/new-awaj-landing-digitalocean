@@ -1,16 +1,18 @@
-import type { Metadata } from "next"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { getOrganizationsDirectory } from "@/app/actions/organizations"
 import { MembersDirectory } from "@/components/awaj/members-directory"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Members | Asia Web3 & AI Alliance Japan",
-  description:
-    "Explore the members, partners, startups, sponsors, government bodies, VCs, and media of Asia Web3 & AI Alliance Japan. Filter by type, country, industry, event, and program.",
-  alternates: { canonical: "/members" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/members",
+    title: "Members",
+    description:
+      "Explore the members, partners, startups, sponsors, government bodies, VCs, and media of Asia Web3 & AI Alliance Japan.",
+  })
 }
 
 export default async function MembersPage() {

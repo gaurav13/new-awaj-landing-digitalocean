@@ -4,12 +4,15 @@ import { PeopleDirectory } from "@/components/awaj/people-directory"
 import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 import { getPeopleDirectory } from "@/app/actions/people"
 import { getSiteSettings } from "@/app/actions/settings"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata = {
-  title: "Leadership & Ecosystem Leaders | Asia Web3 & AI Alliance Japan",
-  description:
-    "Meet the leaders, advisors, mentors, and ecosystem partners connected with Asia Web3 & AI Alliance Japan (AWAJ).",
-  alternates: { canonical: "/team" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/team",
+    title: "Leadership & Ecosystem Leaders",
+    description:
+      "Meet the leaders, advisors, mentors, and ecosystem partners connected with Asia Web3 & AI Alliance Japan (AWAJ).",
+  })
 }
 
 export default async function TeamPage() {

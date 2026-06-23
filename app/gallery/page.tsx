@@ -2,12 +2,15 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { GalleryShowcase, type GalleryAlbum } from "@/components/awaj/gallery-showcase"
 import { getAllGalleries } from "@/app/actions/gallery"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata = {
-  title: "Gallery",
-  description:
-    "Photo highlights from Asia Web3 & AI Alliance Japan (AWAJ) events, programs, conferences, and community activities.",
-  alternates: { canonical: "/gallery" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/gallery",
+    title: "Gallery",
+    description:
+      "Photo highlights from Asia Web3 & AI Alliance Japan (AWAJ) events, programs, conferences, and community activities.",
+  })
 }
 
 export default async function GalleryPage() {

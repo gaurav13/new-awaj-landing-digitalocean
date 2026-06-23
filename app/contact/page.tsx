@@ -1,14 +1,16 @@
-import type { Metadata } from "next"
 import { Mail, MapPin, Building2, Megaphone, Handshake, Award, Users, HelpCircle } from "lucide-react"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { ContactForm } from "@/components/awaj/contact-form"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Contact | Asia Web3 & AI Alliance Japan",
-  description:
-    "Get in touch with Asia Web3 & AI Alliance Japan for media, sponsorship, partnership, membership, and other inquiries.",
-  alternates: { canonical: "/contact" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/contact",
+    title: "Contact",
+    description:
+      "Get in touch with Asia Web3 & AI Alliance Japan for media, sponsorship, partnership, membership, and other inquiries.",
+  })
 }
 
 const INQUIRY_CARDS = [

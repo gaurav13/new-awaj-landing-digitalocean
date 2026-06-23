@@ -18,11 +18,14 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllPrograms } from "@/app/actions/programs"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata = {
-  title: "Programs | Asia Web3 & AI Alliance Japan",
-  description: "Explore the accelerator, innovation, and ecosystem programs offered by AWAJ.",
-  alternates: { canonical: "/programs" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/programs",
+    title: "Programs",
+    description: "Explore the accelerator, innovation, and ecosystem programs offered by AWAJ.",
+  })
 }
 
 const ICONS: Record<string, LucideIcon> = {

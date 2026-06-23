@@ -5,7 +5,7 @@ import { withDb } from "@/lib/db/with-db"
 import { siteSettings } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
-import { toStoredImagePath } from "@/lib/images"
+import { resolveImageUrl, toStoredImagePath } from "@/lib/images"
 
 const IMAGE_SETTING_KEYS = new Set([
   "headerLogoUrl",
@@ -92,6 +92,12 @@ const DEFAULTS: SiteSettings = {
   leadershipViewAllUrl: "/team",
 }
 
+function resolveSettingImage(value: string | undefined, fallback: string): string {
+  const raw = value?.trim() ? value : fallback
+  if (!raw) return ""
+  return resolveImageUrl(raw)
+}
+
 // ---- Public read ----
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -99,28 +105,28 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     const rows = await db.select().from(siteSettings)
     const map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]))
     return {
-      headerLogoUrl: map.headerLogoUrl || DEFAULTS.headerLogoUrl,
-      footerLogoUrl: map.footerLogoUrl || DEFAULTS.footerLogoUrl,
-      heroBannerUrl: map.heroBannerUrl || DEFAULTS.heroBannerUrl,
+      headerLogoUrl: resolveSettingImage(map.headerLogoUrl, DEFAULTS.headerLogoUrl),
+      footerLogoUrl: resolveSettingImage(map.footerLogoUrl, DEFAULTS.footerLogoUrl),
+      heroBannerUrl: resolveSettingImage(map.heroBannerUrl, DEFAULTS.heroBannerUrl),
       siteTitle: map.siteTitle || DEFAULTS.siteTitle,
       siteDescription: map.siteDescription || DEFAULTS.siteDescription,
       siteKeywords: map.siteKeywords || DEFAULTS.siteKeywords,
       ogTitle: map.ogTitle || DEFAULTS.ogTitle,
       ogDescription: map.ogDescription || DEFAULTS.ogDescription,
-      ogImageUrl: map.ogImageUrl || DEFAULTS.ogImageUrl,
-      faviconUrl: map.faviconUrl || DEFAULTS.faviconUrl,
+      ogImageUrl: resolveSettingImage(map.ogImageUrl, DEFAULTS.ogImageUrl),
+      faviconUrl: resolveSettingImage(map.faviconUrl, DEFAULTS.faviconUrl),
       twitterHandle: map.twitterHandle || DEFAULTS.twitterHandle,
       canonicalBaseUrl: map.canonicalBaseUrl || DEFAULTS.canonicalBaseUrl,
       membershipEyebrow: map.membershipEyebrow || DEFAULTS.membershipEyebrow,
       membershipTitle: map.membershipTitle || DEFAULTS.membershipTitle,
       membershipSubtitle: map.membershipSubtitle || DEFAULTS.membershipSubtitle,
-      membershipHeroUrl: map.membershipHeroUrl || DEFAULTS.membershipHeroUrl,
+      membershipHeroUrl: resolveSettingImage(map.membershipHeroUrl, DEFAULTS.membershipHeroUrl),
       presidentEyebrow: map.presidentEyebrow || DEFAULTS.presidentEyebrow,
       presidentName: map.presidentName || DEFAULTS.presidentName,
       presidentTitle: map.presidentTitle || DEFAULTS.presidentTitle,
       presidentBio: map.presidentBio || DEFAULTS.presidentBio,
-      presidentPhotoUrl: map.presidentPhotoUrl || DEFAULTS.presidentPhotoUrl,
-      presidentBgUrl: map.presidentBgUrl || DEFAULTS.presidentBgUrl,
+      presidentPhotoUrl: resolveSettingImage(map.presidentPhotoUrl, DEFAULTS.presidentPhotoUrl),
+      presidentBgUrl: resolveSettingImage(map.presidentBgUrl, DEFAULTS.presidentBgUrl),
       presidentCtaLabel: map.presidentCtaLabel || DEFAULTS.presidentCtaLabel,
       presidentCtaUrl: map.presidentCtaUrl || DEFAULTS.presidentCtaUrl,
       leadershipStats: map.leadershipStats || DEFAULTS.leadershipStats,

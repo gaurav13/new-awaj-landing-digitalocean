@@ -4,11 +4,15 @@ import { NewsListing } from "@/components/awaj/news-listing"
 import { getAllNews } from "@/app/actions/news"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata = {
-  title: "News",
-  description: "The latest news, partnerships, and program updates from Asia Web3 & AI Alliance Japan (AWAJ).",
-  alternates: { canonical: "/news" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/news",
+    title: "News",
+    description:
+      "The latest news, partnerships, and program updates from Asia Web3 & AI Alliance Japan (AWAJ).",
+  })
 }
 
 export default async function NewsPage() {

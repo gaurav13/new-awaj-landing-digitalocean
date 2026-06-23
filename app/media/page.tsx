@@ -2,12 +2,15 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { MediaCoverage } from "@/components/awaj/media-coverage"
 import { getAllMedia } from "@/app/actions/media"
+import { buildPageMetadata } from "@/lib/seo"
 
-export const metadata = {
-  title: "Media",
-  description:
-    "Press coverage, interviews, videos, and podcasts featuring Asia Web3 & AI Alliance Japan (AWAJ) across global media.",
-  alternates: { canonical: "/media" },
+export async function generateMetadata() {
+  return buildPageMetadata({
+    path: "/media",
+    title: "Media",
+    description:
+      "Press coverage, interviews, videos, and podcasts featuring Asia Web3 & AI Alliance Japan (AWAJ) across global media.",
+  })
 }
 
 export default async function MediaPage() {
