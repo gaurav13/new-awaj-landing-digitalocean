@@ -172,9 +172,11 @@ export async function createProgram(input: ProgramInput) {
     })
     .returning({ id: programs.id })
   await syncProgramPeople(created.id, input.peopleIds)
+  await syncProgramOrganizations(created.id, input)
   revalidatePath("/")
   revalidatePath("/programs")
   revalidatePath("/team")
+  revalidatePath("/members")
 }
 
 export async function updateProgram(id: number, input: ProgramInput) {
@@ -198,15 +200,20 @@ export async function updateProgram(id: number, input: ProgramInput) {
     })
     .where(eq(programs.id, id))
   await syncProgramPeople(id, input.peopleIds)
+  await syncProgramOrganizations(id, input)
   revalidatePath("/")
   revalidatePath("/programs")
   revalidatePath(`/programs/${slug}`)
   revalidatePath("/team")
+  revalidatePath("/members")
 }
 
 export async function deleteProgram(id: number) {
   await getUserId()
   await db.delete(programs).where(eq(programs.id, id))
+  await db.delete(programsPeople).where(eq(programsPeople.programId, id))
+  await db.delete(programsOrganizations).where(eq(programsOrganizations.programId, id))
   revalidatePath("/")
   revalidatePath("/programs")
+  revalidatePath("/members")
 }

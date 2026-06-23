@@ -5,6 +5,7 @@ import { withDb } from "@/lib/db/with-db"
 import {
   events,
   eventsPeople,
+  eventsOrganizations,
   type EventSponsor,
   type EventSpeaker,
   type EventHighlight,
@@ -14,6 +15,7 @@ import { asc, desc, eq, ne, gte, lt } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
 import { syncEventSpeakerPeople } from "@/lib/people-sync"
+import { importEventSponsors, syncEventOrganizationConnections } from "@/lib/organizations-sync"
 import { resolveEventRecord } from "@/lib/images"
 
 // ---- Public reads ----
@@ -111,7 +113,14 @@ export async function getMyEvents() {
     arr.push(l.personId)
     map.set(l.eventId, arr)
   }
-  return rows.map((r) => ({ ...r, peopleIds: map.get(r.id) ?? [] }))
+  const orgLinks = await db.select().from(eventsOrganizations).orderBy(asc(eventsOrganizations.sortOrder))
+  const orgMap = new Map<number, number[]>()
+  for (const l of orgLinks) {
+    const arr = orgMap.get(l.eventId) ?? []
+    arr.push(l.organizationId)
+    orgMap.set(l.eventId, arr)
+  }
+  return rows.map((r) => ({ ...r, peopleIds: map.get(r.id) ?? [], organizationIds: orgMap.get(r.id) ?? [] }))
 }
 
 type EventInput = {
@@ -135,6 +144,7 @@ type EventInput = {
   speakers?: EventSpeaker[]
   isFeatured?: boolean
   peopleIds?: number[]
+  organizationIds?: number[]
 }
 
 function cleanSponsors(items?: EventSponsor[]): EventSponsor[] {
@@ -230,9 +240,13 @@ export async function createEvent(input: EventInput) {
     .returning({ id: events.id })
   // Upsert speakers into the central People table + connect them (and any picked people).
   await syncEventSpeakerPeople(created.id, speakers, input.peopleIds ?? [])
+  // Upsert sponsors into the central Organizations table + connect picked organizations.
+  const sponsorOrgIds = await importEventSponsors(cleanSponsors(input.sponsors))
+  await syncEventOrganizationConnections(created.id, [...(input.organizationIds ?? []), ...sponsorOrgIds])
   revalidatePath("/")
   revalidatePath("/events")
   revalidatePath("/team")
+  revalidatePath("/members")
 }
 
 export async function updateEvent(id: number, input: EventInput) {
@@ -266,10 +280,14 @@ export async function updateEvent(id: number, input: EventInput) {
     .where(eq(events.id, id))
   // Upsert speakers into the central People table + connect them (and any picked people).
   await syncEventSpeakerPeople(id, speakers, input.peopleIds ?? [])
+  // Upsert sponsors into the central Organizations table + connect picked organizations.
+  const sponsorOrgIds = await importEventSponsors(cleanSponsors(input.sponsors))
+  await syncEventOrganizationConnections(id, [...(input.organizationIds ?? []), ...sponsorOrgIds])
   revalidatePath("/")
   revalidatePath("/events")
   revalidatePath(`/events/${slug}`)
   revalidatePath("/team")
+  revalidatePath("/members")
 }
 
 export async function deleteEvent(id: number) {
