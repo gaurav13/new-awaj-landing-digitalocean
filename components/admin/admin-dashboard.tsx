@@ -29,6 +29,9 @@ import type { Person } from "@/app/actions/people"
 import { OrganizationsPanel } from "./organizations-panel"
 import { quickCreateOrganization } from "@/app/actions/organizations"
 import type { AdminOrganization } from "@/lib/organization-types"
+import { AdsManager } from "./ads-manager"
+import type { AdminAd } from "@/lib/ad-types"
+import type { NewsletterSubscriber } from "@/lib/db/schema"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
@@ -518,6 +521,8 @@ export function AdminDashboard({
   peopleCounts,
   organizations,
   organizationCounts,
+  ads,
+  subscribers,
   banners,
   messages,
   settings,
@@ -546,6 +551,8 @@ export function AdminDashboard({
     counts: { total: number; approved: number; pending: number; hidden: number }
     byType: Record<string, number>
   }
+  ads: AdminAd[]
+  subscribers: NewsletterSubscriber[]
   banners: Banner[]
   messages: Message[]
   settings: SiteSettings
@@ -696,6 +703,7 @@ export function AdminDashboard({
             <TabsTrigger value="events">Events ({events.length})</TabsTrigger>
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
+            <TabsTrigger value="ads">Ads ({ads.length})</TabsTrigger>
             <TabsTrigger value="people">People ({peopleCounts.counts.total})</TabsTrigger>
             <TabsTrigger value="organizations">Organizations ({organizationCounts.counts.total})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
@@ -1148,6 +1156,10 @@ export function AdminDashboard({
               onUpdate={(id, d) => updateBanner(id, d)}
               onDelete={(id) => deleteBanner(id)}
             />
+          </TabsContent>
+
+          <TabsContent value="ads" className="mt-6">
+            <AdsManager ads={ads} subscribers={subscribers} />
           </TabsContent>
 
           <TabsContent value="messages" className="mt-6">

@@ -15,6 +15,7 @@ import { getMyPeople, getPeopleCounts } from "@/app/actions/people"
 import { getMyOrganizations, getOrganizationCounts } from "@/app/actions/organizations"
 import { getMyMessages } from "@/app/actions/contact"
 import { getMyBanners } from "@/app/actions/banners"
+import { getMyAds, getSubscribers } from "@/app/actions/ads"
 import { getAllUsers } from "@/app/actions/users"
 import { isSuperAdmin } from "@/lib/admin-helpers"
 import { getSiteSettings } from "@/app/actions/settings"
@@ -45,6 +46,8 @@ export default async function AdminPage() {
     peopleCounts,
     organizations,
     organizationCounts,
+    ads,
+    subscribers,
     banners,
     messages,
     settings,
@@ -64,6 +67,8 @@ export default async function AdminPage() {
     getPeopleCounts(),
     getMyOrganizations(),
     getOrganizationCounts(),
+    getMyAds(),
+    getSubscribers(),
     getMyBanners(),
     getMyMessages(),
     getSiteSettings(),
@@ -89,6 +94,8 @@ export default async function AdminPage() {
       peopleCounts={peopleCounts}
       organizations={organizations}
       organizationCounts={organizationCounts}
+      ads={ads}
+      subscribers={subscribers}
       banners={banners}
       messages={messages}
       settings={settings}
