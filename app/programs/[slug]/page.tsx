@@ -9,6 +9,8 @@ import { getMediaByProgram } from "@/app/actions/media"
 import { getPeopleForProgram } from "@/app/actions/people"
 import { buildPageMetadata, getArticleSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 export async function generateMetadata({
   params,
@@ -54,12 +56,14 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <JsonLd data={[programSchema, breadcrumbSchema]} />
       <SiteHeader />
       <ProgramDetail program={program} media={media} />
+      <AdSlot page="programs" placement="in-content" className="mx-auto max-w-[1280px] px-5 py-8 lg:px-10" />
       <ConnectedPeople
         people={programPeople}
         title="Mentors & Leaders"
         subtitle="People connected with this program."
       />
       <SiteFooter />
+      <PageAds page="programs" />
     </main>
   )
 }

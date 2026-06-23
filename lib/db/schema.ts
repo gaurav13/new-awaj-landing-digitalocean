@@ -359,6 +359,77 @@ export const PEOPLE_ROLE_TYPES = [
 ] as const
 export type PeopleRoleType = (typeof PEOPLE_ROLE_TYPES)[number]
 
+// ---- Advertising & newsletter system ----
+// A single unified table for every promotional unit: in-flow banners
+// (top/mid/sidebar/bottom/in-content), the popup ad, the right-side floating ad,
+// the mobile bottom sticky, and the newsletter popup. They all share scheduling,
+// page targeting, status, and impression/click tracking.
+export const ads = pgTable("ads", {
+  id: serial("id").primaryKey(),
+  campaignName: text("campaign_name").notNull(),
+  imageUrl: text("image_url"),
+  linkUrl: text("link_url"),
+  altText: text("alt_text"),
+  // Popup / floating / newsletter copy
+  title: text("title"),
+  bodyText: text("body_text"),
+  buttonText: text("button_text"),
+  // home | events | programs | news | partners | members | all
+  pageTarget: text("page_target").notNull().default("all"),
+  // top | mid | sidebar | bottom | in-content | popup | floating | mobile-sticky | newsletter
+  placement: text("placement").notNull().default("top"),
+  // immediate | delay | scroll | exit  (overlays only)
+  trigger: text("trigger").notNull().default("delay"),
+  // session | day | always  (overlays only)
+  frequency: text("frequency").notNull().default("session"),
+  // active | hidden
+  status: text("status").notNull().default("active"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  impressions: integer("impressions").notNull().default(0),
+  clicks: integer("clicks").notNull().default(0),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+export type Ad = typeof ads.$inferSelect
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: serial("id").primaryKey(),
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  consent: boolean("consent").notNull().default(true),
+  source: text("source"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect
+
+export const AD_PAGE_TARGETS = ["all", "home", "events", "programs", "news", "partners", "members"] as const
+export type AdPageTarget = (typeof AD_PAGE_TARGETS)[number]
+
+export const AD_PLACEMENTS = [
+  "top",
+  "mid",
+  "sidebar",
+  "bottom",
+  "in-content",
+  "popup",
+  "floating",
+  "mobile-sticky",
+  "newsletter",
+] as const
+export type AdPlacement = (typeof AD_PLACEMENTS)[number]
+
+/** Placements that render as fixed/overlay units (handled client-side with triggers). */
+export const AD_OVERLAY_PLACEMENTS = ["popup", "floating", "mobile-sticky", "newsletter"] as const
+
+export const AD_TRIGGERS = ["immediate", "delay", "scroll", "exit"] as const
+export type AdTrigger = (typeof AD_TRIGGERS)[number]
+
+export const AD_FREQUENCIES = ["session", "day", "always"] as const
+export type AdFrequency = (typeof AD_FREQUENCIES)[number]
+
 export const siteSettings = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value"),

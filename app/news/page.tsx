@@ -2,6 +2,8 @@ import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { NewsListing } from "@/components/awaj/news-listing"
 import { getAllNews } from "@/app/actions/news"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 export const metadata = {
   title: "News",
@@ -30,11 +32,17 @@ export default async function NewsPage() {
         </div>
       </section>
 
+      <AdSlot page="news" placement="top" className="px-5 pt-10 lg:px-10" />
+
       <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
         <NewsListing articles={articles} />
+        <AdSlot page="news" placement="mid" className="mt-10" />
       </div>
 
+      <AdSlot page="news" placement="bottom" className="px-5 pb-12 lg:px-10" />
+
       <SiteFooter />
+      <PageAds page="news" />
     </main>
   )
 }

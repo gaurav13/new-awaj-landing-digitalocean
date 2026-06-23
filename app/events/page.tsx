@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/awaj/site-footer"
 import { getAllEvents } from "@/app/actions/events"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 import { resolveEventCardImage } from "@/lib/images"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { PageAds } from "@/components/ads/page-ads"
 
 export const metadata = {
   title: "Events | Asia Web3 & AI Alliance Japan",
@@ -39,6 +41,8 @@ export default async function EventsPage() {
           </p>
         </div>
       </section>
+
+      <AdSlot page="events" placement="top" className="px-5 pt-10 lg:px-10" />
 
       <div className="mx-auto max-w-[1280px] px-5 py-12 lg:px-10 lg:py-16">
         {events.length === 0 ? (
@@ -101,6 +105,8 @@ export default async function EventsPage() {
               </div>
             )}
 
+            <AdSlot page="events" placement="mid" className="mt-12" />
+
             {past.length > 0 && (
               <>
                 <h2 className="mt-16 mb-6 font-serif text-2xl font-bold text-navy-text">Past Events</h2>
@@ -115,7 +121,10 @@ export default async function EventsPage() {
         )}
       </div>
 
+      <AdSlot page="events" placement="bottom" className="px-5 pb-12 lg:px-10" />
+
       <SiteFooter />
+      <PageAds page="events" />
     </main>
   )
 }
