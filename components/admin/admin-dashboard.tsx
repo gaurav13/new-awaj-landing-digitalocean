@@ -26,6 +26,9 @@ import { MembershipContentPanel } from "./membership-content-panel"
 import type { MembershipContent } from "@/lib/membership-content"
 import { PeoplePanel } from "./people-panel"
 import type { Person } from "@/app/actions/people"
+import { OrganizationsPanel } from "./organizations-panel"
+import { quickCreateOrganization } from "@/app/actions/organizations"
+import type { AdminOrganization } from "@/lib/organization-types"
 import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners"
 import { createMedia, updateMedia, deleteMedia } from "@/app/actions/media"
 import { createGallery, updateGallery, deleteGallery } from "@/app/actions/gallery"
@@ -101,6 +104,7 @@ type Event = {
   speakers: EventSpeaker[]
   isFeatured: boolean
   peopleIds?: number[]
+  organizationIds?: number[]
 }
 type Program = {
   id: number
@@ -117,6 +121,7 @@ type Program = {
   gallery: GalleryItem[]
   sortOrder: number
   peopleIds?: number[]
+  organizationIds?: number[]
 }
 type Team = {
   id: number
@@ -324,6 +329,14 @@ const EVENT_FIELDS: FieldDef[] = [
     type: "people",
     hint: "Link speakers, mentors, and leaders from the central People directory. Shown on the event page.",
   },
+
+  // — Connected organizations —
+  {
+    name: "organizationIds",
+    label: "Connected organizations",
+    type: "organizations",
+    hint: "Link sponsors, partners, and startups from the central Organizations directory. New ones are added to the directory and appear on the Members list automatically.",
+  },
 ]
 
 const PROGRAM_FIELDS: FieldDef[] = [
@@ -376,6 +389,12 @@ const PROGRAM_FIELDS: FieldDef[] = [
     label: "Connected people",
     type: "people",
     hint: "Link mentors, advisors, and leaders from the central People directory. Shown on the program page.",
+  },
+  {
+    name: "organizationIds",
+    label: "Connected organizations",
+    type: "organizations",
+    hint: "Link partners and startups from the central Organizations directory. New ones are added to the directory and appear on the Members list automatically.",
   },
 ]
 
@@ -497,6 +516,8 @@ export function AdminDashboard({
   membershipContent,
   people,
   peopleCounts,
+  organizations,
+  organizationCounts,
   banners,
   messages,
   settings,
@@ -520,6 +541,11 @@ export function AdminDashboard({
     counts: { total: number; published: number; draft: number; homepage: number }
     byRole: Record<string, number>
   }
+  organizations: AdminOrganization[]
+  organizationCounts: {
+    counts: { total: number; approved: number; pending: number; hidden: number }
+    byType: Record<string, number>
+  }
   banners: Banner[]
   messages: Message[]
   settings: SiteSettings
@@ -536,6 +562,12 @@ export function AdminDashboard({
     id: p.id,
     name: p.fullName,
     subtitle: [p.jobTitle, p.companyName].filter(Boolean).join(" · ") || undefined,
+  }))
+
+  const organizationOptions = organizations.map((o) => ({
+    id: o.id,
+    name: o.name,
+    subtitle: [o.type, o.country].filter(Boolean).join(" · ") || undefined,
   }))
 
   const NEWS_FIELDS: FieldDef[] = [
@@ -665,6 +697,7 @@ export function AdminDashboard({
             <TabsTrigger value="programs">Programs ({programs.length})</TabsTrigger>
             <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
             <TabsTrigger value="people">People ({peopleCounts.counts.total})</TabsTrigger>
+            <TabsTrigger value="organizations">Organizations ({organizationCounts.counts.total})</TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
             <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
             <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
@@ -827,6 +860,7 @@ export function AdminDashboard({
                 speakers: [],
                 isFeatured: false,
                 peopleIds: [],
+                organizationIds: [],
               }}
               toForm={(e) => ({
                 title: e.title,
@@ -849,6 +883,7 @@ export function AdminDashboard({
                 speakers: e.speakers ?? [],
                 isFeatured: e.isFeatured,
                 peopleIds: e.peopleIds ?? [],
+                organizationIds: e.organizationIds ?? [],
               })}
               render={{
                 image: (e) => e.imageUrl,
@@ -858,6 +893,8 @@ export function AdminDashboard({
                 viewHref: (e) => `/events/${e.slug}`,
               }}
               peopleOptions={peopleOptions}
+              organizationOptions={organizationOptions}
+              onQuickCreateOrganization={quickCreateOrganization}
               onCreate={(d) => createEvent(d)}
               onUpdate={(id, d) => updateEvent(id, d)}
               onDelete={(id) => deleteEvent(id)}
@@ -883,6 +920,7 @@ export function AdminDashboard({
                 startups: [],
                 gallery: [],
                 peopleIds: [],
+                organizationIds: [],
               }}
               toForm={(p) => ({
                 title: p.title,
@@ -897,6 +935,7 @@ export function AdminDashboard({
                 startups: p.startups ?? [],
                 gallery: p.gallery ?? [],
                 peopleIds: p.peopleIds ?? [],
+                organizationIds: p.organizationIds ?? [],
               })}
               render={{
                 image: (p) => p.imageUrl,
@@ -906,6 +945,8 @@ export function AdminDashboard({
                 viewHref: (p) => `/programs/${p.slug}`,
               }}
               peopleOptions={peopleOptions}
+              organizationOptions={organizationOptions}
+              onQuickCreateOrganization={quickCreateOrganization}
               onCreate={(d) => createProgram(d)}
               onUpdate={(id, d) => updateProgram(id, d)}
               onDelete={(id) => deleteProgram(id)}
@@ -914,6 +955,14 @@ export function AdminDashboard({
 
           <TabsContent value="people" className="mt-6">
             <PeoplePanel people={people} counts={peopleCounts.counts} byRole={peopleCounts.byRole} />
+          </TabsContent>
+
+          <TabsContent value="organizations" className="mt-6">
+            <OrganizationsPanel
+              organizations={organizations}
+              counts={organizationCounts.counts}
+              byType={organizationCounts.byType}
+            />
           </TabsContent>
 
           <TabsContent value="team" className="mt-6">

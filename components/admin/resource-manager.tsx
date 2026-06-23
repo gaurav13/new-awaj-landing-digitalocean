@@ -13,7 +13,7 @@ import { ImageUpload } from "./image-upload"
 import { MultiImageUpload } from "./multi-image-upload"
 import { RichTextEditor } from "./rich-text-editor"
 import { resolveImageUrl } from "@/lib/images"
-import type { GalleryItem } from "@/lib/db/schema"
+import { ORGANIZATION_TYPES, type GalleryItem } from "@/lib/db/schema"
 
 export type FieldType =
   | "text"
@@ -27,8 +27,10 @@ export type FieldType =
   | "repeater"
   | "gallery"
   | "people"
+  | "organizations"
 
 export type PeopleOption = { id: number; name: string; subtitle?: string }
+export type OrganizationOption = { id: number; name: string; subtitle?: string }
 
 export type RepeaterSubField = {
   name: string
@@ -72,6 +74,12 @@ type Props<T extends { id: number }> = {
   onUpdate: (id: number, data: any) => Promise<void>
   onDelete: (id: number) => Promise<void>
   peopleOptions?: PeopleOption[]
+  organizationOptions?: OrganizationOption[]
+  /** Create a new organization inline; returns the created/existing option to select. */
+  onQuickCreateOrganization?: (input: {
+    name: string
+    type?: string
+  }) => Promise<{ id: number; name: string; subtitle: string | null; duplicate: boolean }>
 }
 
 export function ResourceManager<T extends { id: number }>({
@@ -86,6 +94,8 @@ export function ResourceManager<T extends { id: number }>({
   onUpdate,
   onDelete,
   peopleOptions = [],
+  organizationOptions = [],
+  onQuickCreateOrganization,
 }: Props<T>) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -318,6 +328,18 @@ export function ResourceManager<T extends { id: number }>({
                       options={peopleOptions}
                       value={Array.isArray(form[f.name]) ? (form[f.name] as number[]) : []}
                       onChange={(ids) => setForm({ ...form, [f.name]: ids })}
+                    />
+                  )
+                }
+                if (f.type === "organizations") {
+                  return (
+                    <OrganizationSelectField
+                      key={f.name}
+                      field={f}
+                      options={organizationOptions}
+                      value={Array.isArray(form[f.name]) ? (form[f.name] as number[]) : []}
+                      onChange={(ids) => setForm({ ...form, [f.name]: ids })}
+                      onQuickCreate={onQuickCreateOrganization}
                     />
                   )
                 }
@@ -578,6 +600,176 @@ function PeopleSelectField({
           </div>
         </>
       )}
+    </div>
+  )
+}
+
+function OrganizationSelectField({
+  field,
+  options,
+  value,
+  onChange,
+  onQuickCreate,
+}: {
+  field: FieldDef
+  options: OrganizationOption[]
+  value: number[]
+  onChange: (ids: number[]) => void
+  onQuickCreate?: (input: {
+    name: string
+    type?: string
+  }) => Promise<{ id: number; name: string; subtitle: string | null; duplicate: boolean }>
+}) {
+  // Local mirror of the options so newly-created organizations appear immediately.
+  const [localOptions, setLocalOptions] = useState<OrganizationOption[]>(options)
+  const [query, setQuery] = useState("")
+  const [adding, setAdding] = useState(false)
+  const [newName, setNewName] = useState("")
+  const [newType, setNewType] = useState<string>("Partner")
+  const [creating, setCreating] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [createError, setCreateError] = useState<string | null>(null)
+
+  const selected = new Set(value)
+  const filtered = localOptions.filter(
+    (o) => !query.trim() || `${o.name} ${o.subtitle ?? ""}`.toLowerCase().includes(query.toLowerCase()),
+  )
+
+  function toggle(id: number) {
+    onChange(selected.has(id) ? value.filter((v) => v !== id) : [...value, id])
+  }
+
+  async function handleCreate() {
+    if (!onQuickCreate || !newName.trim()) return
+    setCreating(true)
+    setCreateError(null)
+    setNotice(null)
+    try {
+      const created = await onQuickCreate({ name: newName.trim(), type: newType })
+      setLocalOptions((prev) =>
+        prev.some((o) => o.id === created.id)
+          ? prev
+          : [...prev, { id: created.id, name: created.name, subtitle: created.subtitle ?? undefined }],
+      )
+      if (!selected.has(created.id)) onChange([...value, created.id])
+      setNotice(
+        created.duplicate
+          ? `"${created.name}" already exists - selected the existing entry.`
+          : `Added "${created.name}" to the central directory.`,
+      )
+      setNewName("")
+      setAdding(false)
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Could not create organization.")
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-gold/25 bg-white/60 p-4">
+      <div className="flex items-center justify-between">
+        <Label>{field.label}</Label>
+        <span className="text-xs text-navy-text/50">{value.length} selected</span>
+      </div>
+      {field.hint ? <p className="-mt-1 text-xs text-navy-text/55">{field.hint}</p> : null}
+
+      <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search organizations..." />
+
+      <div className="max-h-56 overflow-y-auto rounded-lg border border-gold/20 bg-white">
+        {filtered.length === 0 ? (
+          <p className="px-3 py-3 text-xs text-navy-text/55">
+            No organizations found. Add one below to save it to the central directory.
+          </p>
+        ) : (
+          <ul className="divide-y divide-gold/10">
+            {filtered.map((o) => (
+              <li key={o.id}>
+                <label className="flex cursor-pointer items-center gap-2.5 px-3 py-2 hover:bg-beige/40">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(o.id)}
+                    onChange={() => toggle(o.id)}
+                    className="h-4 w-4 rounded border-input accent-awaj-red"
+                  />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium text-navy-text">{o.name}</span>
+                    {o.subtitle ? (
+                      <span className="block truncate text-xs text-navy-text/55">{o.subtitle}</span>
+                    ) : null}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {notice ? <p className="text-xs text-navy-text/70">{notice}</p> : null}
+
+      {onQuickCreate ? (
+        adding ? (
+          <div className="flex flex-col gap-2 rounded-lg border border-gold/25 bg-beige/30 p-3">
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="New organization name"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                  handleCreate()
+                }
+              }}
+            />
+            <select
+              value={newType}
+              onChange={(e) => setNewType(e.target.value)}
+              className="h-9 rounded-md border border-input bg-white px-3 text-sm text-navy-text"
+            >
+              {ORGANIZATION_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+            {createError ? <p className="text-xs text-awaj-red">{createError}</p> : null}
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                onClick={handleCreate}
+                disabled={creating || !newName.trim()}
+                className="flex-1 rounded-full bg-navy text-white hover:bg-navy/90"
+              >
+                {creating ? "Adding..." : "Add & select"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setAdding(false)
+                  setCreateError(null)
+                }}
+                className="rounded-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setAdding(true)
+              setNewName(query)
+            }}
+            className="rounded-full border-gold/40 text-navy-text"
+          >
+            <Plus className="mr-1.5 h-4 w-4" />
+            Add new organization
+          </Button>
+        )
+      ) : null}
     </div>
   )
 }

@@ -292,6 +292,60 @@ export const programsPeople = pgTable("programs_people", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+// ---- Central Organizations directory ----
+// Single source of truth for every organization (Members, Partners, Startups, Sponsors,
+// Government, VCs, Media). Events and Programs link to it via the junction tables below.
+export const organizations = pgTable("organizations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull().default("Member"),
+  logoUrl: text("logo_url"),
+  websiteUrl: text("website_url"),
+  country: text("country"),
+  industry: text("industry"),
+  description: text("description"),
+  // approved (public) | pending (awaiting review) | hidden (kept but not shown)
+  status: text("status").notNull().default("approved"),
+  featured: boolean("featured").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  authorId: text("author_id").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+export type Organization = typeof organizations.$inferSelect
+
+export const eventsOrganizations = pgTable("events_organizations", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  roleAtEvent: text("role_at_event"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const programsOrganizations = pgTable("programs_organizations", {
+  id: serial("id").primaryKey(),
+  programId: integer("program_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  roleAtProgram: text("role_at_program"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const ORGANIZATION_TYPES = [
+  "Member",
+  "Partner",
+  "Startup",
+  "Sponsor",
+  "Government",
+  "VC",
+  "Media",
+] as const
+export type OrganizationType = (typeof ORGANIZATION_TYPES)[number]
+
+export const ORGANIZATION_STATUSES = ["approved", "pending", "hidden"] as const
+export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number]
+
 export const PEOPLE_ROLE_TYPES = [
   "Leadership",
   "Advisor",
