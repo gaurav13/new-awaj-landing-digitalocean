@@ -6,6 +6,8 @@ import { members } from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
+import { upsertOrganizationFromLegacy } from "@/lib/organizations-sync"
+import { memberTypeFromCategory } from "@/lib/organizations-import"
 
 import { resolveOptionalImage } from "@/lib/images"
 
@@ -58,6 +60,14 @@ export async function createMember(input: MemberInput) {
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
   })
+  await upsertOrganizationFromLegacy({
+    name: input.companyName,
+    type: memberTypeFromCategory(input.category || "corporate"),
+    logoUrl: input.logoUrl || null,
+    websiteUrl: input.websiteUrl || null,
+    description: input.description || null,
+    sortOrder: input.sortOrder ?? 0,
+  })
   revalidatePath("/members")
   revalidatePath("/")
 }
@@ -79,6 +89,14 @@ export async function updateMember(id: number, input: MemberInput) {
       sortOrder: input.sortOrder ?? 0,
     })
     .where(eq(members.id, id))
+  await upsertOrganizationFromLegacy({
+    name: input.companyName,
+    type: memberTypeFromCategory(input.category || "corporate"),
+    logoUrl: input.logoUrl || null,
+    websiteUrl: input.websiteUrl || null,
+    description: input.description || null,
+    sortOrder: input.sortOrder ?? 0,
+  })
   revalidatePath("/members")
   revalidatePath("/")
 }

@@ -11,7 +11,7 @@ import {
 } from "@/lib/organizations-sync"
 
 /** Map a member's category to a central organization type. */
-function memberTypeFromCategory(category: string): string {
+export function memberTypeFromCategory(category: string): string {
   const c = (category || "").toLowerCase()
   if (c.includes("startup")) return "Startup"
   if (c.includes("vc") || c.includes("invest")) return "VC"

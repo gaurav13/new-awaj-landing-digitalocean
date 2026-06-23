@@ -60,6 +60,52 @@ export async function findOrCreateOrganizationByName(input: {
   return { id: row.id, duplicate: false }
 }
 
+/** Create or update a central organization from legacy member/partner data. */
+export async function upsertOrganizationFromLegacy(input: {
+  name: string
+  type?: string
+  logoUrl?: string | null
+  websiteUrl?: string | null
+  description?: string | null
+  sortOrder?: number
+}) {
+  const cleanName = input.name.trim()
+  if (!cleanName) return null
+
+  const key = normalizeName(cleanName)
+  const existing = await db
+    .select()
+    .from(organizations)
+    .where(sql`lower(${organizations.name}) = ${key}`)
+    .limit(1)
+
+  if (existing[0]) {
+    await db
+      .update(organizations)
+      .set({
+        type: input.type || existing[0].type,
+        logoUrl: input.logoUrl ?? existing[0].logoUrl,
+        websiteUrl: input.websiteUrl ?? existing[0].websiteUrl,
+        description: input.description ?? existing[0].description,
+        sortOrder: input.sortOrder ?? existing[0].sortOrder,
+        status: "approved",
+        updatedAt: new Date(),
+      })
+      .where(eq(organizations.id, existing[0].id))
+    return existing[0].id
+  }
+
+  const { id } = await findOrCreateOrganizationByName({
+    name: cleanName,
+    type: input.type || "Member",
+    logoUrl: input.logoUrl,
+    websiteUrl: input.websiteUrl,
+    description: input.description,
+    status: "approved",
+  })
+  return id
+}
+
 /** Upsert an event's free-text sponsors into the central directory. Returns their ids. */
 export async function importEventSponsors(sponsors: EventSponsor[] = []): Promise<number[]> {
   const ids: number[] = []

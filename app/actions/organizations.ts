@@ -8,14 +8,15 @@ import {
   programsOrganizations,
   events,
   programs,
-  type Organization,
+  members,
+  partners,
 } from "@/lib/db/schema"
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 import { resolveOptionalImage } from "@/lib/images"
-import { findOrCreateOrganizationByName, normalizeName } from "@/lib/organizations-sync"
-import { importExistingOrganizations } from "@/lib/organizations-import"
+import { findOrCreateOrganizationByName, normalizeName, upsertOrganizationFromLegacy } from "@/lib/organizations-sync"
+import { importExistingOrganizations, memberTypeFromCategory } from "@/lib/organizations-import"
 import type {
   OrgConnection,
   DirectoryOrganization,
@@ -29,6 +30,74 @@ function resolveOrg<T extends { logoUrl?: string | null }>(row: T): T {
 
 function pushUnique(list: OrgConnection[], conn: OrgConnection) {
   if (!list.some((c) => c.id === conn.id)) list.push(conn)
+}
+
+function legacyMemberToDirectory(m: typeof members.$inferSelect): DirectoryOrganization {
+  return {
+    id: -m.id,
+    name: m.companyName,
+    type: memberTypeFromCategory(m.category),
+    logoUrl: resolveOptionalImage(m.logoUrl),
+    websiteUrl: m.websiteUrl,
+    country: null,
+    industry: null,
+    description: m.description,
+    status: "approved",
+    featured: false,
+    sortOrder: m.sortOrder,
+    authorId: m.authorId,
+    createdAt: m.createdAt,
+    updatedAt: m.createdAt,
+    events: [],
+    programs: [],
+  }
+}
+
+function legacyPartnerToDirectory(p: typeof partners.$inferSelect): DirectoryOrganization {
+  return {
+    id: -100000 - p.id,
+    name: p.name,
+    type: "Partner",
+    logoUrl: resolveOptionalImage(p.logoUrl),
+    websiteUrl: p.linkUrl,
+    country: null,
+    industry: null,
+    description: null,
+    status: "approved",
+    featured: false,
+    sortOrder: p.sortOrder,
+    authorId: p.authorId,
+    createdAt: p.createdAt,
+    updatedAt: p.createdAt,
+    events: [],
+    programs: [],
+  }
+}
+
+async function appendLegacyOrganizations(result: DirectoryOrganization[]): Promise<DirectoryOrganization[]> {
+  const seenNames = new Set(result.map((o) => normalizeName(o.name)))
+
+  const [memberRows, partnerRows] = await Promise.all([
+    db.select().from(members).orderBy(asc(members.sortOrder), asc(members.companyName)),
+    db.select().from(partners).orderBy(asc(partners.sortOrder), asc(partners.name)),
+  ])
+
+  for (const m of memberRows) {
+    const key = normalizeName(m.companyName)
+    if (seenNames.has(key)) continue
+    seenNames.add(key)
+    result.push(legacyMemberToDirectory(m))
+  }
+
+  for (const p of partnerRows) {
+    const key = normalizeName(p.name)
+    if (seenNames.has(key)) continue
+    seenNames.add(key)
+    result.push(legacyPartnerToDirectory(p))
+  }
+
+  result.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
+  return result
 }
 
 // ---- Public reads ----
@@ -46,7 +115,6 @@ export async function getOrganizationsDirectory(): Promise<DirectoryOrganization
       .from(organizations)
       .where(eq(organizations.status, "approved"))
       .orderBy(asc(organizations.sortOrder), asc(organizations.name))
-    if (rows.length === 0) return []
 
     const byId = new Map<number, DirectoryOrganization>()
     const result: DirectoryOrganization[] = rows.map((r) => {
@@ -55,40 +123,43 @@ export async function getOrganizationsDirectory(): Promise<DirectoryOrganization
       return entry
     })
 
-    const ids = rows.map((r) => r.id)
-    const [eventLinks, programLinks] = await Promise.all([
-      db
-        .select({
-          organizationId: eventsOrganizations.organizationId,
-          id: events.id,
-          title: events.title,
-          slug: events.slug,
-        })
-        .from(eventsOrganizations)
-        .innerJoin(events, eq(events.id, eventsOrganizations.eventId))
-        .where(inArray(eventsOrganizations.organizationId, ids))
-        .orderBy(asc(eventsOrganizations.sortOrder)),
-      db
-        .select({
-          organizationId: programsOrganizations.organizationId,
-          id: programs.id,
-          title: programs.title,
-          slug: programs.slug,
-        })
-        .from(programsOrganizations)
-        .innerJoin(programs, eq(programs.id, programsOrganizations.programId))
-        .where(inArray(programsOrganizations.organizationId, ids))
-        .orderBy(asc(programsOrganizations.sortOrder)),
-    ])
-    for (const l of eventLinks) {
-      const entry = byId.get(l.organizationId)
-      if (entry) pushUnique(entry.events, { id: l.id, title: l.title, slug: l.slug })
+    if (rows.length > 0) {
+      const ids = rows.map((r) => r.id)
+      const [eventLinks, programLinks] = await Promise.all([
+        db
+          .select({
+            organizationId: eventsOrganizations.organizationId,
+            id: events.id,
+            title: events.title,
+            slug: events.slug,
+          })
+          .from(eventsOrganizations)
+          .innerJoin(events, eq(events.id, eventsOrganizations.eventId))
+          .where(inArray(eventsOrganizations.organizationId, ids))
+          .orderBy(asc(eventsOrganizations.sortOrder)),
+        db
+          .select({
+            organizationId: programsOrganizations.organizationId,
+            id: programs.id,
+            title: programs.title,
+            slug: programs.slug,
+          })
+          .from(programsOrganizations)
+          .innerJoin(programs, eq(programs.id, programsOrganizations.programId))
+          .where(inArray(programsOrganizations.organizationId, ids))
+          .orderBy(asc(programsOrganizations.sortOrder)),
+      ])
+      for (const l of eventLinks) {
+        const entry = byId.get(l.organizationId)
+        if (entry) pushUnique(entry.events, { id: l.id, title: l.title, slug: l.slug })
+      }
+      for (const l of programLinks) {
+        const entry = byId.get(l.organizationId)
+        if (entry) pushUnique(entry.programs, { id: l.id, title: l.title, slug: l.slug })
+      }
     }
-    for (const l of programLinks) {
-      const entry = byId.get(l.organizationId)
-      if (entry) pushUnique(entry.programs, { id: l.id, title: l.title, slug: l.slug })
-    }
-    return result
+
+    return appendLegacyOrganizations(result)
   }, [])
 }
 

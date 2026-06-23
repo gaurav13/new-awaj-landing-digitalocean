@@ -6,6 +6,7 @@ import { partners } from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
+import { upsertOrganizationFromLegacy } from "@/lib/organizations-sync"
 
 import { resolveOptionalImage } from "@/lib/images"
 
@@ -48,7 +49,15 @@ export async function createPartner(input: PartnerInput) {
     sortOrder: input.sortOrder ?? 0,
     authorId: userId,
   })
+  await upsertOrganizationFromLegacy({
+    name: input.name,
+    type: "Partner",
+    logoUrl: input.logoUrl || null,
+    websiteUrl: input.linkUrl || null,
+    sortOrder: input.sortOrder ?? 0,
+  })
   revalidatePath("/")
+  revalidatePath("/members")
 }
 
 export async function updatePartner(id: number, input: PartnerInput) {
@@ -63,7 +72,15 @@ export async function updatePartner(id: number, input: PartnerInput) {
       sortOrder: input.sortOrder ?? 0,
     })
     .where(eq(partners.id, id))
+  await upsertOrganizationFromLegacy({
+    name: input.name,
+    type: "Partner",
+    logoUrl: input.logoUrl || null,
+    websiteUrl: input.linkUrl || null,
+    sortOrder: input.sortOrder ?? 0,
+  })
   revalidatePath("/")
+  revalidatePath("/members")
 }
 
 export async function deletePartner(id: number) {
