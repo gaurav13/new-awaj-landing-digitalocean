@@ -2,10 +2,22 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { programs, programsPeople, type ProgramPartner, type ProgramStartup, type GalleryItem } from "@/lib/db/schema"
+import {
+  programs,
+  programsPeople,
+  programsOrganizations,
+  type ProgramPartner,
+  type ProgramStartup,
+  type GalleryItem,
+} from "@/lib/db/schema"
 import { asc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId, slugify } from "@/lib/admin-helpers"
+import {
+  importProgramPartners,
+  importProgramStartups,
+  syncProgramOrganizationConnections,
+} from "@/lib/organizations-sync"
 
 import { resolveProgramRecord } from "@/lib/images"
 
@@ -45,7 +57,18 @@ export async function getMyPrograms() {
     arr.push(l.personId)
     map.set(l.programId, arr)
   }
-  return rows.map((r) => ({ ...r, peopleIds: map.get(r.id) ?? [] }))
+  const orgLinks = await db.select().from(programsOrganizations).orderBy(asc(programsOrganizations.sortOrder))
+  const orgMap = new Map<number, number[]>()
+  for (const l of orgLinks) {
+    const arr = orgMap.get(l.programId) ?? []
+    arr.push(l.organizationId)
+    orgMap.set(l.programId, arr)
+  }
+  return rows.map((r) => ({
+    ...r,
+    peopleIds: map.get(r.id) ?? [],
+    organizationIds: orgMap.get(r.id) ?? [],
+  }))
 }
 
 type ProgramInput = {
@@ -61,6 +84,21 @@ type ProgramInput = {
   gallery?: GalleryItem[]
   sortOrder?: number
   peopleIds?: number[]
+  organizationIds?: number[]
+}
+
+/** Import a program's free-text partners/startups + connect picked organizations. */
+async function syncProgramOrganizations(
+  programId: number,
+  input: { partners?: ProgramPartner[]; startups?: ProgramStartup[]; organizationIds?: number[] },
+) {
+  const partnerIds = await importProgramPartners(input.partners ?? [])
+  const startupIds = await importProgramStartups(input.startups ?? [])
+  await syncProgramOrganizationConnections(programId, [
+    ...(input.organizationIds ?? []),
+    ...partnerIds,
+    ...startupIds,
+  ])
 }
 
 async function syncProgramPeople(programId: number, peopleIds?: number[]) {

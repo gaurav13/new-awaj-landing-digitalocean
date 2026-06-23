@@ -275,6 +275,9 @@ export async function updateEvent(id: number, input: EventInput) {
 export async function deleteEvent(id: number) {
   await getUserId()
   await db.delete(events).where(eq(events.id, id))
+  await db.delete(eventsPeople).where(eq(eventsPeople.eventId, id))
+  await db.delete(eventsOrganizations).where(eq(eventsOrganizations.eventId, id))
   revalidatePath("/")
   revalidatePath("/events")
+  revalidatePath("/members")
 }
