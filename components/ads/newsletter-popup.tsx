@@ -74,7 +74,7 @@ export function NewsletterPopup({ ad }: { ad: OverlayAd }) {
             </div>
           ) : (
             <>
-              <h3 className="font-serif text-xl font-bold text-navy-text">{ad.title || "Join our newsletter"}</h3>
+              <h3 className="pr-8 font-serif text-xl font-bold text-navy-text">{ad.title || "Join our newsletter"}</h3>
               {ad.bodyText ? (
                 <p className="mt-2 text-sm leading-relaxed text-navy-text/70">{ad.bodyText}</p>
               ) : null}
