@@ -33,7 +33,7 @@ export function PopupAd({ ad }: { ad: OverlayAd }) {
 
         {ad.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="max-h-64 w-full object-cover" />
+          <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="max-h-64 w-full object-contain" />
         ) : null}
 
         <div className="flex flex-col gap-3 p-6 text-center">

@@ -13,7 +13,7 @@ export function FloatingAd({ ad }: { ad: OverlayAd }) {
     <>
       {ad.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="h-32 w-full object-cover" />
+        <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="h-32 w-full object-contain" />
       ) : null}
       {ad.title ? (
         <div className="px-3 py-2.5">

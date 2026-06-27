@@ -54,17 +54,18 @@ const PLACEMENT_LABELS: Record<string, string> = {
   newsletter: "Newsletter popup",
 }
 
-// Recommended image dimensions so uploaded creatives fit each slot on the site.
+// Actual rendered sizes on the site. Upload at the recommended (2×) size so the
+// creative stays sharp and fills the slot without cropping or blurring.
 const PLACEMENT_SIZES: Record<string, string> = {
-  top: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
-  mid: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
-  bottom: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
-  "in-content": "1200 × 675 px — landscape (16:9)",
-  sidebar: "600 × 750 px — portrait (4:5)",
-  popup: "600 × 400 px — landscape (3:2), shown up to ~256 px tall",
-  floating: "480 × 320 px — landscape (3:2), shown ~240 px wide on desktop",
-  "mobile-sticky": "96 × 96 px — small square thumbnail",
-  newsletter: "1200 × 400 px — wide banner (3:1), image optional",
+  top: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
+  mid: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
+  bottom: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
+  "in-content": "renders at 16:9, fit inside the slot (not cropped) — upload 1280 × 720 px",
+  sidebar: "renders at 4:5, fit inside the slot (not cropped) — upload 1024 × 1280 px",
+  popup: "renders 448 × 256 px (7:4, cropped to fill) — upload 896 × 512 px",
+  floating: "renders 240 × 128 px (15:8, cropped to fill) — upload 480 × 256 px",
+  "mobile-sticky": "renders 48 × 48 px square (cropped to fill) — upload 96 × 96 px",
+  newsletter: "renders as a wide banner (image optional) — upload 1200 × 400 px",
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -411,8 +412,8 @@ export function AdsManager({
               {/* Recommended size so the creative fits the slot on the site */}
               {form.placement && PLACEMENT_SIZES[form.placement] ? (
                 <div className="-mt-1 rounded-lg border border-gold/30 bg-beige/40 px-3 py-2 text-xs text-navy-text/70">
-                  <span className="font-semibold text-navy-text">Recommended image size:</span>{" "}
-                  {PLACEMENT_SIZES[form.placement]}
+                  <span className="font-semibold text-navy-text">Size on site:</span> This placement{" "}
+                  {PLACEMENT_SIZES[form.placement]}.
                 </div>
               ) : null}
 
@@ -422,9 +423,7 @@ export function AdsManager({
                   <Label>{overlayForm ? "Image (optional)" : "Banner image"}</Label>
                   <ImageUpload value={form.imageUrl ?? ""} onChange={(url) => setForm({ ...form, imageUrl: url })} />
                   {form.placement && PLACEMENT_SIZES[form.placement] ? (
-                    <p className="-mt-1 text-xs text-navy-text/50">
-                      Upload at {PLACEMENT_SIZES[form.placement]} so it fits the website without cropping.
-                    </p>
+                    <p className="-mt-1 text-xs text-navy-text/50">This placement {PLACEMENT_SIZES[form.placement]}.</p>
                   ) : null}
                 </div>
               )}
