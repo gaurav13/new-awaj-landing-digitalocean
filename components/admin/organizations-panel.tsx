@@ -376,7 +376,11 @@ export function OrganizationsPanel({
             <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-4 p-6">
               <div className="flex flex-col gap-2">
                 <Label>Logo</Label>
-                <ImageUpload value={form.logoUrl ?? ""} onChange={(url) => setForm({ ...form, logoUrl: url })} />
+                <ImageUpload
+                  value={form.logoUrl ?? ""}
+                  onChange={(url) => setForm({ ...form, logoUrl: url })}
+                  hint="Recommended 400 × 400 px. Use a transparent PNG (or WebP) for the cleanest look. The full logo is shown without cropping."
+                />
               </div>
 
               <Field label="Organization name" required>

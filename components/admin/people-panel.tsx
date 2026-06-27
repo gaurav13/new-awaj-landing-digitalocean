@@ -412,6 +412,7 @@ export function PeoplePanel({
                 <ImageUpload
                   value={form.profilePhoto ?? ""}
                   onChange={(url) => setForm({ ...form, profilePhoto: url })}
+                  hint="Recommended 600 × 600 px square head-and-shoulders portrait. PNG, JPG, or WebP. The full image is shown without cropping."
                 />
               </div>
 
@@ -437,7 +438,11 @@ export function PeoplePanel({
 
               <div className="flex flex-col gap-2">
                 <Label>Company logo</Label>
-                <ImageUpload value={form.companyLogo ?? ""} onChange={(url) => setForm({ ...form, companyLogo: url })} />
+                <ImageUpload
+                  value={form.companyLogo ?? ""}
+                  onChange={(url) => setForm({ ...form, companyLogo: url })}
+                  hint="Recommended 400 × 400 px. Use a transparent PNG (or WebP) for the cleanest look. The full logo is shown without cropping."
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
