@@ -12,6 +12,13 @@ export type DirectoryOrganization = Organization & {
 export type AdminOrganization = Organization & {
   eventCount: number
   programCount: number
+  events: OrgConnection[]
+  programs: OrgConnection[]
+}
+
+export type EventProgramOptions = {
+  events: { id: number; title: string }[]
+  programs: { id: number; title: string }[]
 }
 
 export type OrganizationInput = {

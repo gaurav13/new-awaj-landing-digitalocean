@@ -22,6 +22,7 @@ import type {
   DirectoryOrganization,
   AdminOrganization,
   OrganizationInput,
+  EventProgramOptions,
 } from "@/lib/organization-types"
 
 function resolveOrg<T extends { logoUrl?: string | null }>(row: T): T {
@@ -209,28 +210,68 @@ export async function getMyOrganizations(): Promise<AdminOrganization[]> {
       .from(organizations)
       .orderBy(asc(organizations.sortOrder), asc(organizations.name))
     const ids = rows.map((r) => r.id)
-    const counts = new Map<number, { events: number; programs: number }>()
-    for (const id of ids) counts.set(id, { events: 0, programs: 0 })
-    if (ids.length > 0) {
-      const ev = await db
-        .select({ organizationId: eventsOrganizations.organizationId, c: sql<number>`count(*)::int` })
-        .from(eventsOrganizations)
-        .where(inArray(eventsOrganizations.organizationId, ids))
-        .groupBy(eventsOrganizations.organizationId)
-      const pr = await db
-        .select({ organizationId: programsOrganizations.organizationId, c: sql<number>`count(*)::int` })
-        .from(programsOrganizations)
-        .where(inArray(programsOrganizations.organizationId, ids))
-        .groupBy(programsOrganizations.organizationId)
-      for (const r of ev) counts.get(r.organizationId)!.events = r.c
-      for (const r of pr) counts.get(r.organizationId)!.programs = r.c
+    const eventsByOrg = new Map<number, OrgConnection[]>()
+    const programsByOrg = new Map<number, OrgConnection[]>()
+    for (const id of ids) {
+      eventsByOrg.set(id, [])
+      programsByOrg.set(id, [])
     }
-    return rows.map((r) => ({
-      ...r,
-      eventCount: counts.get(r.id)?.events ?? 0,
-      programCount: counts.get(r.id)?.programs ?? 0,
-    }))
+    if (ids.length > 0) {
+      const [eventLinks, programLinks] = await Promise.all([
+        db
+          .select({
+            organizationId: eventsOrganizations.organizationId,
+            id: events.id,
+            title: events.title,
+            slug: events.slug,
+          })
+          .from(eventsOrganizations)
+          .innerJoin(events, eq(events.id, eventsOrganizations.eventId))
+          .where(inArray(eventsOrganizations.organizationId, ids))
+          .orderBy(asc(eventsOrganizations.sortOrder)),
+        db
+          .select({
+            organizationId: programsOrganizations.organizationId,
+            id: programs.id,
+            title: programs.title,
+            slug: programs.slug,
+          })
+          .from(programsOrganizations)
+          .innerJoin(programs, eq(programs.id, programsOrganizations.programId))
+          .where(inArray(programsOrganizations.organizationId, ids))
+          .orderBy(asc(programsOrganizations.sortOrder)),
+      ])
+      for (const l of eventLinks) pushUnique(eventsByOrg.get(l.organizationId)!, { id: l.id, title: l.title, slug: l.slug })
+      for (const l of programLinks)
+        pushUnique(programsByOrg.get(l.organizationId)!, { id: l.id, title: l.title, slug: l.slug })
+    }
+    return rows.map((r) => {
+      const evs = eventsByOrg.get(r.id) ?? []
+      const prs = programsByOrg.get(r.id) ?? []
+      return {
+        ...r,
+        eventCount: evs.length,
+        programCount: prs.length,
+        events: evs,
+        programs: prs,
+      }
+    })
   }, [])
+}
+
+/** All events and programs as lightweight options for the member connection pickers. */
+export async function getEventProgramOptions(): Promise<EventProgramOptions> {
+  await getUserId()
+  return withDb(
+    async () => {
+      const [ev, pr] = await Promise.all([
+        db.select({ id: events.id, title: events.title }).from(events).orderBy(asc(events.title)),
+        db.select({ id: programs.id, title: programs.title }).from(programs).orderBy(asc(programs.title)),
+      ])
+      return { events: ev, programs: pr }
+    },
+    { events: [], programs: [] },
+  )
 }
 
 /** Lightweight option list for the event/program organization picker. */
@@ -297,13 +338,47 @@ function normalize(input: OrganizationInput) {
   }
 }
 
-export async function createOrganization(input: OrganizationInput) {
+export async function createOrganization(input: OrganizationInput): Promise<number> {
   const userId = await getUserId()
   if (!input.name?.trim()) throw new Error("Organization name is required.")
   await assertNoDuplicate(input.name)
-  await db.insert(organizations).values({ ...normalize(input), authorId: userId })
+  const [row] = await db
+    .insert(organizations)
+    .values({ ...normalize(input), authorId: userId })
+    .returning({ id: organizations.id })
   revalidatePath("/members")
   revalidatePath("/")
+  return row.id
+}
+
+/**
+ * Rebuild which events and programs this organization is connected to, editable directly
+ * from the member (organizations) area. A single organization can be linked to any number
+ * of events and programs.
+ */
+export async function setOrganizationConnections(orgId: number, eventIds: number[], programIds: number[]) {
+  await getUserId()
+  const evIds = Array.from(new Set(eventIds.map(Number).filter((n) => Number.isFinite(n))))
+  const prIds = Array.from(new Set(programIds.map(Number).filter((n) => Number.isFinite(n))))
+
+  await db.delete(eventsOrganizations).where(eq(eventsOrganizations.organizationId, orgId))
+  if (evIds.length > 0) {
+    await db
+      .insert(eventsOrganizations)
+      .values(evIds.map((eventId, i) => ({ eventId, organizationId: orgId, sortOrder: i })))
+  }
+
+  await db.delete(programsOrganizations).where(eq(programsOrganizations.organizationId, orgId))
+  if (prIds.length > 0) {
+    await db
+      .insert(programsOrganizations)
+      .values(prIds.map((programId, i) => ({ programId, organizationId: orgId, sortOrder: i })))
+  }
+
+  revalidatePath("/members")
+  revalidatePath("/")
+  revalidatePath("/events")
+  revalidatePath("/programs")
 }
 
 export async function updateOrganization(id: number, input: OrganizationInput) {
