@@ -129,9 +129,8 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
         <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
           {BRANDING_FIELDS.map((f) => (
             <div key={f.key} className="rounded-2xl border border-gold/20 bg-white p-5">
-              <h4 className="font-semibold text-navy-text">{f.label}</h4>
-              <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">{f.help}</p>
-              <ImageUpload value={form[f.key]} onChange={(url) => setForm({ ...form, [f.key]: url })} />
+              <h4 className="mb-3 font-semibold text-navy-text">{f.label}</h4>
+              <ImageUpload value={form[f.key]} onChange={(url) => setForm({ ...form, [f.key]: url })} hint={f.help} />
             </div>
           ))}
         </div>
@@ -168,9 +167,8 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1">
             {SEO_IMAGE_FIELDS.map((f) => (
               <div key={f.key} className="rounded-2xl border border-gold/20 bg-white p-5">
-                <h4 className="font-semibold text-navy-text">{f.label}</h4>
-                <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">{f.help}</p>
-                <ImageUpload value={form[f.key]} onChange={(url) => setForm({ ...form, [f.key]: url })} />
+                <h4 className="mb-3 font-semibold text-navy-text">{f.label}</h4>
+                <ImageUpload value={form[f.key]} onChange={(url) => setForm({ ...form, [f.key]: url })} hint={f.help} />
               </div>
             ))}
           </div>
@@ -223,13 +221,11 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
             </div>
           </div>
           <div className="rounded-2xl border border-gold/20 bg-white p-5">
-            <h4 className="font-semibold text-navy-text">Header banner image</h4>
-            <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">
-              Shown on the right side of the membership hero. Recommended 1200×800px (3:2) JPG or PNG.
-            </p>
+            <h4 className="mb-3 font-semibold text-navy-text">Header banner image</h4>
             <ImageUpload
               value={form.membershipHeroUrl}
               onChange={(url) => setForm({ ...form, membershipHeroUrl: url })}
+              hint="Shown on the right side of the membership hero. Recommended 1200 × 800 px (3:2), JPG or PNG. The full image is shown without cropping."
             />
           </div>
         </div>
@@ -304,21 +300,20 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
           </div>
           <div className="flex flex-col gap-6">
             <div className="rounded-2xl border border-gold/20 bg-white p-5">
-              <h4 className="font-semibold text-navy-text">President photo</h4>
-              <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">
-                Cut-out portrait on a transparent or dark background works best. Recommended 600×800px PNG.
-              </p>
+              <h4 className="mb-3 font-semibold text-navy-text">President photo</h4>
               <ImageUpload
                 value={form.presidentPhotoUrl}
                 onChange={(url) => setForm({ ...form, presidentPhotoUrl: url })}
+                hint="Cut-out portrait on a transparent or dark background works best. Recommended 600 × 800 px PNG. The full image is shown without cropping."
               />
             </div>
             <div className="rounded-2xl border border-gold/20 bg-white p-5">
-              <h4 className="font-semibold text-navy-text">Background image</h4>
-              <p className="mb-3 mt-1 text-xs leading-relaxed text-navy-text/55">
-                Dark, atmospheric image behind the hero. Recommended 1920×1080px (16:9).
-              </p>
-              <ImageUpload value={form.presidentBgUrl} onChange={(url) => setForm({ ...form, presidentBgUrl: url })} />
+              <h4 className="mb-3 font-semibold text-navy-text">Background image</h4>
+              <ImageUpload
+                value={form.presidentBgUrl}
+                onChange={(url) => setForm({ ...form, presidentBgUrl: url })}
+                hint="Dark, atmospheric image behind the hero. Recommended 1920 × 1080 px (16:9). The full image is shown without cropping."
+              />
             </div>
           </div>
         </div>

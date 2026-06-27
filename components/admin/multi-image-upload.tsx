@@ -16,9 +16,11 @@ function isImageFile(file: File): boolean {
 export function MultiImageUpload({
   value,
   onChange,
+  hint,
 }: {
   value: GalleryItem[]
   onChange: (photos: GalleryItem[]) => void
+  hint?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -93,6 +95,12 @@ export function MultiImageUpload({
 
   return (
     <div className="flex flex-col gap-3">
+      {hint ? (
+        <div className="rounded-lg border border-gold/30 bg-beige/40 px-3 py-2 text-xs leading-relaxed text-navy-text/70">
+          <span className="font-semibold text-navy-text">Image guide:</span> {hint}
+        </div>
+      ) : null}
+
       <input
         ref={inputRef}
         type="file"
@@ -146,7 +154,7 @@ export function MultiImageUpload({
                 <img
                   src={resolveImageUrl(photo.imageUrl) || "/placeholder.svg"}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
                 <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-navy/70 text-[11px] font-semibold text-white">
                   {index + 1}

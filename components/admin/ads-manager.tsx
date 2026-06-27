@@ -54,18 +54,18 @@ const PLACEMENT_LABELS: Record<string, string> = {
   newsletter: "Newsletter popup",
 }
 
-// Actual rendered sizes on the site. Upload at the recommended (2×) size so the
-// creative stays sharp and fills the slot without cropping or blurring.
+// Recommended upload size per placement. The full image is always shown (never
+// cropped), so match the suggested aspect ratio for the best fit.
 const PLACEMENT_SIZES: Record<string, string> = {
-  top: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
-  mid: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
-  bottom: "renders 1280 × 213 px (6:1, image is cropped to fill) — upload 2560 × 426 px",
-  "in-content": "renders at 16:9, fit inside the slot (not cropped) — upload 1280 × 720 px",
-  sidebar: "renders at 4:5, fit inside the slot (not cropped) — upload 1024 × 1280 px",
-  popup: "renders 448 × 256 px (7:4, cropped to fill) — upload 896 × 512 px",
-  floating: "renders 240 × 128 px (15:8, cropped to fill) — upload 480 × 256 px",
-  "mobile-sticky": "renders 48 × 48 px square (cropped to fill) — upload 96 × 96 px",
-  newsletter: "renders as a wide banner (image optional) — upload 1200 × 400 px",
+  top: "Recommended 2560 × 426 px (6:1 wide banner). PNG, JPG, or WebP.",
+  mid: "Recommended 2560 × 426 px (6:1 wide banner). PNG, JPG, or WebP.",
+  bottom: "Recommended 2560 × 426 px (6:1 wide banner). PNG, JPG, or WebP.",
+  "in-content": "Recommended 1280 × 720 px (16:9 landscape). PNG, JPG, or WebP.",
+  sidebar: "Recommended 1024 × 1280 px (4:5 portrait). PNG, JPG, or WebP.",
+  popup: "Recommended 896 × 512 px (7:4 landscape). PNG, JPG, or WebP.",
+  floating: "Recommended 480 × 256 px (15:8 landscape). PNG, JPG, or WebP.",
+  "mobile-sticky": "Recommended 96 × 96 px (square). PNG, JPG, or WebP.",
+  newsletter: "Recommended 1200 × 400 px (3:1 wide banner). Image optional.",
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -409,22 +409,15 @@ export function AdsManager({
                 </div>
               </div>
 
-              {/* Recommended size so the creative fits the slot on the site */}
-              {form.placement && PLACEMENT_SIZES[form.placement] ? (
-                <div className="-mt-1 rounded-lg border border-gold/30 bg-beige/40 px-3 py-2 text-xs text-navy-text/70">
-                  <span className="font-semibold text-navy-text">Size on site:</span> This placement{" "}
-                  {PLACEMENT_SIZES[form.placement]}.
-                </div>
-              ) : null}
-
               {/* Image: required for banners + popup/floating/mobile; optional for newsletter */}
               {!isNewsletter && (
                 <div className="flex flex-col gap-2">
                   <Label>{overlayForm ? "Image (optional)" : "Banner image"}</Label>
-                  <ImageUpload value={form.imageUrl ?? ""} onChange={(url) => setForm({ ...form, imageUrl: url })} />
-                  {form.placement && PLACEMENT_SIZES[form.placement] ? (
-                    <p className="-mt-1 text-xs text-navy-text/50">This placement {PLACEMENT_SIZES[form.placement]}.</p>
-                  ) : null}
+                  <ImageUpload
+                    value={form.imageUrl ?? ""}
+                    onChange={(url) => setForm({ ...form, imageUrl: url })}
+                    hint={form.placement ? PLACEMENT_SIZES[form.placement] : undefined}
+                  />
                 </div>
               )}
 

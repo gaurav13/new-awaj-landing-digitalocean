@@ -7,9 +7,11 @@ import { resolveImageUrl, uploadImageViaApi } from "@/lib/images"
 export function ImageUpload({
   value,
   onChange,
+  hint,
 }: {
   value: string
   onChange: (url: string) => void
+  hint?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -31,6 +33,12 @@ export function ImageUpload({
 
   return (
     <div className="flex flex-col gap-2">
+      {hint ? (
+        <div className="rounded-lg border border-gold/30 bg-beige/40 px-3 py-2 text-xs leading-relaxed text-navy-text/70">
+          <span className="font-semibold text-navy-text">Image guide:</span> {hint}
+        </div>
+      ) : null}
+
       <input
         ref={inputRef}
         type="file"
@@ -46,7 +54,7 @@ export function ImageUpload({
       {value ? (
         <div className="relative overflow-hidden rounded-xl border border-gold/30 bg-white">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={previewUrl || "/placeholder.svg"} alt="Selected" className="h-40 w-full object-cover" />
+          <img src={previewUrl || "/placeholder.svg"} alt="Selected" className="h-40 w-full bg-beige object-contain" />
           <div className="flex items-center justify-between gap-2 border-t border-gold/20 px-3 py-2">
             <button
               type="button"

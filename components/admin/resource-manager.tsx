@@ -15,6 +15,15 @@ import { RichTextEditor } from "./rich-text-editor"
 import { resolveImageUrl } from "@/lib/images"
 import { ORGANIZATION_TYPES, type GalleryItem } from "@/lib/db/schema"
 
+// Fallback image guidance shown on upload areas that don't specify their own hint.
+// The full image is always displayed (never cropped), so any size works.
+const DEFAULT_IMAGE_HINT =
+  "Recommended 1200 × 675 px (16:9 landscape). PNG, JPG, or WebP, under 500 KB. The full image is shown without cropping."
+const DEFAULT_GALLERY_HINT =
+  "Upload multiple photos at once. Recommended 1600 × 1200 px (4:3) or larger, PNG/JPG/WebP. Drag to reorder — the first photo is the cover."
+const DEFAULT_LOGO_HINT =
+  "Recommended 400 × 400 px. Transparent PNG (or WebP) looks best. The full logo is shown without cropping."
+
 export type FieldType =
   | "text"
   | "textarea"
@@ -37,6 +46,7 @@ export type RepeaterSubField = {
   label: string
   type: "text" | "textarea" | "image"
   placeholder?: string
+  hint?: string
 }
 
 export type FieldDef = {
@@ -347,10 +357,10 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label>{f.label}</Label>
-                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <ImageUpload
                         value={String(form[f.name] ?? "")}
                         onChange={(url) => setForm({ ...form, [f.name]: url })}
+                        hint={f.hint ?? DEFAULT_IMAGE_HINT}
                       />
                     </div>
                   )
@@ -359,10 +369,10 @@ export function ResourceManager<T extends { id: number }>({
                   return (
                     <div key={f.name} className="flex flex-col gap-2">
                       <Label>{f.label}</Label>
-                      {f.hint ? <p className="-mt-1 text-xs text-navy-text/55">{f.hint}</p> : null}
                       <MultiImageUpload
                         value={Array.isArray(form[f.name]) ? (form[f.name] as GalleryItem[]) : []}
                         onChange={(photos) => setForm({ ...form, [f.name]: photos })}
+                        hint={f.hint ?? DEFAULT_GALLERY_HINT}
                       />
                     </div>
                   )
@@ -494,7 +504,11 @@ function RepeaterField({
                 return (
                   <div key={sf.name} className="flex flex-col gap-1.5">
                     <span className="text-xs font-medium text-navy-text/70">{sf.label}</span>
-                    <ImageUpload value={row[sf.name] ?? ""} onChange={(url) => update(index, sf.name, url)} />
+                    <ImageUpload
+                      value={row[sf.name] ?? ""}
+                      onChange={(url) => update(index, sf.name, url)}
+                      hint={sf.hint ?? DEFAULT_LOGO_HINT}
+                    />
                   </div>
                 )
               }

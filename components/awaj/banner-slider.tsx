@@ -41,7 +41,7 @@ export function BannerSlider({ banners }: { banners: Banner[] }) {
             <img
               src={b.imageUrl || "/placeholder.svg"}
               alt={b.title || "AWAJ banner"}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
             {(b.title || b.subtitle || b.linkUrl) && (
               <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-navy/80 via-navy/20 to-transparent p-6 lg:p-8">

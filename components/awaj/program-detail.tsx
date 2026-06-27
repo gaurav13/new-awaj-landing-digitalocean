@@ -47,17 +47,13 @@ export function ProgramDetail({ program, media }: { program: Program; media: Med
             <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-navy-text/70">{program.excerpt}</p>
           </div>
 
-          {/* Right visual — fixed-ratio frame that flatters any banner shape */}
+          {/* Right visual — shows the full banner without cropping */}
           <div className="relative">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] bg-beige">
+            <div className="relative w-full overflow-hidden rounded-[1.75rem] bg-beige">
               {banner ? (
-                <img
-                  src={banner || "/placeholder.svg"}
-                  alt={program.title}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                <img src={banner || "/placeholder.svg"} alt={program.title} className="block h-auto w-full" />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-beige">
+                <div className="flex aspect-[4/3] w-full items-center justify-center bg-beige">
                   <Globe2 className="h-16 w-16 text-gold/30" />
                 </div>
               )}
