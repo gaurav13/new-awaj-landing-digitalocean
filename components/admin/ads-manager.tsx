@@ -36,6 +36,7 @@ const EMPTY: AdInput = {
   trigger: "delay",
   frequency: "session",
   status: "active",
+  showSponsoredLabel: true,
   startDate: null,
   endDate: null,
   sortOrder: 0,
@@ -51,6 +52,19 @@ const PLACEMENT_LABELS: Record<string, string> = {
   floating: "Floating (desktop)",
   "mobile-sticky": "Mobile sticky bar",
   newsletter: "Newsletter popup",
+}
+
+// Recommended image dimensions so uploaded creatives fit each slot on the site.
+const PLACEMENT_SIZES: Record<string, string> = {
+  top: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
+  mid: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
+  bottom: "1280 × 200 px — wide leaderboard (≈6:1), full content width",
+  "in-content": "1200 × 675 px — landscape (16:9)",
+  sidebar: "600 × 750 px — portrait (4:5)",
+  popup: "600 × 400 px — landscape (3:2), shown up to ~256 px tall",
+  floating: "480 × 320 px — landscape (3:2), shown ~240 px wide on desktop",
+  "mobile-sticky": "96 × 96 px — small square thumbnail",
+  newsletter: "1200 × 400 px — wide banner (3:1), image optional",
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -131,6 +145,7 @@ export function AdsManager({
       trigger: a.trigger as AdInput["trigger"],
       frequency: a.frequency as AdInput["frequency"],
       status: a.status,
+      showSponsoredLabel: a.showSponsoredLabel,
       startDate: toInputDate(a.startDate),
       endDate: toInputDate(a.endDate),
       sortOrder: a.sortOrder,
@@ -393,11 +408,24 @@ export function AdsManager({
                 </div>
               </div>
 
+              {/* Recommended size so the creative fits the slot on the site */}
+              {form.placement && PLACEMENT_SIZES[form.placement] ? (
+                <div className="-mt-1 rounded-lg border border-gold/30 bg-beige/40 px-3 py-2 text-xs text-navy-text/70">
+                  <span className="font-semibold text-navy-text">Recommended image size:</span>{" "}
+                  {PLACEMENT_SIZES[form.placement]}
+                </div>
+              ) : null}
+
               {/* Image: required for banners + popup/floating/mobile; optional for newsletter */}
               {!isNewsletter && (
                 <div className="flex flex-col gap-2">
                   <Label>{overlayForm ? "Image (optional)" : "Banner image"}</Label>
                   <ImageUpload value={form.imageUrl ?? ""} onChange={(url) => setForm({ ...form, imageUrl: url })} />
+                  {form.placement && PLACEMENT_SIZES[form.placement] ? (
+                    <p className="-mt-1 text-xs text-navy-text/50">
+                      Upload at {PLACEMENT_SIZES[form.placement]} so it fits the website without cropping.
+                    </p>
+                  ) : null}
                 </div>
               )}
 
@@ -519,6 +547,22 @@ export function AdsManager({
                   />
                 </Field>
               </div>
+
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gold/25 bg-white px-3 py-3">
+                <input
+                  type="checkbox"
+                  checked={form.showSponsoredLabel ?? true}
+                  onChange={(e) => setForm({ ...form, showSponsoredLabel: e.target.checked })}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-gold/50 text-awaj-red accent-awaj-red"
+                />
+                <span className="text-sm">
+                  <span className="font-medium text-navy-text">Show “Sponsored” label</span>
+                  <span className="mt-0.5 block text-xs text-navy-text/55">
+                    Display a small “Sponsored” badge on this ad. Turn off for partner notices or non-sponsored
+                    promotions.
+                  </span>
+                </span>
+              </label>
 
               {error && (
                 <p className="text-sm text-awaj-red" role="alert">

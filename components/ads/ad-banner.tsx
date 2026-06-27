@@ -55,9 +55,11 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
       ref={ref}
       className="group relative w-full overflow-hidden rounded-2xl border border-gold/20 bg-white shadow-sm"
     >
-      <span className="absolute right-2 top-2 z-10 rounded-full bg-navy/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/90">
-        Sponsored
-      </span>
+      {ad.showSponsoredLabel ? (
+        <span className="absolute right-2 top-2 z-10 rounded-full bg-navy/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/90">
+          Sponsored
+        </span>
+      ) : null}
       <div className={`relative w-full ${aspect} bg-beige/40`}>
         {hasLink ? (
           <a

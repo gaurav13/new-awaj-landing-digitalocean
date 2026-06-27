@@ -23,6 +23,7 @@ export async function PageAds({ page }: { page: AdPageTarget }) {
     buttonText: a.buttonText,
     trigger: a.trigger,
     frequency: a.frequency,
+    showSponsoredLabel: a.showSponsoredLabel,
   }))
 
   return <AdOverlays ads={overlays} />
