@@ -28,7 +28,7 @@ import { PeoplePanel } from "./people-panel"
 import type { Person } from "@/app/actions/people"
 import { OrganizationsPanel } from "./organizations-panel"
 import { quickCreateOrganization } from "@/app/actions/organizations"
-import type { AdminOrganization } from "@/lib/organization-types"
+import type { AdminOrganization, EventProgramOptions } from "@/lib/organization-types"
 import { AdsManager } from "./ads-manager"
 import type { AdminAd } from "@/lib/ad-types"
 import type { NewsletterSubscriber } from "@/lib/db/schema"
@@ -521,6 +521,7 @@ export function AdminDashboard({
   peopleCounts,
   organizations,
   organizationCounts,
+  eventProgramOptions,
   ads,
   subscribers,
   banners,
@@ -551,6 +552,7 @@ export function AdminDashboard({
     counts: { total: number; approved: number; pending: number; hidden: number }
     byType: Record<string, number>
   }
+  eventProgramOptions: EventProgramOptions
   ads: AdminAd[]
   subscribers: NewsletterSubscriber[]
   banners: Banner[]
@@ -970,6 +972,7 @@ export function AdminDashboard({
               organizations={organizations}
               counts={organizationCounts.counts}
               byType={organizationCounts.byType}
+              eventProgramOptions={eventProgramOptions}
             />
           </TabsContent>
 

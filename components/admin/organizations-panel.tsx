@@ -16,9 +16,10 @@ import {
   updateOrganization,
   deleteOrganization,
   setOrganizationStatus,
+  setOrganizationConnections,
   importOrganizations,
 } from "@/app/actions/organizations"
-import type { AdminOrganization, OrganizationInput } from "@/lib/organization-types"
+import type { AdminOrganization, OrganizationInput, EventProgramOptions } from "@/lib/organization-types"
 
 type Counts = { total: number; approved: number; pending: number; hidden: number }
 
@@ -45,16 +46,21 @@ export function OrganizationsPanel({
   organizations,
   counts,
   byType,
+  eventProgramOptions,
 }: {
   organizations: AdminOrganization[]
   counts: Counts
   byType: Record<string, number>
+  eventProgramOptions: EventProgramOptions
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<AdminOrganization | null>(null)
   const [form, setForm] = useState<OrganizationInput>(EMPTY)
+  // Event/program connections, editable directly from the member area.
+  const [eventIds, setEventIds] = useState<number[]>([])
+  const [programIds, setProgramIds] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [search, setSearch] = useState("")
@@ -77,6 +83,8 @@ export function OrganizationsPanel({
   function openCreate() {
     setEditing(null)
     setForm(EMPTY)
+    setEventIds([])
+    setProgramIds([])
     setError(null)
     setShowForm(true)
   }
@@ -95,6 +103,8 @@ export function OrganizationsPanel({
       featured: o.featured,
       sortOrder: o.sortOrder,
     })
+    setEventIds(o.events.map((e) => e.id))
+    setProgramIds(o.programs.map((p) => p.id))
     setError(null)
     setShowForm(true)
   }
@@ -108,8 +118,8 @@ export function OrganizationsPanel({
     }
     startTransition(async () => {
       try {
-        if (editing) await updateOrganization(editing.id, form)
-        else await createOrganization(form)
+        const orgId = editing ? (await updateOrganization(editing.id, form), editing.id) : await createOrganization(form)
+        await setOrganizationConnections(orgId, eventIds, programIds)
         setShowForm(false)
         router.refresh()
       } catch (err) {
@@ -292,6 +302,26 @@ export function OrganizationsPanel({
                     {o.eventCount} event{o.eventCount === 1 ? "" : "s"} · {o.programCount} program
                     {o.programCount === 1 ? "" : "s"}
                   </p>
+                  {o.events.length > 0 || o.programs.length > 0 ? (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      {o.events.map((e) => (
+                        <span
+                          key={`e-${e.id}`}
+                          className="rounded-full bg-awaj-red/10 px-2 py-0.5 text-[10px] font-medium text-awaj-red"
+                        >
+                          {e.title}
+                        </span>
+                      ))}
+                      {o.programs.map((p) => (
+                        <span
+                          key={`p-${p.id}`}
+                          className="rounded-full bg-navy/10 px-2 py-0.5 text-[10px] font-medium text-navy-text"
+                        >
+                          {p.title}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   {o.status !== "approved" ? (
@@ -462,6 +492,34 @@ export function OrganizationsPanel({
                 </Field>
               </div>
 
+              <div className="rounded-2xl border border-gold/20 bg-white p-4">
+                <h3 className="font-semibold text-navy-text">Connections</h3>
+                <p className="mt-0.5 text-xs text-navy-text/55">
+                  Link this organization to any number of events and programs. These links also appear on the event and
+                  program pages, and changes here update both sides.
+                </p>
+                <div className="mt-4 flex flex-col gap-4">
+                  <ConnectionPicker
+                    label="Events"
+                    options={eventProgramOptions.events}
+                    selected={eventIds}
+                    onToggle={(id) =>
+                      setEventIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+                    }
+                    emptyText="No events have been created yet."
+                  />
+                  <ConnectionPicker
+                    label="Programs"
+                    options={eventProgramOptions.programs}
+                    selected={programIds}
+                    onToggle={(id) =>
+                      setProgramIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+                    }
+                    emptyText="No programs have been created yet."
+                  />
+                </div>
+              </div>
+
               {error && (
                 <p className="text-sm text-awaj-red" role="alert">
                   {error}
@@ -546,6 +604,54 @@ function Field({
       </Label>
       {hint ? <p className="-mt-1 text-xs text-navy-text/55">{hint}</p> : null}
       {children}
+    </div>
+  )
+}
+
+function ConnectionPicker({
+  label,
+  options,
+  selected,
+  onToggle,
+  emptyText,
+}: {
+  label: string
+  options: { id: number; title: string }[]
+  selected: number[]
+  onToggle: (id: number) => void
+  emptyText: string
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <Label>{label}</Label>
+        <span className="text-xs text-navy-text/45">{selected.length} selected</span>
+      </div>
+      {options.length === 0 ? (
+        <p className="text-xs text-navy-text/50">{emptyText}</p>
+      ) : (
+        <div className="flex max-h-44 flex-col gap-1 overflow-y-auto rounded-xl border border-gold/20 bg-beige/20 p-2">
+          {options.map((opt) => {
+            const checked = selected.includes(opt.id)
+            return (
+              <label
+                key={opt.id}
+                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors ${
+                  checked ? "bg-white text-navy-text" : "text-navy-text/70 hover:bg-white/60"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onToggle(opt.id)}
+                  className="h-4 w-4 rounded border-input accent-awaj-red"
+                />
+                <span className="truncate">{opt.title}</span>
+              </label>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
