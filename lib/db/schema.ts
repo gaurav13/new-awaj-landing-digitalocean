@@ -384,6 +384,8 @@ export const ads = pgTable("ads", {
   frequency: text("frequency").notNull().default("session"),
   // active | hidden
   status: text("status").notNull().default("active"),
+  // Whether to display the small "Sponsored" label on the ad unit.
+  showSponsoredLabel: boolean("show_sponsored_label").notNull().default(true),
   startDate: timestamp("start_date"),
   endDate: timestamp("end_date"),
   impressions: integer("impressions").notNull().default(0),

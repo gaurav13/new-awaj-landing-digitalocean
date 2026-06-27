@@ -13,6 +13,7 @@ export type AdInput = {
   trigger?: AdTrigger
   frequency?: AdFrequency
   status?: string
+  showSponsoredLabel?: boolean
   startDate?: string | null
   endDate?: string | null
   sortOrder?: number

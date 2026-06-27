@@ -14,6 +14,7 @@ export type OverlayAd = {
   buttonText: string | null
   trigger: string
   frequency: string
+  showSponsoredLabel: boolean
 }
 
 const keyFor = (id: number) => `awaj_ad_${id}`

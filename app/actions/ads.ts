@@ -44,6 +44,7 @@ function toValues(input: AdInput) {
     trigger: input.trigger || "delay",
     frequency: input.frequency || "session",
     status: input.status || "active",
+    showSponsoredLabel: input.showSponsoredLabel ?? true,
     startDate: input.startDate ? new Date(input.startDate) : null,
     endDate: input.endDate ? new Date(input.endDate) : null,
     sortOrder: input.sortOrder ?? 0,

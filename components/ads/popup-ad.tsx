@@ -37,9 +37,11 @@ export function PopupAd({ ad }: { ad: OverlayAd }) {
         ) : null}
 
         <div className="flex flex-col gap-3 p-6 text-center">
-          <span className="mx-auto rounded-full bg-beige px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-navy-text/50">
-            Sponsored
-          </span>
+          {ad.showSponsoredLabel ? (
+            <span className="mx-auto rounded-full bg-beige px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-navy-text/50">
+              Sponsored
+            </span>
+          ) : null}
           {ad.title ? <h3 className="font-serif text-xl font-bold text-navy-text">{ad.title}</h3> : null}
           {ad.bodyText ? <p className="text-sm leading-relaxed text-navy-text/70">{ad.bodyText}</p> : null}
           {ad.linkUrl ? (

@@ -31,9 +31,11 @@ export function FloatingAd({ ad }: { ad: OverlayAd }) {
   return (
     <div className="fixed bottom-6 right-6 z-[80] hidden w-60 md:block">
       <div className="relative overflow-hidden rounded-2xl border border-gold/25 bg-white shadow-xl">
-        <span className="absolute left-2 top-2 z-10 rounded-full bg-navy/70 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/90">
-          Sponsored
-        </span>
+        {ad.showSponsoredLabel ? (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-navy/70 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/90">
+            Sponsored
+          </span>
+        ) : null}
         <button
           type="button"
           onClick={dismiss}
