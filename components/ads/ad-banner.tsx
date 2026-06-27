@@ -37,15 +37,13 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
   if (!ad.imageUrl) return null
 
   const hasLink = !!ad.linkUrl
-  const aspect =
-    variant === "sidebar" ? "aspect-[4/5]" : variant === "in-content" ? "aspect-[16/9]" : "aspect-[1200/200]"
 
   const inner = (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={ad.imageUrl || "/placeholder.svg"}
       alt={ad.altText || ad.campaignName}
-      className="h-full w-full object-contain"
+      className="block h-auto w-full"
       loading="lazy"
     />
   )
@@ -60,7 +58,7 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
           Sponsored
         </span>
       ) : null}
-      <div className={`relative w-full ${aspect} bg-beige/40`}>
+      <div className="relative w-full bg-beige/40">
         {hasLink ? (
           <a
             href={ad.linkUrl!}
@@ -68,7 +66,7 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
             rel="noopener sponsored noreferrer"
             onClick={() => void recordClick(ad.id)}
             aria-label={ad.altText || ad.campaignName}
-            className="block h-full w-full"
+            className="block w-full"
           >
             {inner}
           </a>
