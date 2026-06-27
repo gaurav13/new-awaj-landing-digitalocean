@@ -45,7 +45,7 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
     <img
       src={ad.imageUrl || "/placeholder.svg"}
       alt={ad.altText || ad.campaignName}
-      className={`h-full w-full ${variant === "banner" ? "object-cover" : "object-contain"}`}
+      className="h-full w-full object-contain"
       loading="lazy"
     />
   )

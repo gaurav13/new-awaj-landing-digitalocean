@@ -13,7 +13,7 @@ export function MobileStickyAd({ ad }: { ad: OverlayAd }) {
     <div className="flex items-center gap-3">
       {ad.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+        <img src={ad.imageUrl || "/placeholder.svg"} alt={ad.altText || ""} className="h-12 w-12 shrink-0 rounded-lg object-contain" />
       ) : null}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-navy-text">{ad.title || ad.altText || "Sponsored"}</p>
