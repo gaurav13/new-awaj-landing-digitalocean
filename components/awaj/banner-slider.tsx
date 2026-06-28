@@ -29,19 +29,21 @@ export function BannerSlider({ banners }: { banners: Banner[] }) {
   if (count === 0) return null
 
   return (
-    <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-xl">
+    <div className="relative w-full overflow-hidden rounded-[2rem] bg-beige shadow-xl">
       {banners.map((b, i) => {
         const active = i === index
         return (
           <div
             key={b.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${active ? "opacity-100" : "opacity-0"}`}
+            className={`transition-opacity duration-700 ${
+              active ? "relative opacity-100" : "absolute inset-0 opacity-0"
+            }`}
             aria-hidden={!active}
           >
             <img
               src={b.imageUrl || "/placeholder.svg"}
               alt={b.title || "AWAJ banner"}
-              className="h-full w-full object-contain"
+              className={active ? "block h-auto w-full" : "h-full w-full object-cover"}
             />
             {(b.title || b.subtitle || b.linkUrl) && (
               <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-navy/80 via-navy/20 to-transparent p-6 lg:p-8">
