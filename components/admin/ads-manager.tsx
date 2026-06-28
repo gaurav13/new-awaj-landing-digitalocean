@@ -49,8 +49,10 @@ const PLACEMENT_LABELS: Record<string, string> = {
   bottom: "Banner — Bottom",
   "in-content": "Banner — In-content",
   popup: "Popup / Modal",
-  floating: "Floating (desktop)",
-  "mobile-sticky": "Mobile sticky bar",
+  "sticky-header": "Sticky header (mobile + desktop)",
+  floating: "Floating card (desktop)",
+  "floating-mobile": "Floating card (mobile)",
+  "mobile-sticky": "Mobile sticky bar (bottom)",
   newsletter: "Newsletter popup",
 }
 
@@ -63,8 +65,10 @@ const PLACEMENT_SIZES: Record<string, string> = {
   "in-content": "Recommended 1280 × 720 px (16:9 landscape). PNG, JPG, or WebP.",
   sidebar: "Recommended 1024 × 1280 px (4:5 portrait). PNG, JPG, or WebP.",
   popup: "Recommended 896 × 512 px (7:4 landscape). PNG, JPG, or WebP.",
+  "sticky-header": "Recommended 1456 × 180 px (≈8:1 thin leaderboard). Shown full-width, top of page. PNG, JPG, or WebP.",
   floating: "Recommended 480 × 256 px (15:8 landscape). PNG, JPG, or WebP.",
-  "mobile-sticky": "Recommended 96 × 96 px (square). PNG, JPG, or WebP.",
+  "floating-mobile": "Recommended 352 × 200 px (16:9 landscape). PNG, JPG, or WebP.",
+  "mobile-sticky": "Recommended 640 × 128 px (5:1 mobile leaderboard). Shown full-width. PNG, JPG, or WebP.",
   newsletter: "Recommended 1200 × 400 px (3:1 wide banner). Image optional.",
 }
 
@@ -80,8 +84,16 @@ const PAGE_LABELS: Record<string, string> = {
 
 const OVERLAY_SET = new Set<string>(AD_OVERLAY_PLACEMENTS)
 
+// Overlay placements that are banner-driven: they still require an uploaded image.
+const IMAGE_OVERLAYS = new Set<string>(["sticky-header", "mobile-sticky", "floating-mobile"])
+
 function isOverlay(placement?: string) {
   return placement ? OVERLAY_SET.has(placement) : false
+}
+
+function needsImage(placement?: string) {
+  if (!placement) return true
+  return !isOverlay(placement) || IMAGE_OVERLAYS.has(placement)
 }
 
 function toInputDate(d: Date | null) {
@@ -162,15 +174,14 @@ export function AdsManager({
       setError("Campaign name is required.")
       return
     }
-    const overlay = isOverlay(form.placement)
-    if (overlay && form.placement === "newsletter") {
+    if (form.placement === "newsletter") {
       // newsletter overlay needs at least a title
       if (!form.title?.trim()) {
         setError("Add a title for the newsletter popup.")
         return
       }
-    } else if (!form.imageUrl?.trim() && !overlay) {
-      setError("Banner ads need an image.")
+    } else if (!form.imageUrl?.trim() && needsImage(form.placement)) {
+      setError("This placement needs a banner image.")
       return
     }
     startTransition(async () => {
@@ -412,7 +423,7 @@ export function AdsManager({
               {/* Image: required for banners + popup/floating/mobile; optional for newsletter */}
               {!isNewsletter && (
                 <div className="flex flex-col gap-2">
-                  <Label>{overlayForm ? "Image (optional)" : "Banner image"}</Label>
+                  <Label>{needsImage(form.placement) ? "Banner image" : "Image (optional)"}</Label>
                   <ImageUpload
                     value={form.imageUrl ?? ""}
                     onChange={(url) => setForm({ ...form, imageUrl: url })}

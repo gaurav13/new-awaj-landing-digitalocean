@@ -3,29 +3,35 @@
 import type { OverlayAd } from "./use-ad-trigger"
 import { PopupAd } from "./popup-ad"
 import { NewsletterPopup } from "./newsletter-popup"
+import { StickyHeaderAd } from "./sticky-header-ad"
 import { FloatingAd } from "./floating-ad"
 import { MobileStickyAd } from "./mobile-sticky-ad"
 
 /**
- * Renders all overlay advertising units for a page. A single "floating" ad also
- * covers the mobile bottom sticky slot unless a dedicated mobile-sticky ad is
- * configured, matching the "right-side on desktop, bottom bar on mobile" spec.
+ * Renders all overlay advertising units for a page. Each placement is fully
+ * independent and configured on its own in the Ads Manager:
+ *  - sticky-header: pinned to the top on both mobile and desktop
+ *  - floating: bottom-right card on desktop only
+ *  - floating-mobile: bottom-left card on mobile only
+ *  - mobile-sticky: full-width bottom bar on mobile only
+ *  - popup / newsletter: modal overlays
  */
 export function AdOverlays({ ads }: { ads: OverlayAd[] }) {
   const popup = ads.find((a) => a.placement === "popup")
   const newsletter = ads.find((a) => a.placement === "newsletter")
+  const stickyHeader = ads.find((a) => a.placement === "sticky-header")
   const floating = ads.find((a) => a.placement === "floating")
+  const floatingMobile = ads.find((a) => a.placement === "floating-mobile")
   const mobileSticky = ads.find((a) => a.placement === "mobile-sticky")
-
-  // Floating doubles as the mobile sticky when no dedicated mobile ad exists.
-  const mobileBar = mobileSticky ?? floating
 
   return (
     <>
+      {stickyHeader ? <StickyHeaderAd ad={stickyHeader} /> : null}
       {popup ? <PopupAd ad={popup} /> : null}
       {newsletter ? <NewsletterPopup ad={newsletter} /> : null}
-      {floating ? <FloatingAd ad={floating} /> : null}
-      {mobileBar ? <MobileStickyAd key={mobileBar.id} ad={mobileBar} /> : null}
+      {floating ? <FloatingAd ad={floating} device="desktop" /> : null}
+      {floatingMobile ? <FloatingAd ad={floatingMobile} device="mobile" /> : null}
+      {mobileSticky ? <MobileStickyAd ad={mobileSticky} /> : null}
     </>
   )
 }
