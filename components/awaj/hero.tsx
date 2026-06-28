@@ -44,7 +44,7 @@ export function Hero({
           {banners.length > 0 ? (
             <BannerSlider banners={banners} />
           ) : (
-            <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-xl">
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem]">
               <img
                 src={bannerUrl || "/images/hero-tokyo.png"}
                 alt="Tokyo Tower at golden hour with Mount Fuji in the background"
@@ -55,9 +55,6 @@ export function Hero({
           )}
         </div>
       </div>
-
-      {/* soft background glow */}
-      <div className="pointer-events-none absolute right-0 top-0 -z-0 h-[600px] w-[600px] rounded-full bg-beige/50 blur-3xl" />
     </section>
   )
 }

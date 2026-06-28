@@ -168,11 +168,11 @@ export function MembershipPackages({
           </ul>
         </div>
         {header.heroUrl ? (
-          <div className="relative overflow-hidden rounded-2xl">
+          <div className="relative overflow-hidden rounded-2xl bg-beige">
             <img
               src={header.heroUrl || "/placeholder.svg"}
               alt="Asia Web3 Alliance Japan membership"
-              className="h-64 w-full object-cover lg:h-80"
+              className="block h-auto w-full"
             />
           </div>
         ) : null}
