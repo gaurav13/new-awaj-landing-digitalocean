@@ -29,7 +29,7 @@ export function BannerSlider({ banners }: { banners: Banner[] }) {
   if (count === 0) return null
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[2rem] bg-beige shadow-xl">
+    <div className="relative w-full overflow-hidden rounded-[2rem] bg-beige">
       {banners.map((b, i) => {
         const active = i === index
         return (
