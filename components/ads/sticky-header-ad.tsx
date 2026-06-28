@@ -50,7 +50,7 @@ export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
     <img
       src={ad.imageUrl || "/placeholder.svg"}
       alt={ad.altText || ad.title || ""}
-      className="mx-auto block max-h-14 w-auto max-w-full object-contain md:max-h-20"
+      className="mx-auto block h-auto w-full max-w-[1456px] object-contain"
     />
   ) : (
     <div className="flex items-center justify-center gap-2 px-4 py-2 text-center">
