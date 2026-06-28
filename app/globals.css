@@ -169,6 +169,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Offsets all page content by the sticky header ad's height when one is
+       active. Defaults to 0, so pages without a sticky-header ad are unaffected. */
+    padding-top: var(--sticky-ad-height, 0px);
   }
   html {
     @apply font-sans;

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
@@ -9,9 +10,39 @@ import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
  * desktop. The uploaded image spans the full width with a capped height and is
  * never cropped. Dismissible, with optional title/button text shown when there
  * is no image.
+ *
+ * While visible it publishes its rendered height to the `--sticky-ad-height`
+ * CSS variable on <html>, which globally pushes the page (and the sticky site
+ * header) down so the banner never covers the navigation or hero. The variable
+ * is reset to 0 when the ad is dismissed or unmounts.
  */
 export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
   const { visible, dismiss } = useAdTrigger(ad)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (!visible) {
+      root.style.setProperty("--sticky-ad-height", "0px")
+      return
+    }
+    const el = barRef.current
+    if (!el) return
+
+    const apply = () => root.style.setProperty("--sticky-ad-height", `${el.offsetHeight}px`)
+    apply()
+
+    const observer = new ResizeObserver(apply)
+    observer.observe(el)
+    window.addEventListener("resize", apply)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", apply)
+      root.style.setProperty("--sticky-ad-height", "0px")
+    }
+  }, [visible])
+
   if (!visible) return null
 
   const inner = ad.imageUrl ? (
@@ -31,7 +62,10 @@ export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
   )
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[90] w-full border-b border-gold/25 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+    <div
+      ref={barRef}
+      className="fixed inset-x-0 top-0 z-[90] w-full border-b border-gold/25 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
+    >
       <div className="relative flex w-full items-center justify-center">
         {ad.showSponsoredLabel ? (
           <span className="absolute left-2 top-1/2 hidden -translate-y-1/2 rounded-full bg-navy/70 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/90 sm:block">
