@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { getSiteSettings } from '@/app/actions/settings'
 import { getOrganizationSchema, getWebSiteSchema, resolveBaseUrl, resolveSocialImage } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/json-ld'
+import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 import './globals.css'
 
 // Database-backed pages must not prerender at build time when env vars are unavailable.
@@ -74,6 +75,13 @@ export async function generateMetadata(): Promise<Metadata> {
       icon,
       apple: settings.faviconUrl || '/apple-icon.png',
     },
+    verification: {
+      google: settings.googleSiteVerification || undefined,
+      other: settings.bingSiteVerification
+        ? { 'msvalidate.01': settings.bingSiteVerification }
+        : undefined,
+    },
+    manifest: '/manifest.webmanifest',
   }
 }
 
@@ -90,9 +98,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [organizationSchema, webSiteSchema] = await Promise.all([
+  const [organizationSchema, webSiteSchema, settings] = await Promise.all([
     getOrganizationSchema(),
     getWebSiteSchema(),
+    getSiteSettings(),
   ])
 
   return (
@@ -103,6 +112,7 @@ export default async function RootLayout({
       <body className="font-sans antialiased">
         <JsonLd data={[organizationSchema, webSiteSchema]} />
         {children}
+        <GoogleAnalytics measurementId={settings.gaMeasurementId} />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

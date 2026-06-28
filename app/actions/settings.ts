@@ -32,6 +32,10 @@ export type SiteSettings = {
   faviconUrl: string
   twitterHandle: string
   canonicalBaseUrl: string
+  // Analytics & verification
+  gaMeasurementId: string
+  googleSiteVerification: string
+  bingSiteVerification: string
   // Membership page header
   membershipEyebrow: string
   membershipTitle: string
@@ -66,6 +70,9 @@ const DEFAULTS: SiteSettings = {
   faviconUrl: "",
   twitterHandle: "",
   canonicalBaseUrl: "",
+  gaMeasurementId: "",
+  googleSiteVerification: "",
+  bingSiteVerification: "",
   membershipEyebrow: "One Year Membership",
   membershipTitle: "Membership Packages",
   membershipSubtitle:
@@ -117,6 +124,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       faviconUrl: resolveSettingImage(map.faviconUrl, DEFAULTS.faviconUrl),
       twitterHandle: map.twitterHandle || DEFAULTS.twitterHandle,
       canonicalBaseUrl: map.canonicalBaseUrl || DEFAULTS.canonicalBaseUrl,
+      gaMeasurementId: map.gaMeasurementId || DEFAULTS.gaMeasurementId,
+      googleSiteVerification: map.googleSiteVerification || DEFAULTS.googleSiteVerification,
+      bingSiteVerification: map.bingSiteVerification || DEFAULTS.bingSiteVerification,
       membershipEyebrow: map.membershipEyebrow || DEFAULTS.membershipEyebrow,
       membershipTitle: map.membershipTitle || DEFAULTS.membershipTitle,
       membershipSubtitle: map.membershipSubtitle || DEFAULTS.membershipSubtitle,

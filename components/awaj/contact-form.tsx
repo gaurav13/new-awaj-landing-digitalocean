@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { submitContactMessage } from "@/app/actions/contact"
 import { INQUIRY_TYPES } from "@/lib/contact-types"
+import { trackContactSubmit } from "@/lib/analytics"
 
 type FormState = {
   name: string
@@ -52,6 +53,7 @@ export function ContactForm({ member }: { member?: string }) {
     startTransition(async () => {
       const result = await submitContactMessage(form)
       if (result.ok) {
+        trackContactSubmit(form.inquiryType)
         setSuccess(true)
         setForm(EMPTY)
       } else {

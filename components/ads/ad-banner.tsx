@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import type { PublicAd } from "@/lib/ads-data"
 import { recordImpression, recordClick } from "@/app/actions/ads"
+import { trackOutboundClick } from "@/lib/analytics"
 
 type Variant = "banner" | "sidebar" | "in-content"
 
@@ -64,7 +65,10 @@ export function AdBanner({ ad, variant = "banner" }: { ad: PublicAd; variant?: V
             href={ad.linkUrl!}
             target="_blank"
             rel="noopener sponsored noreferrer"
-            onClick={() => void recordClick(ad.id)}
+            onClick={() => {
+              void recordClick(ad.id)
+              trackOutboundClick(ad.linkUrl!, ad.campaignName)
+            }}
             aria-label={ad.altText || ad.campaignName}
             className="block w-full"
           >

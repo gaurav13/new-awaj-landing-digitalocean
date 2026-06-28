@@ -3,6 +3,7 @@
 import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
+import { trackOutboundClick } from "@/lib/analytics"
 
 /**
  * Small floating card ad. Controlled per device:
@@ -59,8 +60,11 @@ export function FloatingAd({ ad, device = "desktop" }: { ad: OverlayAd; device?:
             href={ad.linkUrl}
             target="_blank"
             rel="noopener sponsored noreferrer"
-            onClick={() => void recordClick(ad.id)}
-            className="block"
+          onClick={() => {
+            void recordClick(ad.id)
+            trackOutboundClick(ad.linkUrl ?? "", ad.title ?? ad.altText ?? `floating-${device}`)
+          }}
+          className="block"
           >
             {body}
           </a>

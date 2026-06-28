@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { trackCtaClick } from "@/lib/analytics"
 
 export function JoinCta() {
   return (
@@ -27,6 +30,7 @@ export function JoinCta() {
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:shrink-0">
             <Link
               href="/membership"
+              onClick={() => trackCtaClick("Become a Member", "join_cta")}
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-awaj-red px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               Become a Member
@@ -34,6 +38,7 @@ export function JoinCta() {
             </Link>
             <Link
               href="/#programs"
+              onClick={() => trackCtaClick("Apply for Accelerator", "join_cta")}
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition-opacity hover:opacity-90"
             >
               Apply for Accelerator
@@ -41,6 +46,7 @@ export function JoinCta() {
             </Link>
             <Link
               href="/contact"
+              onClick={() => trackCtaClick("Partner With Us", "join_cta")}
               className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-gold hover:text-gold"
             >
               Partner With Us
