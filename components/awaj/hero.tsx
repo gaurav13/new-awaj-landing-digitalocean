@@ -55,9 +55,6 @@ export function Hero({
           )}
         </div>
       </div>
-
-      {/* soft background glow */}
-      <div className="pointer-events-none absolute right-0 top-0 -z-0 h-[600px] w-[600px] rounded-full bg-beige/50 blur-3xl" />
     </section>
   )
 }
