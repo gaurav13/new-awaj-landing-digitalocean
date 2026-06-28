@@ -65,6 +65,27 @@ const SEO_TEXT_FIELDS: TextField[] = [
   },
 ]
 
+const ANALYTICS_TEXT_FIELDS: TextField[] = [
+  {
+    key: "gaMeasurementId",
+    label: "Google Analytics 4 Measurement ID",
+    help: "Your GA4 ID, e.g. G-XXXXXXXXXX. Leave empty to disable analytics. Found in GA4 → Admin → Data Streams.",
+    placeholder: "G-XXXXXXXXXX",
+  },
+  {
+    key: "googleSiteVerification",
+    label: "Google Search Console verification",
+    help: "The content value of the google-site-verification meta tag (just the token, not the full tag).",
+    placeholder: "abc123…",
+  },
+  {
+    key: "bingSiteVerification",
+    label: "Bing Webmaster verification",
+    help: "The content value of the msvalidate.01 meta tag (just the token).",
+    placeholder: "ABC123…",
+  },
+]
+
 const SOCIAL_TEXT_FIELDS: TextField[] = [
   {
     key: "ogTitle",
@@ -169,6 +190,31 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
               <div key={f.key} className="rounded-2xl border border-gold/20 bg-white p-5">
                 <h4 className="mb-3 font-semibold text-navy-text">{f.label}</h4>
                 <ImageUpload value={form[f.key]} onChange={(url) => setForm({ ...form, [f.key]: url })} hint={f.help} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Analytics & verification */}
+      <section className="mt-10">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Analytics & verification</h3>
+        <p className="mt-1 text-sm text-navy-text/60">
+          Connect Google Analytics 4 and verify ownership with Google Search Console and Bing. These load globally
+          across the public site.
+        </p>
+        <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-5 rounded-2xl border border-gold/20 bg-white p-5 lg:col-span-2">
+            {ANALYTICS_TEXT_FIELDS.map((f) => (
+              <div key={f.key} className="flex flex-col gap-2">
+                <Label htmlFor={f.key}>{f.label}</Label>
+                <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">{f.help}</p>
+                <Input
+                  id={f.key}
+                  value={form[f.key]}
+                  placeholder={f.placeholder}
+                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                />
               </div>
             ))}
           </div>

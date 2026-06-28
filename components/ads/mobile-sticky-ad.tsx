@@ -3,6 +3,7 @@
 import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
+import { trackOutboundClick } from "@/lib/analytics"
 
 /**
  * Bottom sticky banner for mobile only (hidden on desktop). The uploaded image
@@ -44,7 +45,10 @@ export function MobileStickyAd({ ad }: { ad: OverlayAd }) {
             href={ad.linkUrl}
             target="_blank"
             rel="noopener sponsored noreferrer"
-            onClick={() => void recordClick(ad.id)}
+            onClick={() => {
+              void recordClick(ad.id)
+              trackOutboundClick(ad.linkUrl ?? "", ad.title ?? ad.altText ?? "mobile-sticky")
+            }}
             className="block w-full py-1.5"
             aria-label={ad.altText || ad.title || "Advertisement"}
           >

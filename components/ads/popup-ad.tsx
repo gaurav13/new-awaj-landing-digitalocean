@@ -3,6 +3,7 @@
 import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
+import { trackOutboundClick } from "@/lib/analytics"
 
 export function PopupAd({ ad }: { ad: OverlayAd }) {
   const { visible, dismiss } = useAdTrigger(ad)
@@ -51,6 +52,7 @@ export function PopupAd({ ad }: { ad: OverlayAd }) {
               rel="noopener sponsored noreferrer"
               onClick={() => {
                 void recordClick(ad.id)
+                trackOutboundClick(ad.linkUrl ?? "", ad.title ?? ad.altText ?? "popup")
                 dismiss()
               }}
               className="mt-1 inline-flex items-center justify-center rounded-full bg-awaj-red px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90"

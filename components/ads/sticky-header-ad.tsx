@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
+import { trackOutboundClick } from "@/lib/analytics"
 
 /**
  * Slim full-width banner pinned to the very top of the page on BOTH mobile and
@@ -78,7 +79,10 @@ export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
             href={ad.linkUrl}
             target="_blank"
             rel="noopener sponsored noreferrer"
-            onClick={() => void recordClick(ad.id)}
+            onClick={() => {
+              void recordClick(ad.id)
+              trackOutboundClick(ad.linkUrl ?? "", ad.title ?? ad.altText ?? "sticky-header")
+            }}
             className="block w-full"
             aria-label={ad.altText || ad.title || "Advertisement"}
           >

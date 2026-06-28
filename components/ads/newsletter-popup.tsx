@@ -4,6 +4,7 @@ import { useState } from "react"
 import { X, Mail, CheckCircle2 } from "lucide-react"
 import { recordClick, subscribeNewsletter } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
+import { trackNewsletterSignup } from "@/lib/analytics"
 
 export function NewsletterPopup({ ad }: { ad: OverlayAd }) {
   const { visible, dismiss } = useAdTrigger(ad)
@@ -22,6 +23,7 @@ export function NewsletterPopup({ ad }: { ad: OverlayAd }) {
     const result = await subscribeNewsletter({ name, email, consent })
     if (result.ok) {
       void recordClick(ad.id)
+      if (!result.duplicate) trackNewsletterSignup("popup")
       setStatus("success")
       setMessage(result.duplicate ? "You're already subscribed — thank you!" : "Thanks for subscribing!")
     } else {
