@@ -44,9 +44,16 @@ export async function getAdForSlot(page: AdPageTarget, placement: AdPlacement): 
   return all.find((a) => a.placement === placement) ?? null
 }
 
-/** Live overlay ads (popup, floating, mobile-sticky, newsletter) for a page. */
+/** Live overlay ads (popup, sticky header, floating desktop/mobile, mobile-sticky, newsletter) for a page. */
 export async function getOverlayAds(page: AdPageTarget): Promise<PublicAd[]> {
-  const overlay = new Set<AdPlacement>(["popup", "floating", "mobile-sticky", "newsletter"])
+  const overlay = new Set<AdPlacement>([
+    "popup",
+    "sticky-header",
+    "floating",
+    "floating-mobile",
+    "mobile-sticky",
+    "newsletter",
+  ])
   const all = await getLiveAdsForPage(page)
   // Only one of each overlay placement (first by sort order) to avoid stacking.
   const seen = new Set<string>()

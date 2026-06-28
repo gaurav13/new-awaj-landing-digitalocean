@@ -376,7 +376,8 @@ export const ads = pgTable("ads", {
   buttonText: text("button_text"),
   // home | events | programs | news | partners | members | all
   pageTarget: text("page_target").notNull().default("all"),
-  // top | mid | sidebar | bottom | in-content | popup | floating | mobile-sticky | newsletter
+  // top | mid | sidebar | bottom | in-content | popup | sticky-header |
+  // floating | floating-mobile | mobile-sticky | newsletter
   placement: text("placement").notNull().default("top"),
   // immediate | delay | scroll | exit  (overlays only)
   trigger: text("trigger").notNull().default("delay"),
@@ -417,14 +418,23 @@ export const AD_PLACEMENTS = [
   "bottom",
   "in-content",
   "popup",
+  "sticky-header",
   "floating",
+  "floating-mobile",
   "mobile-sticky",
   "newsletter",
 ] as const
 export type AdPlacement = (typeof AD_PLACEMENTS)[number]
 
 /** Placements that render as fixed/overlay units (handled client-side with triggers). */
-export const AD_OVERLAY_PLACEMENTS = ["popup", "floating", "mobile-sticky", "newsletter"] as const
+export const AD_OVERLAY_PLACEMENTS = [
+  "popup",
+  "sticky-header",
+  "floating",
+  "floating-mobile",
+  "mobile-sticky",
+  "newsletter",
+] as const
 
 export const AD_TRIGGERS = ["immediate", "delay", "scroll", "exit"] as const
 export type AdTrigger = (typeof AD_TRIGGERS)[number]

@@ -4,10 +4,20 @@ import { X } from "lucide-react"
 import { recordClick } from "@/app/actions/ads"
 import { useAdTrigger, type OverlayAd } from "./use-ad-trigger"
 
-/** Small right-side floating ad for desktop. Hidden on mobile (use MobileStickyAd there). */
-export function FloatingAd({ ad }: { ad: OverlayAd }) {
+/**
+ * Small floating card ad. Controlled per device:
+ *  - "desktop": bottom-right corner, visible on md+ only.
+ *  - "mobile": bottom-left corner, visible below md only (sits above the mobile
+ *    sticky bar if one is also active).
+ */
+export function FloatingAd({ ad, device = "desktop" }: { ad: OverlayAd; device?: "desktop" | "mobile" }) {
   const { visible, dismiss } = useAdTrigger(ad)
   if (!visible) return null
+
+  const positionClass =
+    device === "mobile"
+      ? "bottom-24 left-4 z-[80] block w-44 md:hidden"
+      : "bottom-6 right-6 z-[80] hidden w-60 md:block"
 
   const body = (
     <>
@@ -29,7 +39,7 @@ export function FloatingAd({ ad }: { ad: OverlayAd }) {
   )
 
   return (
-    <div className="fixed bottom-6 right-6 z-[80] hidden w-60 md:block">
+    <div className={`fixed ${positionClass}`}>
       <div className="relative overflow-hidden rounded-2xl border border-gold/25 bg-white shadow-xl">
         {ad.showSponsoredLabel ? (
           <span className="absolute left-2 top-2 z-10 rounded-full bg-navy/70 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/90">
