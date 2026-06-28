@@ -50,7 +50,7 @@ export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
     <img
       src={ad.imageUrl || "/placeholder.svg"}
       alt={ad.altText || ad.title || ""}
-      className="mx-auto block h-auto w-full max-w-[1456px] object-contain"
+      className="block h-auto w-full object-contain"
     />
   ) : (
     <div className="flex items-center justify-center gap-2 px-4 py-2 text-center">
@@ -66,7 +66,7 @@ export function StickyHeaderAd({ ad }: { ad: OverlayAd }) {
       ref={barRef}
       className="fixed inset-x-0 top-0 z-[90] w-full border-b border-gold/25 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
     >
-      <div className="relative flex w-full items-center justify-center">
+      <div className="relative mx-auto flex w-full max-w-[1280px] items-center justify-center px-10">
         {ad.showSponsoredLabel ? (
           <span className="absolute left-2 top-1/2 hidden -translate-y-1/2 rounded-full bg-navy/70 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/90 sm:block">
             Sponsored
