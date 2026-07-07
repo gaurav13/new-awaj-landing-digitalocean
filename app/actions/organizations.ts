@@ -17,6 +17,7 @@ import { findOrCreateOrganizationByName, normalizeName } from "@/lib/organizatio
 import { importExistingOrganizations } from "@/lib/organizations-import"
 import { defaultTagForType } from "@/lib/organization-types"
 import type {
+  Organization,
   OrgConnection,
   DirectoryOrganization,
   AdminOrganization,

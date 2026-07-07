@@ -740,6 +740,8 @@ export function AdminDashboard({
               singular="Article"
               items={news}
               fields={NEWS_FIELDS}
+              organizationOptions={organizationOptions}
+              onQuickCreateOrganization={quickCreateOrganization}
               emptyForm={{
                 title: "",
                 excerpt: "",
@@ -748,6 +750,7 @@ export function AdminDashboard({
                 location: "",
                 imageUrl: "",
                 publishedAt: "",
+                organizationIds: [],
               }}
               toForm={(a) => ({
                 title: a.title,
@@ -757,6 +760,7 @@ export function AdminDashboard({
                 location: a.location ?? "",
                 imageUrl: a.imageUrl ?? "",
                 publishedAt: new Date(a.publishedAt).toISOString().slice(0, 10),
+                organizationIds: a.organizationIds ?? [],
               })}
               render={{
                 image: (a) => a.imageUrl,

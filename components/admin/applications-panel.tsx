@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Inbox, Building2, Check, X, HelpCircle, Trash2, Globe, Mail, Phone, Linkedin, User } from "lucide-react"
+import { Inbox, Building2, Check, X, HelpCircle, Trash2, Globe, Mail, Phone, Link2, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatLongDate } from "@/lib/format-date"
 import type { MemberApplication } from "@/lib/db/schema"
@@ -177,7 +177,7 @@ export function ApplicationsPanel({ applications }: { applications: MemberApplic
                       ) : null}
                       {app.linkedinUrl ? (
                         <Detail
-                          icon={<Linkedin className="h-3.5 w-3.5 text-gold" />}
+                          icon={<Link2 className="h-3.5 w-3.5 text-gold" />}
                           label="LinkedIn"
                           value={<a href={app.linkedinUrl} target="_blank" rel="noreferrer" className="text-gold hover:underline">Profile</a>}
                         />

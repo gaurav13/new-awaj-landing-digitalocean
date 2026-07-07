@@ -4,7 +4,7 @@ import { ArrowLeft, MapPin, Calendar, ExternalLink } from "lucide-react"
 import { SiteHeader } from "@/components/awaj/site-header"
 import { SiteFooter } from "@/components/awaj/site-footer"
 import { RichContent } from "@/components/awaj/rich-content"
-import { getNewsBySlug, getRelatedNews } from "@/app/actions/news"
+import { getNewsBySlug, getRelatedNews, getNewsOrganizations } from "@/app/actions/news"
 import { dateParts, formatLongDate } from "@/lib/format-date"
 import { buildPageMetadata, getArticleSchema, getBreadcrumbSchema } from "@/lib/seo"
 import { JsonLd } from "@/components/seo/json-ld"
@@ -31,7 +31,7 @@ export default async function ArticlePage({ params }: Props) {
   const article = await getNewsBySlug(slug)
   if (!article) notFound()
 
-  const related = await getRelatedNews(slug, 3)
+  const [related, linkedOrgs] = await Promise.all([getRelatedNews(slug, 3), getNewsOrganizations(article.id)])
 
   const [articleSchema, breadcrumbSchema] = await Promise.all([
     getArticleSchema({
@@ -114,6 +114,44 @@ export default async function ArticlePage({ params }: Props) {
               Read the full coverage
               <ExternalLink className="h-4 w-4" />
             </a>
+          </div>
+        ) : null}
+
+        {linkedOrgs.length > 0 ? (
+          <div className="mt-10 rounded-2xl border border-gold/20 bg-white p-6">
+            <h2 className="font-serif text-lg font-bold uppercase tracking-wide text-navy-text">Featured Companies</h2>
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {linkedOrgs.map((org) => {
+                const Inner = (
+                  <div className="flex items-center gap-3 rounded-xl border border-gold/20 bg-ivory p-3 transition-shadow hover:shadow-sm">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gold/20 bg-white">
+                      {org.logoUrl ? (
+                        <img
+                          src={org.logoUrl || "/placeholder.svg"}
+                          alt={`${org.name} logo`}
+                          className="h-full w-full object-contain"
+                        />
+                      ) : (
+                        <span className="font-serif text-sm font-bold text-navy-text/50">{org.name.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-navy-text">{org.name}</p>
+                      {org.role ? (
+                        <p className="text-xs font-medium uppercase tracking-wide text-gold">{org.role}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                )
+                return org.websiteUrl ? (
+                  <a key={org.id} href={org.websiteUrl} target="_blank" rel="noopener noreferrer">
+                    {Inner}
+                  </a>
+                ) : (
+                  <div key={org.id}>{Inner}</div>
+                )
+              })}
+            </div>
           </div>
         ) : null}
       </article>
