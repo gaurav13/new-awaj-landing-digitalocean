@@ -387,17 +387,7 @@ export const ORGANIZATION_TYPES = [
 ] as const
 export type OrganizationType = (typeof ORGANIZATION_TYPES)[number]
 
-// Multi-tag values a company can carry (shown as chips + used for filtering on /members).
-export const MEMBER_TAGS = [
-  "Corporate Member",
-  "Startup Member",
-  "Media Partner",
-  "Government Support",
-  "Sponsor",
-  "Event Partner",
-  "Exclusive Member",
-] as const
-export type MemberTag = (typeof MEMBER_TAGS)[number]
+// Multi-tag values live in lib/organization-types.ts (client-safe) as MEMBER_TAGS.
 
 export const APPLICATION_STATUSES = ["pending", "approved", "rejected", "info_requested"] as const
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number]

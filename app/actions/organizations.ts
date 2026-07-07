@@ -8,15 +8,14 @@ import {
   programsOrganizations,
   events,
   programs,
-  members,
-  partners,
 } from "@/lib/db/schema"
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 import { resolveOptionalImage } from "@/lib/images"
-import { findOrCreateOrganizationByName, normalizeName, upsertOrganizationFromLegacy } from "@/lib/organizations-sync"
-import { importExistingOrganizations, memberTypeFromCategory } from "@/lib/organizations-import"
+import { findOrCreateOrganizationByName, normalizeName } from "@/lib/organizations-sync"
+import { importExistingOrganizations } from "@/lib/organizations-import"
+import { defaultTagForType } from "@/lib/organization-types"
 import type {
   OrgConnection,
   DirectoryOrganization,
@@ -31,74 +30,6 @@ function resolveOrg<T extends { logoUrl?: string | null }>(row: T): T {
 
 function pushUnique(list: OrgConnection[], conn: OrgConnection) {
   if (!list.some((c) => c.id === conn.id)) list.push(conn)
-}
-
-function legacyMemberToDirectory(m: typeof members.$inferSelect): DirectoryOrganization {
-  return {
-    id: -m.id,
-    name: m.companyName,
-    type: memberTypeFromCategory(m.category),
-    logoUrl: resolveOptionalImage(m.logoUrl),
-    websiteUrl: m.websiteUrl,
-    country: null,
-    industry: null,
-    description: m.description,
-    status: "approved",
-    featured: false,
-    sortOrder: m.sortOrder,
-    authorId: m.authorId,
-    createdAt: m.createdAt,
-    updatedAt: m.createdAt,
-    events: [],
-    programs: [],
-  }
-}
-
-function legacyPartnerToDirectory(p: typeof partners.$inferSelect): DirectoryOrganization {
-  return {
-    id: -100000 - p.id,
-    name: p.name,
-    type: "Partner",
-    logoUrl: resolveOptionalImage(p.logoUrl),
-    websiteUrl: p.linkUrl,
-    country: null,
-    industry: null,
-    description: null,
-    status: "approved",
-    featured: false,
-    sortOrder: p.sortOrder,
-    authorId: p.authorId,
-    createdAt: p.createdAt,
-    updatedAt: p.createdAt,
-    events: [],
-    programs: [],
-  }
-}
-
-async function appendLegacyOrganizations(result: DirectoryOrganization[]): Promise<DirectoryOrganization[]> {
-  const seenNames = new Set(result.map((o) => normalizeName(o.name)))
-
-  const [memberRows, partnerRows] = await Promise.all([
-    db.select().from(members).orderBy(asc(members.sortOrder), asc(members.companyName)),
-    db.select().from(partners).orderBy(asc(partners.sortOrder), asc(partners.name)),
-  ])
-
-  for (const m of memberRows) {
-    const key = normalizeName(m.companyName)
-    if (seenNames.has(key)) continue
-    seenNames.add(key)
-    result.push(legacyMemberToDirectory(m))
-  }
-
-  for (const p of partnerRows) {
-    const key = normalizeName(p.name)
-    if (seenNames.has(key)) continue
-    seenNames.add(key)
-    result.push(legacyPartnerToDirectory(p))
-  }
-
-  result.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
-  return result
 }
 
 // ---- Public reads ----
@@ -160,7 +91,10 @@ export async function getOrganizationsDirectory(): Promise<DirectoryOrganization
       }
     }
 
-    return appendLegacyOrganizations(result)
+    // The central `organizations` table is the single source of truth. Legacy members/partners
+    // are migrated into it (see migrateLegacyOrganizations) rather than merged at read time, so
+    // every company appears exactly once.
+    return result
   }, [])
 }
 
@@ -323,10 +257,26 @@ async function assertNoDuplicate(name: string, excludeId?: number) {
   }
 }
 
+function normalizeTags(tags?: string[]): string[] {
+  if (!Array.isArray(tags)) return []
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const raw of tags) {
+    const t = (raw || "").trim()
+    if (!t) continue
+    const key = t.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(t)
+  }
+  return out
+}
+
 function normalize(input: OrganizationInput) {
   return {
     name: input.name.trim(),
     type: input.type || "Member",
+    tags: normalizeTags(input.tags),
     logoUrl: input.logoUrl || null,
     websiteUrl: input.websiteUrl || null,
     country: input.country || null,
@@ -431,11 +381,30 @@ export async function quickCreateOrganization(input: { name: string; type?: stri
   }
 }
 
-/** One-time bulk import of existing members, partners, sponsors, and program orgs. */
+/**
+ * One-time migration: bulk import existing members, partners, sponsors, and program orgs
+ * into the central directory, then backfill a display tag for any organization that has
+ * none (derived from its primary type). Idempotent — safe to run repeatedly.
+ */
 export async function importOrganizations() {
   await getUserId()
   const result = await importExistingOrganizations()
+
+  // Backfill tags for organizations that don't have any yet.
+  const untagged = await db
+    .select()
+    .from(organizations)
+    .where(sql`${organizations.tags} = '[]'::jsonb OR ${organizations.tags} IS NULL`)
+  let tagged = 0
+  for (const org of untagged) {
+    await db
+      .update(organizations)
+      .set({ tags: [defaultTagForType(org.type)], updatedAt: new Date() })
+      .where(eq(organizations.id, org.id))
+    tagged++
+  }
+
   revalidatePath("/members")
   revalidatePath("/")
-  return result
+  return { ...result, tagged }
 }

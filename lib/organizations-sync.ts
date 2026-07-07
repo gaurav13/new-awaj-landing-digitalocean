@@ -23,6 +23,7 @@ export function normalizeName(name: string) {
 export async function findOrCreateOrganizationByName(input: {
   name: string
   type?: string
+  tags?: string[]
   logoUrl?: string | null
   websiteUrl?: string | null
   country?: string | null
@@ -46,6 +47,7 @@ export async function findOrCreateOrganizationByName(input: {
     .values({
       name: cleanName,
       type: input.type || "Member",
+      tags: input.tags ?? [],
       logoUrl: input.logoUrl || null,
       websiteUrl: input.websiteUrl || null,
       country: input.country || null,
@@ -114,6 +116,7 @@ export async function importEventSponsors(sponsors: EventSponsor[] = []): Promis
     const { id } = await findOrCreateOrganizationByName({
       name: s.name,
       type: "Sponsor",
+      tags: ["Sponsor"],
       logoUrl: s.logoUrl,
       websiteUrl: s.linkUrl,
     })
@@ -130,6 +133,7 @@ export async function importProgramPartners(partners: ProgramPartner[] = []): Pr
     const { id } = await findOrCreateOrganizationByName({
       name: p.name,
       type: "Partner",
+      tags: ["Event Partner"],
       logoUrl: p.logoUrl,
       websiteUrl: p.linkUrl,
     })
@@ -146,6 +150,7 @@ export async function importProgramStartups(startups: ProgramStartup[] = []): Pr
     const { id } = await findOrCreateOrganizationByName({
       name: s.name,
       type: "Startup",
+      tags: ["Startup Member"],
       logoUrl: s.logoUrl,
       websiteUrl: s.linkUrl,
       description: s.description,
