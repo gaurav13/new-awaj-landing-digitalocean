@@ -27,6 +27,8 @@ import type { MembershipContent } from "@/lib/membership-content"
 import { PeoplePanel } from "./people-panel"
 import type { Person } from "@/app/actions/people"
 import { OrganizationsPanel } from "./organizations-panel"
+import { ApplicationsPanel } from "./applications-panel"
+import type { MemberApplication } from "@/lib/db/schema"
 import { quickCreateOrganization } from "@/app/actions/organizations"
 import type { AdminOrganization, EventProgramOptions } from "@/lib/organization-types"
 import { AdsManager } from "./ads-manager"
@@ -57,6 +59,7 @@ type News = {
   imageUrl: string | null
   location: string | null
   publishedAt: Date | string
+  organizationIds?: number[]
 }
 type Media = {
   id: number
@@ -526,6 +529,7 @@ export function AdminDashboard({
   subscribers,
   banners,
   messages,
+  applications,
   settings,
   users,
 }: {
@@ -557,6 +561,7 @@ export function AdminDashboard({
   subscribers: NewsletterSubscriber[]
   banners: Banner[]
   messages: Message[]
+  applications: MemberApplication[]
   settings: SiteSettings
   users: AdminUser[]
 }) {
@@ -592,6 +597,12 @@ export function AdminDashboard({
     },
     { name: "excerpt", label: "Excerpt", type: "textarea", required: true, rows: 2 },
     { name: "content", label: "Article content", type: "richtext", required: true },
+    {
+      name: "organizationIds",
+      label: "Featured companies",
+      type: "organizations",
+      hint: "Link companies mentioned in this article (sponsors, partners, media). They stay in sync with the central directory — re-adding an existing company never creates a duplicate.",
+    },
   ]
 
   const MEDIA_FIELDS: FieldDef[] = [
@@ -708,9 +719,13 @@ export function AdminDashboard({
             <TabsTrigger value="ads">Ads ({ads.length})</TabsTrigger>
             <TabsTrigger value="people">People ({peopleCounts.counts.total})</TabsTrigger>
             <TabsTrigger value="organizations">Organizations ({organizationCounts.counts.total})</TabsTrigger>
+            <TabsTrigger value="applications">
+              Applications
+              {applications.filter((a) => a.status === "pending").length > 0
+                ? ` (${applications.filter((a) => a.status === "pending").length})`
+                : ""}
+            </TabsTrigger>
             <TabsTrigger value="team">Team ({team.length})</TabsTrigger>
-            <TabsTrigger value="partners">Partners ({partners.length})</TabsTrigger>
-            <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
             <TabsTrigger value="membership">Membership ({membershipPlans.length})</TabsTrigger>
             <TabsTrigger value="messages">
               Messages{messages.filter((m) => !m.isRead).length > 0 ? ` (${messages.filter((m) => !m.isRead).length})` : ""}
@@ -974,6 +989,10 @@ export function AdminDashboard({
               byType={organizationCounts.byType}
               eventProgramOptions={eventProgramOptions}
             />
+          </TabsContent>
+
+          <TabsContent value="applications" className="mt-6">
+            <ApplicationsPanel applications={applications} />
           </TabsContent>
 
           <TabsContent value="team" className="mt-6">

@@ -4,6 +4,7 @@ import {
   organizations,
   eventsOrganizations,
   programsOrganizations,
+  newsOrganizations,
   type EventSponsor,
   type ProgramPartner,
   type ProgramStartup,
@@ -168,6 +169,15 @@ export async function syncEventOrganizationConnections(eventId: number, organiza
     await db
       .insert(eventsOrganizations)
       .values(ids.map((organizationId, i) => ({ eventId, organizationId, sortOrder: i })))
+  }
+}
+
+/** Rebuild a news article's organization connections from the supplied ids (de-duplicated). */
+export async function syncNewsOrganizationConnections(newsId: number, organizationIds: number[] = []) {
+  await db.delete(newsOrganizations).where(eq(newsOrganizations.newsId, newsId))
+  const ids = Array.from(new Set(organizationIds.map(Number).filter((n) => Number.isFinite(n))))
+  if (ids.length > 0) {
+    await db.insert(newsOrganizations).values(ids.map((organizationId, i) => ({ newsId, organizationId, sortOrder: i })))
   }
 }
 

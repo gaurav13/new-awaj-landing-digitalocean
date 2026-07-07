@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Building2, Globe, ArrowUpRight, Search, X } from "lucide-react"
 import type { DirectoryOrganization } from "@/lib/organization-types"
 
-type FilterKey = "type" | "country" | "industry" | "event" | "program"
+type FilterKey = "tag" | "country" | "industry" | "event" | "program"
 
 const ALL = "all"
 
@@ -26,10 +26,15 @@ function OrganizationCard({ o }: { o: DirectoryOrganization }) {
         </div>
         <div className="min-w-0">
           <h3 className="truncate font-serif text-lg font-bold text-navy-text">{o.name}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <span className="rounded-full bg-navy px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-              {o.type}
-            </span>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {(o.tags && o.tags.length > 0 ? o.tags : [o.type]).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-navy-text"
+              >
+                {tag}
+              </span>
+            ))}
             {o.country ? <span className="text-xs text-navy-text/55">{o.country}</span> : null}
           </div>
         </div>
@@ -122,7 +127,7 @@ function Select({
 export function MembersDirectory({ organizations }: { organizations: DirectoryOrganization[] }) {
   const [search, setSearch] = useState("")
   const [filters, setFilters] = useState<Record<FilterKey, string>>({
-    type: ALL,
+    tag: ALL,
     country: ALL,
     industry: ALL,
     event: ALL,
@@ -131,13 +136,14 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
 
   // Build the distinct option lists from the data itself.
   const options = useMemo(() => {
-    const types = new Set<string>()
+    const tags = new Set<string>()
     const countries = new Set<string>()
     const industries = new Set<string>()
     const events = new Map<string, string>()
     const programs = new Map<string, string>()
     for (const o of organizations) {
-      types.add(o.type)
+      const oTags = o.tags && o.tags.length > 0 ? o.tags : [o.type]
+      for (const t of oTags) tags.add(t)
       if (o.country) countries.add(o.country)
       if (o.industry) industries.add(o.industry)
       for (const e of o.events) events.set(String(e.id), e.title)
@@ -155,7 +161,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
         .map(([value, label]) => ({ value, label })),
     ]
     return {
-      type: toOpts(Array.from(types), "All types"),
+      tag: toOpts(Array.from(tags), "All tags"),
       country: toOpts(Array.from(countries), "All countries"),
       industry: toOpts(Array.from(industries), "All industries"),
       event: toMapOpts(events, "All events"),
@@ -165,14 +171,16 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
 
   const filtered = useMemo(() => {
     return organizations.filter((o) => {
-      if (filters.type !== ALL && o.type !== filters.type) return false
+      const oTags = o.tags && o.tags.length > 0 ? o.tags : [o.type]
+      if (filters.tag !== ALL && !oTags.includes(filters.tag)) return false
       if (filters.country !== ALL && o.country !== filters.country) return false
       if (filters.industry !== ALL && o.industry !== filters.industry) return false
       if (filters.event !== ALL && !o.events.some((e) => String(e.id) === filters.event)) return false
       if (filters.program !== ALL && !o.programs.some((p) => String(p.id) === filters.program)) return false
       if (search.trim()) {
         const q = search.toLowerCase()
-        const hay = `${o.name} ${o.country ?? ""} ${o.industry ?? ""} ${o.type} ${o.description ?? ""}`.toLowerCase()
+        const hay =
+          `${o.name} ${o.country ?? ""} ${o.industry ?? ""} ${o.type} ${oTags.join(" ")} ${o.description ?? ""}`.toLowerCase()
         if (!hay.includes(q)) return false
       }
       return true
@@ -184,7 +192,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
 
   function reset() {
     setSearch("")
-    setFilters({ type: ALL, country: ALL, industry: ALL, event: ALL, program: ALL })
+    setFilters({ tag: ALL, country: ALL, industry: ALL, event: ALL, program: ALL })
   }
 
   function set(key: FilterKey, value: string) {
@@ -204,8 +212,26 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
             className="h-11 w-full rounded-lg border border-gold/30 bg-white pl-9 pr-3 text-sm text-navy-text outline-none transition-colors focus:border-gold"
           />
         </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {options.tag.map((opt) => {
+            const active = filters.tag === opt.value
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => set("tag", opt.value)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  active
+                    ? "border-navy bg-navy text-white"
+                    : "border-gold/30 bg-white text-navy-text/70 hover:border-gold hover:text-navy-text"
+                }`}
+              >
+                {opt.label}
+              </button>
+            )
+          })}
+        </div>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Select label="Type" value={filters.type} onChange={(v) => set("type", v)} options={options.type} />
           <Select label="Country" value={filters.country} onChange={(v) => set("country", v)} options={options.country} />
           <Select
             label="Industry"
