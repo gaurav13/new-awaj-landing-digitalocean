@@ -9,6 +9,7 @@ import {
   syncEventOrganizationConnections,
   syncProgramOrganizationConnections,
 } from "@/lib/organizations-sync"
+import { defaultTagForType } from "@/lib/organization-types"
 
 /** Map a member's category to a central organization type. */
 export function memberTypeFromCategory(category: string): string {
@@ -37,10 +38,12 @@ export async function importExistingOrganizations(): Promise<{ imported: number;
   // 1. Members
   const memberRows = await db.select().from(members)
   for (const m of memberRows) {
+    const type = memberTypeFromCategory(m.category)
     await countNew(() =>
       findOrCreateOrganizationByName({
         name: m.companyName,
-        type: memberTypeFromCategory(m.category),
+        type,
+        tags: [defaultTagForType(type)],
         logoUrl: m.logoUrl,
         websiteUrl: m.websiteUrl,
         description: m.description,
@@ -56,6 +59,7 @@ export async function importExistingOrganizations(): Promise<{ imported: number;
       findOrCreateOrganizationByName({
         name: p.name,
         type: "Partner",
+        tags: [defaultTagForType("Partner")],
         logoUrl: p.logoUrl,
         websiteUrl: p.linkUrl,
         status: "approved",

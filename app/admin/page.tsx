@@ -14,6 +14,7 @@ import { getMembershipContent } from "@/app/actions/membership-content"
 import { getMyPeople, getPeopleCounts } from "@/app/actions/people"
 import { getMyOrganizations, getOrganizationCounts, getEventProgramOptions } from "@/app/actions/organizations"
 import { getMyMessages } from "@/app/actions/contact"
+import { getMyApplications } from "@/app/actions/member-applications"
 import { getMyBanners } from "@/app/actions/banners"
 import { getMyAds, getSubscribers } from "@/app/actions/ads"
 import { getAllUsers } from "@/app/actions/users"
@@ -51,6 +52,7 @@ export default async function AdminPage() {
     subscribers,
     banners,
     messages,
+    applications,
     settings,
     users,
   ] = await Promise.all([
@@ -73,6 +75,7 @@ export default async function AdminPage() {
     getSubscribers(),
     getMyBanners(),
     getMyMessages(),
+    getMyApplications(),
     getSiteSettings(),
     superAdmin ? getAllUsers() : Promise.resolve([]),
   ])
@@ -101,6 +104,7 @@ export default async function AdminPage() {
       subscribers={subscribers}
       banners={banners}
       messages={messages}
+      applications={applications}
       settings={settings}
       users={users}
     />

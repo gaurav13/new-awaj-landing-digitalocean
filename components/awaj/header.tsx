@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
       { label: "List of Members", href: "/members" },
       { label: "List of Leaders", href: "/team" },
       { label: "Become a Member", href: "/membership" },
+      { label: "Apply for Membership", href: "/membership/apply" },
     ],
   },
   { label: "Events", href: "/events" },

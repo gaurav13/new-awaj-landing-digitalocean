@@ -19,6 +19,7 @@ import {
   setOrganizationConnections,
   importOrganizations,
 } from "@/app/actions/organizations"
+import { MEMBER_TAGS } from "@/lib/organization-types"
 import type { AdminOrganization, OrganizationInput, EventProgramOptions } from "@/lib/organization-types"
 
 type Counts = { total: number; approved: number; pending: number; hidden: number }
@@ -26,6 +27,7 @@ type Counts = { total: number; approved: number; pending: number; hidden: number
 const EMPTY: OrganizationInput = {
   name: "",
   type: "Member",
+  tags: [],
   logoUrl: "",
   websiteUrl: "",
   country: "",
@@ -94,6 +96,7 @@ export function OrganizationsPanel({
     setForm({
       name: o.name,
       type: o.type,
+      tags: o.tags ?? [],
       logoUrl: o.logoUrl ?? "",
       websiteUrl: o.websiteUrl ?? "",
       country: o.country ?? "",
@@ -107,6 +110,14 @@ export function OrganizationsPanel({
     setProgramIds(o.programs.map((p) => p.id))
     setError(null)
     setShowForm(true)
+  }
+
+  function toggleTag(tag: string) {
+    setForm((prev) => {
+      const current = prev.tags ?? []
+      const has = current.includes(tag)
+      return { ...prev, tags: has ? current.filter((t) => t !== tag) : [...current, tag] }
+    })
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -294,6 +305,14 @@ export function OrganizationsPanel({
                     {o.featured ? <Star className="h-3.5 w-3.5 fill-gold text-gold" /> : null}
                     <span className="rounded bg-navy-text px-1.5 py-0.5 text-[10px] font-medium text-white">{o.type}</span>
                     <StatusBadge status={o.status} />
+                    {(o.tags ?? []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-medium text-navy-text"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                   <p className="mt-0.5 truncate text-sm text-navy-text/60">
                     {[o.country, o.industry].filter(Boolean).join(" · ") || "—"}
@@ -443,6 +462,34 @@ export function OrganizationsPanel({
                     <option value="pending">Pending review</option>
                     <option value="hidden">Hidden</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label>Membership tags</Label>
+                <p className="-mt-1 text-xs text-navy-text/55">
+                  A company can carry several tags. All selected tags show as chips on the Members page and can be
+                  filtered.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {MEMBER_TAGS.map((tag) => {
+                    const active = (form.tags ?? []).includes(tag)
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleTag(tag)}
+                        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                          active
+                            ? "border-awaj-red bg-awaj-red text-white"
+                            : "border-gold/40 bg-white text-navy-text/70 hover:bg-beige"
+                        }`}
+                      >
+                        {active ? <Check className="h-3 w-3" /> : null}
+                        {tag}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 

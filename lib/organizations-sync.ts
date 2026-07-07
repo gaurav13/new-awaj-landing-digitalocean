@@ -4,6 +4,7 @@ import {
   organizations,
   eventsOrganizations,
   programsOrganizations,
+  newsOrganizations,
   type EventSponsor,
   type ProgramPartner,
   type ProgramStartup,
@@ -23,6 +24,7 @@ export function normalizeName(name: string) {
 export async function findOrCreateOrganizationByName(input: {
   name: string
   type?: string
+  tags?: string[]
   logoUrl?: string | null
   websiteUrl?: string | null
   country?: string | null
@@ -46,6 +48,7 @@ export async function findOrCreateOrganizationByName(input: {
     .values({
       name: cleanName,
       type: input.type || "Member",
+      tags: input.tags ?? [],
       logoUrl: input.logoUrl || null,
       websiteUrl: input.websiteUrl || null,
       country: input.country || null,
@@ -114,6 +117,7 @@ export async function importEventSponsors(sponsors: EventSponsor[] = []): Promis
     const { id } = await findOrCreateOrganizationByName({
       name: s.name,
       type: "Sponsor",
+      tags: ["Sponsor"],
       logoUrl: s.logoUrl,
       websiteUrl: s.linkUrl,
     })
@@ -130,6 +134,7 @@ export async function importProgramPartners(partners: ProgramPartner[] = []): Pr
     const { id } = await findOrCreateOrganizationByName({
       name: p.name,
       type: "Partner",
+      tags: ["Event Partner"],
       logoUrl: p.logoUrl,
       websiteUrl: p.linkUrl,
     })
@@ -146,6 +151,7 @@ export async function importProgramStartups(startups: ProgramStartup[] = []): Pr
     const { id } = await findOrCreateOrganizationByName({
       name: s.name,
       type: "Startup",
+      tags: ["Startup Member"],
       logoUrl: s.logoUrl,
       websiteUrl: s.linkUrl,
       description: s.description,
@@ -163,6 +169,15 @@ export async function syncEventOrganizationConnections(eventId: number, organiza
     await db
       .insert(eventsOrganizations)
       .values(ids.map((organizationId, i) => ({ eventId, organizationId, sortOrder: i })))
+  }
+}
+
+/** Rebuild a news article's organization connections from the supplied ids (de-duplicated). */
+export async function syncNewsOrganizationConnections(newsId: number, organizationIds: number[] = []) {
+  await db.delete(newsOrganizations).where(eq(newsOrganizations.newsId, newsId))
+  const ids = Array.from(new Set(organizationIds.map(Number).filter((n) => Number.isFinite(n))))
+  if (ids.length > 0) {
+    await db.insert(newsOrganizations).values(ids.map((organizationId, i) => ({ newsId, organizationId, sortOrder: i })))
   }
 }
 

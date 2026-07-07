@@ -298,7 +298,11 @@ export const programsPeople = pgTable("programs_people", {
 export const organizations = pgTable("organizations", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  // Primary type — used for default sorting/grouping.
   type: text("type").notNull().default("Member"),
+  // Display + filter tags (e.g. "Corporate Member", "Sponsor", "Media Partner"). A single
+  // company can carry several tags so it appears once with all its relationships.
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
   logoUrl: text("logo_url"),
   websiteUrl: text("website_url"),
   country: text("country"),
@@ -332,6 +336,46 @@ export const programsOrganizations = pgTable("programs_organizations", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const newsOrganizations = pgTable("news_organizations", {
+  id: serial("id").primaryKey(),
+  newsId: integer("news_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  roleAtNews: text("role_at_news"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+// ---- Public member applications ----
+// Submissions from the public /membership/apply form. Reviewed in the admin dashboard;
+// approving one creates/updates a central organization (de-duplicated by name).
+export const memberApplications = pgTable("member_applications", {
+  id: serial("id").primaryKey(),
+  companyName: text("company_name").notNull(),
+  applicantName: text("applicant_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  website: text("website"),
+  country: text("country"),
+  // The membership category the applicant is applying for (a MEMBER_TAG).
+  category: text("category").notNull().default("Corporate Member"),
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  reasonForJoining: text("reason_for_joining"),
+  linkedinUrl: text("linkedin_url"),
+  message: text("message"),
+  founderName: text("founder_name"),
+  founderPhoto: text("founder_photo"),
+  founderEmail: text("founder_email"),
+  // pending | approved | rejected | info_requested
+  status: text("status").notNull().default("pending"),
+  reviewNotes: text("review_notes"),
+  organizationId: integer("organization_id"),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+export type MemberApplication = typeof memberApplications.$inferSelect
+
 export const ORGANIZATION_TYPES = [
   "Member",
   "Partner",
@@ -342,6 +386,11 @@ export const ORGANIZATION_TYPES = [
   "Media",
 ] as const
 export type OrganizationType = (typeof ORGANIZATION_TYPES)[number]
+
+// Multi-tag values live in lib/organization-types.ts (client-safe) as MEMBER_TAGS.
+
+export const APPLICATION_STATUSES = ["pending", "approved", "rejected", "info_requested"] as const
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number]
 
 export const ORGANIZATION_STATUSES = ["approved", "pending", "hidden"] as const
 export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number]
