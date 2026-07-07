@@ -70,8 +70,9 @@ function Field({
   )
 }
 
-export function MembershipApplicationForm() {
-  const [form, setForm] = useState<FormState>(EMPTY)
+export function MembershipApplicationForm({ defaultCategory }: { defaultCategory?: string }) {
+  const initialCategory = MEMBER_TAGS.find((t) => t === defaultCategory) ?? EMPTY.category
+  const [form, setForm] = useState<FormState>({ ...EMPTY, category: initialCategory })
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)

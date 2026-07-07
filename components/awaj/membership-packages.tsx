@@ -114,6 +114,22 @@ function accentOf(name: string): AccentStyle {
   return ACCENTS[name] ?? ACCENTS.gold
 }
 
+/**
+ * Map a membership plan (by name) to the pre-selected category on the public application form.
+ * Falls back to "Corporate Member" so any custom plan still lands on a valid category.
+ */
+function applyHrefForPlan(planName: string): string {
+  const n = planName.toLowerCase()
+  let category = "Corporate Member"
+  if (n.includes("startup")) category = "Startup Member"
+  else if (n.includes("exec") || n.includes("exclusive") || n.includes("premium")) category = "Exclusive Member"
+  else if (n.includes("supporter") || n.includes("sponsor")) category = "Sponsor"
+  else if (n.includes("media")) category = "Media Partner"
+  else if (n.includes("government") || n.includes("public")) category = "Government Support"
+  else if (n.includes("corporate") || n.includes("enterprise")) category = "Corporate Member"
+  return `/membership/apply?category=${encodeURIComponent(category)}`
+}
+
 const MINI_FEATURES = [
   { icon: Users, title: "Connect", desc: "Engage with leaders and peers" },
   { icon: Handshake, title: "Collaborate", desc: "Co-create programs and initiatives" },
@@ -186,7 +202,9 @@ export function MembershipPackages({
         {plans.map((plan) => {
           const highlighted = plan.isHighlighted || plan.accent === "navy"
           const accent = accentOf(plan.accent)
-          const href = plan.ctaUrl || "/contact"
+          // Default the "Join as ..." buttons to the membership application form with the matching
+          // category preselected; an explicit admin-set CTA URL still takes precedence.
+          const href = plan.ctaUrl || applyHrefForPlan(plan.name)
           return (
             <div
               key={plan.id}

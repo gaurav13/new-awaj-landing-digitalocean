@@ -12,7 +12,12 @@ export async function generateMetadata() {
   })
 }
 
-export default function MembershipApplyPage() {
+export default async function MembershipApplyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>
+}) {
+  const { category } = await searchParams
   return (
     <main className="min-h-svh bg-ivory">
       <SiteHeader />
@@ -31,7 +36,7 @@ export default function MembershipApplyPage() {
       </section>
 
       <div className="mx-auto max-w-[860px] px-5 py-12 lg:px-10 lg:py-16">
-        <MembershipApplicationForm />
+        <MembershipApplicationForm defaultCategory={category} />
       </div>
 
       <SiteFooter />
