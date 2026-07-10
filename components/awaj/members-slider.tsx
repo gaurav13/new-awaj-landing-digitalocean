@@ -14,6 +14,8 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
   const trackRef = useRef<HTMLDivElement>(null)
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(true)
+  // Pauses the auto-slider while the user hovers, focuses, or is actively interacting.
+  const [paused, setPaused] = useState(false)
 
   // Base ordering: the 20 newest companies first (in newest-first order), then the rest
   // shuffled. Done AFTER mount (not during render) so the SSR HTML matches first paint —
@@ -50,6 +52,29 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
     el.scrollBy({ left: dir * amount * 2, behavior: "smooth" })
   }
 
+  // Auto-slide: advance one card at a time on a timer, looping back to the start when
+  // the end is reached. Pauses while the user hovers/focuses/interacts, and respects the
+  // user's reduced-motion preference.
+  useEffect(() => {
+    if (paused || ordered.length <= 1) return
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const id = window.setInterval(() => {
+      const el = trackRef.current
+      if (!el) return
+      const card = el.querySelector<HTMLElement>("[data-member-card]")
+      const amount = card ? card.offsetWidth + 16 : el.clientWidth * 0.8
+      // If at (or near) the end, loop back to the beginning; otherwise advance one card.
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 8) {
+        el.scrollTo({ left: 0, behavior: "smooth" })
+      } else {
+        el.scrollBy({ left: amount, behavior: "smooth" })
+      }
+    }, 2500)
+
+    return () => window.clearInterval(id)
+  }, [paused, ordered])
+
   if (organizations.length === 0) return null
 
   return (
@@ -69,7 +94,15 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
           </Link>
         </div>
 
-        <div className="relative mt-6">
+        <div
+          className="relative mt-6"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocusCapture={() => setPaused(true)}
+          onBlurCapture={() => setPaused(false)}
+          onTouchStart={() => setPaused(true)}
+          onTouchEnd={() => setPaused(false)}
+        >
           <button
             type="button"
             aria-label="Previous members"
