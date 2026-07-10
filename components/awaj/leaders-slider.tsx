@@ -15,7 +15,15 @@ export function LeadersSlider({ leaders }: { leaders: Person[] }) {
   // HTML matches first paint — avoiding hydration mismatches — and reshuffles on every visit.
   const [shuffledLeaders, setShuffledLeaders] = useState<Person[]>(leaders)
   useEffect(() => {
-    setShuffledLeaders(shuffle(leaders))
+    const next = shuffle(leaders)
+    if (typeof window !== "undefined") {
+      ;(window as unknown as Record<string, unknown>).__leadersEffect = {
+        ran: true,
+        first: next[0]?.name,
+        count: next.length,
+      }
+    }
+    setShuffledLeaders(next)
   }, [leaders])
 
   function updateButtons() {
