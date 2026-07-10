@@ -6,7 +6,7 @@ import { trackCtaClick } from "@/lib/analytics"
 
 export function JoinCta() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14">
       <div className="relative overflow-hidden rounded-3xl bg-navy">
         {/* Network backdrop */}
         <img

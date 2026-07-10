@@ -132,7 +132,7 @@ const BOTTOM_FEATURES: { icon: LucideIcon; title: string; body: string }[] = [
 
 export function Pathways() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14">
       {/* Heading */}
       <div className="mb-10 text-center lg:mb-12">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">Three Pathways. One Ecosystem.</p>

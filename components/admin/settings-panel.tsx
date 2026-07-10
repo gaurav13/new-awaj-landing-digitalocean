@@ -86,6 +86,27 @@ const ANALYTICS_TEXT_FIELDS: TextField[] = [
   },
 ]
 
+const SOCIAL_LINK_FIELDS: TextField[] = [
+  {
+    key: "socialTwitterUrl",
+    label: "X (Twitter) profile URL",
+    help: "Full link to your X profile. Leave empty to hide the X icon in the footer.",
+    placeholder: "https://x.com/AWAJ_official",
+  },
+  {
+    key: "socialLinkedinUrl",
+    label: "LinkedIn page URL",
+    help: "Full link to your LinkedIn company page. Leave empty to hide the LinkedIn icon.",
+    placeholder: "https://www.linkedin.com/company/asia-web3-alliance-japan/",
+  },
+  {
+    key: "socialTelegramUrl",
+    label: "Telegram URL",
+    help: "Full link to your Telegram channel or group (e.g. https://t.me/AWAJ_official). Leave empty to hide the Telegram icon.",
+    placeholder: "https://t.me/AWAJ_official",
+  },
+]
+
 const SOCIAL_TEXT_FIELDS: TextField[] = [
   {
     key: "ogTitle",
@@ -397,6 +418,29 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
               onChange={(e) => setForm({ ...form, leadershipViewAllUrl: e.target.value })}
             />
           </div>
+        </div>
+      </section>
+
+      {/* Social media links */}
+      <section className="mt-10">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Social media links</h3>
+        <p className="mt-1 text-sm text-navy-text/60">
+          These links power the social icons in the site footer. Paste the full profile URL, or leave a field empty to
+          hide that icon.
+        </p>
+        <div className="mt-4 flex flex-col gap-5 rounded-2xl border border-gold/20 bg-white p-5">
+          {SOCIAL_LINK_FIELDS.map((f) => (
+            <div key={f.key} className="flex flex-col gap-2">
+              <Label htmlFor={f.key}>{f.label}</Label>
+              <p className="-mt-1 text-xs leading-relaxed text-navy-text/55">{f.help}</p>
+              <Input
+                id={f.key}
+                value={form[f.key]}
+                placeholder={f.placeholder}
+                onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+              />
+            </div>
+          ))}
         </div>
       </section>
 
