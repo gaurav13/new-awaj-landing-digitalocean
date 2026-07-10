@@ -7,7 +7,7 @@ export async function FeaturedMedia() {
   if (media.length === 0) return null
 
   return (
-    <section className="border-y border-gold/20 bg-ivory py-12 lg:py-20">
+    <section className="border-y border-gold/20 bg-ivory py-10 lg:py-14">
       <div className="mx-auto max-w-[1280px] px-5 lg:px-10">
         <p className="mb-3 text-base font-black uppercase tracking-[0.3em] text-gold">Featured In</p>
         <MediaLogos />

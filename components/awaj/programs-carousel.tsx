@@ -122,7 +122,7 @@ export function ProgramsCarousel({ programs }: { programs: CarouselProgram[] }) 
   }, [])
 
   return (
-    <section id="programs" className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+    <section id="programs" className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14">
       <div className="mb-8 flex items-center justify-between gap-4">
         <h2 className="font-serif text-2xl font-bold uppercase tracking-tight text-navy-text md:text-3xl">
           Our Core Programs

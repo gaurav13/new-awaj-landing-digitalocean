@@ -76,7 +76,7 @@ export async function PartnersMarquee({ embedded = false }: { embedded?: boolean
   // (e.g. the membership page). Standalone usage (homepage) gets its own section spacing.
   const sectionClass = embedded
     ? "mt-12"
-    : "mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16"
+    : "mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14"
 
   return (
     <section id="partners" aria-label="Our partners" className={sectionClass}>

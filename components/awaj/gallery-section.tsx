@@ -9,7 +9,7 @@ export async function GallerySection() {
   if (withPhotos.length === 0) return null
 
   return (
-    <section className="py-10 lg:py-16">
+    <section className="py-10 lg:py-14">
       <div className="mx-auto max-w-[1280px] px-5 lg:px-10">
         <GalleryPreview albums={withPhotos} />
       </div>

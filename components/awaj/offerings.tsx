@@ -92,7 +92,7 @@ const OFFERS: Offer[] = [
 
 export function Offerings() {
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14">
       {/* Heading */}
       <div className="mx-auto mb-10 max-w-3xl text-center lg:mb-14">
         <div className="flex items-center justify-center gap-3">
