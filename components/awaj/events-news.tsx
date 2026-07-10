@@ -10,9 +10,9 @@ export async function EventsNews() {
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <div className="overflow-hidden rounded-3xl border border-gold/15 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-        <div className="grid grid-cols-1 gap-10 xl:grid-cols-[1fr_340px] xl:gap-12">
+        <div className="flex flex-col gap-10 lg:flex-row lg:gap-10">
         {/* Events column */}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-awaj-red">Upcoming Events</h2>
             <Link
@@ -34,7 +34,7 @@ export async function EventsNews() {
         </div>
 
         {/* News rail */}
-        <div className="xl:border-l xl:border-gold/15 xl:pl-12">
+        <div className="lg:w-[260px] lg:shrink-0 lg:border-l lg:border-gold/15 lg:pl-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">Latest News</h2>
             <Link
@@ -51,18 +51,18 @@ export async function EventsNews() {
               No news published yet.
             </div>
           ) : (
-            <ul className="mt-6 flex flex-col divide-y divide-gold/15">
+            <ul className="mt-5 flex flex-col divide-y divide-gold/15">
               {news.map((n) => (
                 <li key={n.id}>
-                  <Link href={`/news/${n.slug}`} className="group flex items-center gap-4 py-4 first:pt-0">
-                    <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-gold/15 bg-beige">
+                  <Link href={`/news/${n.slug}`} className="group flex items-center gap-3 py-3 first:pt-0">
+                    <div className="h-12 w-14 shrink-0 overflow-hidden rounded-md border border-gold/15 bg-beige">
                       <img
-                        src={n.imageUrl || "/placeholder.svg?height=128&width=160&query=news"}
+                        src={n.imageUrl || "/placeholder.svg?height=96&width=112&query=news"}
                         alt={n.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <h3 className="min-w-0 font-serif text-base font-bold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
+                    <h3 className="line-clamp-2 min-w-0 font-serif text-sm font-semibold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
                       {n.title}
                     </h3>
                   </Link>
