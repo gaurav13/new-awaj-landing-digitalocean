@@ -47,13 +47,15 @@ export default async function Page() {
       <MembersSlider organizations={organizations} />
       <EventsNews />
       <GrowthJourney />
+      {/* "Three Pathways. One Ecosystem." and "What We Offer" now follow the Path to IPO
+          section and precede the Team section. */}
+      <Pathways />
+      <Offerings />
+      <AdSlot page="home" placement="mid" className="px-5 py-8 lg:px-10" />
       <Team />
       {/* Full tiered partner marquee follows the ecosystem leaders section. */}
       <PartnersMarquee />
       <Programs />
-      <Pathways />
-      <AdSlot page="home" placement="mid" className="px-5 py-8 lg:px-10" />
-      <Offerings />
       <GallerySection />
       <FeaturedMedia />
       <JoinCta />
