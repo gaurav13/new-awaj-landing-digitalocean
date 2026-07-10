@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Search, ExternalLink, CalendarDays, Layers } from "lucide-react"
 import type { DirectoryPerson } from "@/app/actions/people"
+import { newestFirstThenShuffle, recencyMs } from "@/lib/shuffle"
 
 const PAGE_SIZE = 24
 
@@ -21,14 +22,22 @@ export function PeopleDirectory({ people }: { people: DirectoryPerson[] }) {
     return ["All", ...Array.from(set).sort()]
   }, [people])
 
+  // Base ordering: newest added/updated person first, remaining shuffled. Done AFTER mount
+  // (not during render) so the SSR HTML and first client paint match — avoiding hydration
+  // mismatches — while still producing a fresh random order on every page load/visit.
+  const [ordered, setOrdered] = useState<DirectoryPerson[]>(people)
+  useEffect(() => {
+    setOrdered(newestFirstThenShuffle(people, (p) => recencyMs(p.createdAt, p.updatedAt)))
+  }, [people])
+
   const filtered = useMemo(() => {
-    return people.filter((p) => {
+    return ordered.filter((p) => {
       const matchesRole = activeRole === "All" || (p.roleTypes ?? []).includes(activeRole)
       const haystack = `${p.fullName} ${p.jobTitle ?? ""} ${p.companyName ?? ""}`.toLowerCase()
       const matchesQuery = !query.trim() || haystack.includes(query.toLowerCase())
       return matchesRole && matchesQuery
     })
-  }, [people, activeRole, query])
+  }, [ordered, activeRole, query])
 
   // Reset paging whenever the filtered set changes.
   useEffect(() => {

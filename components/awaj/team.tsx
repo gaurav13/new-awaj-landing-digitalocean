@@ -26,7 +26,9 @@ function parseStats(raw: string): Stat[] {
 }
 
 export async function Team() {
-  const [leaders, settings] = await Promise.all([getHomepageLeaders(14), getSiteSettings()])
+  // Fetch all homepage leaders (order is randomized client-side in LeadersSlider) so
+  // every ecosystem member gets equal visibility rather than only the first few by sort order.
+  const [leaders, settings] = await Promise.all([getHomepageLeaders(48), getSiteSettings()])
 
   const stats = parseStats(settings.leadershipStats)
 

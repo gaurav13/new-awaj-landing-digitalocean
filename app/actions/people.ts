@@ -75,6 +75,8 @@ export type DirectoryPerson = {
   roleTypes: string[]
   featured: boolean
   sortOrder: number
+  createdAt: string
+  updatedAt: string
   events: PersonConnection[]
   programs: PersonConnection[]
 }
@@ -113,6 +115,8 @@ export async function getPeopleDirectory(): Promise<DirectoryPerson[]> {
         roleTypes: [...(p.roleTypes ?? [])],
         featured: p.featured,
         sortOrder: p.sortOrder,
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
         events: [],
         programs: [],
       }

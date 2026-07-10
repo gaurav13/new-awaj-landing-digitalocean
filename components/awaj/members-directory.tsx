@@ -1,9 +1,10 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Building2, Globe, ArrowUpRight, Search, X } from "lucide-react"
 import type { DirectoryOrganization } from "@/lib/organization-types"
+import { newestFirstThenShuffle, recencyMs } from "@/lib/shuffle"
 
 type FilterKey = "tag" | "country" | "industry" | "event" | "program"
 
@@ -134,6 +135,14 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
     program: ALL,
   })
 
+  // Base ordering: newest added/updated organization first, remaining shuffled. Done AFTER mount
+  // (not during render) so the SSR HTML and first client paint match — avoiding hydration
+  // mismatches — while still producing a fresh random order on every page load/visit.
+  const [ordered, setOrdered] = useState<DirectoryOrganization[]>(organizations)
+  useEffect(() => {
+    setOrdered(newestFirstThenShuffle(organizations, (o) => recencyMs(o.createdAt, o.updatedAt)))
+  }, [organizations])
+
   // Build the distinct option lists from the data itself.
   const options = useMemo(() => {
     const tags = new Set<string>()
@@ -170,7 +179,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
   }, [organizations])
 
   const filtered = useMemo(() => {
-    return organizations.filter((o) => {
+    return ordered.filter((o) => {
       const oTags = o.tags && o.tags.length > 0 ? o.tags : [o.type]
       if (filters.tag !== ALL && !oTags.includes(filters.tag)) return false
       if (filters.country !== ALL && o.country !== filters.country) return false
@@ -185,7 +194,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
       }
       return true
     })
-  }, [organizations, filters, search])
+  }, [ordered, filters, search])
 
   const hasActiveFilters =
     search.trim() !== "" || (Object.keys(filters) as FilterKey[]).some((k) => filters[k] !== ALL)
