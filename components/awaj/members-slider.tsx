@@ -83,7 +83,7 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
 
   return (
     <section aria-label="New members" className="bg-ivory">
-      <div className="mx-auto max-w-[1280px] px-5 pb-10 pt-4 lg:px-10 lg:pb-14 lg:pt-6">
+      <div className="mx-auto max-w-[1280px] px-5 pb-4 pt-4 lg:px-10 lg:pb-6 lg:pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">New Members</h2>

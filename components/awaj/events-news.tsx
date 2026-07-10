@@ -8,7 +8,7 @@ export async function EventsNews() {
   const [events, news] = await Promise.all([getUpcomingEvents(10), getLatestNews(4)])
 
   return (
-    <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-[1280px] px-5 pb-10 pt-4 lg:px-10 lg:pb-16 lg:pt-6">
       <div className="overflow-hidden rounded-3xl border border-gold/15 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
         {/* Events banner — full width so the carousel cards render large and uncropped */}
         <div className="min-w-0">
