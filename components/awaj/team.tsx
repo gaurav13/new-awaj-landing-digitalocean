@@ -3,7 +3,6 @@ import { ArrowRight, Users, Building2, Rocket, Globe, Calendar, Award, Briefcase
 import { getHomepageLeaders } from "@/app/actions/people"
 import { getSiteSettings } from "@/app/actions/settings"
 import { LeadersSlider } from "@/components/awaj/leaders-slider"
-import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 
 const STAT_ICONS: Record<string, LucideIcon> = {
   Users,
@@ -123,13 +122,6 @@ export async function Team() {
           <LeadersSlider leaders={leaders} />
         </div>
       ) : null}
-
-      {/* Speaker support & leading institutions strip */}
-      <div className="border-t border-gold/15">
-        <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
-          <InstitutionsStrip />
-        </div>
-      </div>
     </section>
   )
 }

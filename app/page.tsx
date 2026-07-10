@@ -8,6 +8,7 @@ import { Offerings } from "@/components/awaj/offerings"
 import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
 import { PartnersMarquee } from "@/components/awaj/partners-marquee"
+import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
@@ -30,12 +31,16 @@ export default async function Page() {
       <SiteHeader />
       <AdSlot page="home" placement="top" className="px-5 pt-6 lg:px-10" />
       <Hero bannerUrl={resolveImageUrl(settings.heroBannerUrl)} banners={banners} />
-      {/* Key metrics lead immediately below the hero to establish credibility, followed by trust signals. */}
+      {/* Key metrics lead below the hero, then the government/institution trust strip for immediate credibility. */}
       <Stats />
-      <PartnersMarquee />
+      <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
+        <InstitutionsStrip />
+      </div>
       <EventsNews />
       <GrowthJourney />
       <Team />
+      {/* Full tiered partner marquee follows the ecosystem leaders section. */}
+      <PartnersMarquee />
       <Programs />
       <Pathways />
       <AdSlot page="home" placement="mid" className="px-5 py-8 lg:px-10" />
