@@ -10,9 +10,9 @@ export async function EventsNews() {
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <div className="overflow-hidden rounded-3xl border border-gold/15 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-        <div className="flex flex-col gap-10 lg:flex-row lg:gap-10">
-        {/* Events column */}
-        <div className="min-w-0 flex-1">
+        <div className="events-news-layout">
+        {/* Events column — grows to fill the row so event cards render full-size */}
+        <div className="events-col min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-awaj-red">Upcoming Events</h2>
             <Link
@@ -33,8 +33,8 @@ export async function EventsNews() {
           )}
         </div>
 
-        {/* News rail */}
-        <div className="lg:w-[260px] lg:shrink-0 lg:border-l lg:border-gold/15 lg:pl-8">
+        {/* News rail — fixed narrow column so the events banner keeps the larger share */}
+        <div className="news-col min-w-0 lg:border-l lg:border-gold/15 lg:pl-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">Latest News</h2>
             <Link

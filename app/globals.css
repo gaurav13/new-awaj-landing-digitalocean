@@ -303,3 +303,29 @@
     animation: none;
   }
 }
+
+/* Events + News section: the events banner takes the larger share while the
+   news rail stays a fixed narrow column on desktop. Defined explicitly to avoid
+   relying on JIT-generated width utilities in this build. */
+.events-news-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.events-news-layout > .events-col {
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .events-news-layout {
+    flex-direction: row;
+    gap: 2.5rem;
+  }
+  .events-news-layout > .events-col {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+  .events-news-layout > .news-col {
+    flex: 0 0 300px;
+    max-width: 300px;
+  }
+}
