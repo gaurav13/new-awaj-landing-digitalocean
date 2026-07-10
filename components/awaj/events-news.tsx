@@ -1,11 +1,11 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { getLatestNews } from "@/app/actions/news"
-import { getHomeEvents } from "@/app/actions/events"
+import { getUpcomingEvents } from "@/app/actions/events"
 import { EventsCarousel } from "@/components/awaj/events-carousel"
 
 export async function EventsNews() {
-  const [events, news] = await Promise.all([getHomeEvents(10), getLatestNews(4)])
+  const [events, news] = await Promise.all([getUpcomingEvents(10), getLatestNews(4)])
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
@@ -36,7 +36,7 @@ export async function EventsNews() {
         {/* News rail */}
         <div className="xl:border-l xl:border-gold/15 xl:pl-12">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">Latest News &amp; Insights</h2>
+            <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">Latest News</h2>
             <Link
               href="/news"
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-awaj-red transition-colors hover:text-navy-text"
@@ -54,20 +54,17 @@ export async function EventsNews() {
             <ul className="mt-6 flex flex-col divide-y divide-gold/15">
               {news.map((n) => (
                 <li key={n.id}>
-                  <Link href={`/news/${n.slug}`} className="group flex items-start gap-4 py-4 first:pt-0">
-                    <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-beige">
+                  <Link href={`/news/${n.slug}`} className="group flex items-center gap-4 py-4 first:pt-0">
+                    <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-gold/15 bg-beige">
                       <img
                         src={n.imageUrl || "/placeholder.svg?height=128&width=160&query=news"}
-                        alt=""
+                        alt={n.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-serif text-base font-bold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
-                        {n.title}
-                      </h3>
-                      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-navy-text/65">{n.excerpt}</p>
-                    </div>
+                    <h3 className="min-w-0 font-serif text-base font-bold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
+                      {n.title}
+                    </h3>
                   </Link>
                 </li>
               ))}
