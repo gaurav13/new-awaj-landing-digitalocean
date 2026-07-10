@@ -97,7 +97,11 @@ export async function buildPageMetadata(input: PageSeoInput): Promise<Metadata> 
       title: ogTitle,
       description,
       images: socialImage ? [socialImage.url] : undefined,
-      site: "AWAJ_official" || undefined,
+      site: settings.twitterHandle
+        ? settings.twitterHandle.startsWith("@")
+          ? settings.twitterHandle
+          : `@${settings.twitterHandle}`
+        : "@AWAJ_official",
     },
   }
 }

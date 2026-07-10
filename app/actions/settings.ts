@@ -32,6 +32,10 @@ export type SiteSettings = {
   faviconUrl: string
   twitterHandle: string
   canonicalBaseUrl: string
+  // Social media profile links (shown in the footer)
+  socialTwitterUrl: string
+  socialLinkedinUrl: string
+  socialTelegramUrl: string
   // Analytics & verification
   gaMeasurementId: string
   googleSiteVerification: string
@@ -70,6 +74,9 @@ const DEFAULTS: SiteSettings = {
   faviconUrl: "",
   twitterHandle: "",
   canonicalBaseUrl: "",
+  socialTwitterUrl: "https://x.com/AWAJ_official",
+  socialLinkedinUrl: "https://www.linkedin.com/company/asia-web3-alliance-japan/",
+  socialTelegramUrl: "https://t.me/AWAJ_official",
   gaMeasurementId: "",
   googleSiteVerification: "",
   bingSiteVerification: "",
@@ -124,6 +131,11 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       faviconUrl: resolveSettingImage(map.faviconUrl, DEFAULTS.faviconUrl),
       twitterHandle: map.twitterHandle || DEFAULTS.twitterHandle,
       canonicalBaseUrl: map.canonicalBaseUrl || DEFAULTS.canonicalBaseUrl,
+      // Use nullish coalescing so an admin can explicitly clear a link (empty string)
+      // to hide it, while never-configured links fall back to the AWAJ defaults.
+      socialTwitterUrl: map.socialTwitterUrl ?? DEFAULTS.socialTwitterUrl,
+      socialLinkedinUrl: map.socialLinkedinUrl ?? DEFAULTS.socialLinkedinUrl,
+      socialTelegramUrl: map.socialTelegramUrl ?? DEFAULTS.socialTelegramUrl,
       gaMeasurementId: map.gaMeasurementId || DEFAULTS.gaMeasurementId,
       googleSiteVerification: map.googleSiteVerification || DEFAULTS.googleSiteVerification,
       bingSiteVerification: map.bingSiteVerification || DEFAULTS.bingSiteVerification,
