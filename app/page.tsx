@@ -9,6 +9,8 @@ import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
 import { PartnersMarquee } from "@/components/awaj/partners-marquee"
 import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
+import { MembersSlider } from "@/components/awaj/members-slider"
+import { getOrganizationsDirectory } from "@/app/actions/organizations"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
@@ -25,7 +27,11 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const [settings, banners] = await Promise.all([getSiteSettings(), getActiveBanners()])
+  const [settings, banners, organizations] = await Promise.all([
+    getSiteSettings(),
+    getActiveBanners(),
+    getOrganizationsDirectory(),
+  ])
   return (
     <main className="min-h-screen bg-ivory">
       <SiteHeader />
@@ -36,6 +42,8 @@ export default async function Page() {
       <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
         <InstitutionsStrip />
       </div>
+      {/* New members slider: 20 latest companies first, then randomized on each visit. */}
+      <MembersSlider organizations={organizations} />
       <EventsNews />
       <GrowthJourney />
       <Team />
