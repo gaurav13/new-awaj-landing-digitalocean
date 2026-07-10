@@ -3,7 +3,7 @@
 import type React from "react"
 import { useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Pencil, Trash2, X, Search, Star, Eye, EyeOff, Check, Download, Building2 } from "lucide-react"
+import { Plus, Pencil, Trash2, X, Search, Star, Eye, EyeOff, Check, Download, Building2, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +16,7 @@ import {
   updateOrganization,
   deleteOrganization,
   setOrganizationStatus,
+  setOrganizationHomepage,
   setOrganizationConnections,
   importOrganizations,
 } from "@/app/actions/organizations"
@@ -35,6 +36,7 @@ const EMPTY: OrganizationInput = {
   description: "",
   status: "approved",
   featured: false,
+  showOnHomepage: true,
   sortOrder: 0,
 }
 
@@ -104,6 +106,7 @@ export function OrganizationsPanel({
       description: o.description ?? "",
       status: o.status,
       featured: o.featured,
+      showOnHomepage: o.showOnHomepage,
       sortOrder: o.sortOrder,
     })
     setEventIds(o.events.map((e) => e.id))
@@ -159,6 +162,17 @@ export function OrganizationsPanel({
         router.refresh()
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to update status.")
+      }
+    })
+  }
+
+  function handleHomepage(id: number, showOnHomepage: boolean) {
+    startTransition(async () => {
+      try {
+        await setOrganizationHomepage(id, showOnHomepage)
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to update homepage visibility.")
       }
     })
   }
@@ -380,6 +394,18 @@ export function OrganizationsPanel({
                   )}
                   <button
                     type="button"
+                    onClick={() => handleHomepage(o.id, !o.showOnHomepage)}
+                    disabled={isPending}
+                    className={`rounded-lg p-2 transition-colors hover:bg-beige ${
+                      o.showOnHomepage ? "text-awaj-red" : "text-navy-text/40 hover:text-navy-text"
+                    }`}
+                    aria-label={o.showOnHomepage ? "Remove from homepage slider" : "Add to homepage slider"}
+                    title={o.showOnHomepage ? "Showing in homepage slider — click to hide" : "Hidden from homepage slider — click to show"}
+                  >
+                    <Home className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => openEdit(o)}
                     className="rounded-lg p-2 text-navy-text/60 transition-colors hover:bg-beige hover:text-navy-text"
                     aria-label="Edit"
@@ -538,6 +564,22 @@ export function OrganizationsPanel({
                   />
                 </Field>
               </div>
+
+              <label className="flex items-start gap-2.5 rounded-xl border border-gold/20 bg-white p-3">
+                <input
+                  type="checkbox"
+                  checked={form.showOnHomepage ?? true}
+                  onChange={(e) => setForm({ ...form, showOnHomepage: e.target.checked })}
+                  className="mt-0.5 h-4 w-4 rounded border-input accent-awaj-red"
+                />
+                <span>
+                  <span className="block text-sm font-medium text-navy-text">Show in homepage members slider</span>
+                  <span className="mt-0.5 block text-xs text-navy-text/55">
+                    When enabled, this company can appear in the &ldquo;New Members&rdquo; slider on the homepage. Uncheck
+                    to keep it on the Members page but hide it from the homepage.
+                  </span>
+                </span>
+              </label>
 
               <div className="rounded-2xl border border-gold/20 bg-white p-4">
                 <h3 className="font-semibold text-navy-text">Connections</h3>

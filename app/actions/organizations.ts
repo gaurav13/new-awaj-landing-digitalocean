@@ -99,6 +99,22 @@ export async function getOrganizationsDirectory(): Promise<DirectoryOrganization
   }, [])
 }
 
+/**
+ * Companies eligible for the homepage "New Members" slider: approved AND flagged
+ * showOnHomepage. Admins control inclusion per-company from the Organizations panel.
+ * Event/program connections aren't needed here, so they're returned empty for speed.
+ */
+export async function getHomepageMembers(): Promise<DirectoryOrganization[]> {
+  return withDb(async () => {
+    const rows = await db
+      .select()
+      .from(organizations)
+      .where(and(eq(organizations.status, "approved"), eq(organizations.showOnHomepage, true)))
+      .orderBy(asc(organizations.sortOrder), asc(organizations.name))
+    return rows.map((r) => ({ ...resolveOrg(r), events: [], programs: [] }))
+  }, [])
+}
+
 export async function getOrganizationsForEvent(eventId: number): Promise<Organization[]> {
   return withDb(async () => {
     const links = await db
@@ -285,6 +301,7 @@ function normalize(input: OrganizationInput) {
     description: input.description || null,
     status: input.status || "approved",
     featured: input.featured ?? false,
+    showOnHomepage: input.showOnHomepage ?? true,
     sortOrder: input.sortOrder ?? 0,
   }
 }
@@ -349,6 +366,14 @@ export async function setOrganizationStatus(id: number, status: "approved" | "pe
   await db.update(organizations).set({ status, updatedAt: new Date() }).where(eq(organizations.id, id))
   revalidatePath("/members")
   revalidatePath("/")
+}
+
+/** Quick toggle for whether a company appears in the homepage "New Members" slider. */
+export async function setOrganizationHomepage(id: number, showOnHomepage: boolean) {
+  await getUserId()
+  await db.update(organizations).set({ showOnHomepage, updatedAt: new Date() }).where(eq(organizations.id, id))
+  revalidatePath("/")
+  revalidatePath("/members")
 }
 
 export async function deleteOrganization(id: number) {

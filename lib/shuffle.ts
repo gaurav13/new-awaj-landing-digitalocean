@@ -51,6 +51,29 @@ export function latestNThenShuffle<T>(items: readonly T[], count: number, recenc
   return [...latest, ...shuffle(rest)]
 }
 
+/**
+ * Return the `latestCount` most-recently added/updated items first (in newest-first order),
+ * followed by up to `randomCount` randomly-chosen items from the remainder. The result has at
+ * most `latestCount + randomCount` items. `recencyOf` returns a comparable number (larger = newer);
+ * ties are broken by input order.
+ */
+export function latestNThenRandomM<T>(
+  items: readonly T[],
+  latestCount: number,
+  randomCount: number,
+  recencyOf: (item: T) => number,
+): T[] {
+  if (items.length === 0) return []
+  const byRecency = items
+    .map((item, index) => ({ item, index, r: recencyOf(item) }))
+    .sort((a, b) => b.r - a.r || a.index - b.index)
+  const latest = byRecency.slice(0, Math.max(0, latestCount)).map((e) => e.item)
+  const latestSet = new Set(latest)
+  const rest = items.filter((item) => !latestSet.has(item))
+  const randomPicked = shuffle(rest).slice(0, Math.max(0, randomCount))
+  return [...latest, ...randomPicked]
+}
+
 /** Best-effort epoch ms from a Date | string | null, using the most recent of created/updated. */
 export function recencyMs(createdAt?: Date | string | null, updatedAt?: Date | string | null): number {
   const c = createdAt ? new Date(createdAt).getTime() : 0

@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Building2, ArrowRight } from "lucide-react"
 import type { DirectoryOrganization } from "@/lib/organization-types"
-import { latestNThenShuffle, recencyMs } from "@/lib/shuffle"
+import { latestNThenRandomM, recencyMs } from "@/lib/shuffle"
 
-// Number of most-recently added/updated companies pinned to the front of the slider
-// before the remaining members are randomized.
-const LATEST_PINNED = 20
+// The slider shows the 10 most-recently added/updated companies first, followed by
+// 10 randomly-selected companies from the rest (re-randomized on every visit).
+const LATEST_COUNT = 10
+const RANDOM_COUNT = 10
 
 export function MembersSlider({ organizations }: { organizations: DirectoryOrganization[] }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -17,12 +18,15 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
   // Pauses the auto-slider while the user hovers, focuses, or is actively interacting.
   const [paused, setPaused] = useState(false)
 
-  // Base ordering: the 20 newest companies first (in newest-first order), then the rest
-  // shuffled. Done AFTER mount (not during render) so the SSR HTML matches first paint —
-  // avoiding hydration mismatches — while producing a fresh random tail on every visit.
-  const [ordered, setOrdered] = useState<DirectoryOrganization[]>(organizations)
+  // Base ordering: the 10 newest companies first (newest-first), then 10 random companies from
+  // the rest. Done AFTER mount (not during render) so the SSR HTML matches first paint — avoiding
+  // hydration mismatches — while producing a fresh random tail on every visit. Before the effect
+  // runs, show the first (LATEST_COUNT + RANDOM_COUNT) so SSR isn't the whole list.
+  const [ordered, setOrdered] = useState<DirectoryOrganization[]>(() =>
+    organizations.slice(0, LATEST_COUNT + RANDOM_COUNT),
+  )
   useEffect(() => {
-    setOrdered(latestNThenShuffle(organizations, LATEST_PINNED, (o) => recencyMs(o.createdAt, o.updatedAt)))
+    setOrdered(latestNThenRandomM(organizations, LATEST_COUNT, RANDOM_COUNT, (o) => recencyMs(o.createdAt, o.updatedAt)))
   }, [organizations])
 
   function updateButtons() {
@@ -79,7 +83,7 @@ export function MembersSlider({ organizations }: { organizations: DirectoryOrgan
 
   return (
     <section aria-label="New members" className="bg-ivory">
-      <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-14">
+      <div className="mx-auto max-w-[1280px] px-5 pb-10 pt-4 lg:px-10 lg:pb-14 lg:pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">New Members</h2>

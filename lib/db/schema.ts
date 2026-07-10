@@ -311,6 +311,9 @@ export const organizations = pgTable("organizations", {
   // approved (public) | pending (awaiting review) | hidden (kept but not shown)
   status: text("status").notNull().default("approved"),
   featured: boolean("featured").notNull().default(false),
+  // Controls whether this company is eligible for the homepage "New Members" slider.
+  // Defaults to true so approved companies appear until an admin disables them.
+  showOnHomepage: boolean("show_on_homepage").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
