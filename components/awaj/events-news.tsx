@@ -10,9 +10,8 @@ export async function EventsNews() {
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10 lg:py-16">
       <div className="overflow-hidden rounded-3xl border border-gold/15 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-        <div className="events-news-layout">
-        {/* Events column — grows to fill the row so event cards render full-size */}
-        <div className="events-col min-w-0">
+        {/* Events banner — full width so the carousel cards render large and uncropped */}
+        <div className="min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-awaj-red">Upcoming Events</h2>
             <Link
@@ -33,8 +32,8 @@ export async function EventsNews() {
           )}
         </div>
 
-        {/* News rail — fixed narrow column so the events banner keeps the larger share */}
-        <div className="news-col min-w-0 lg:border-l lg:border-gold/15 lg:pl-8">
+        {/* News banner — full-width grid with large, uncropped images */}
+        <div className="mt-10 border-t border-gold/15 pt-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-bold uppercase tracking-[0.22em] text-gold">Latest News</h2>
             <Link
@@ -51,26 +50,23 @@ export async function EventsNews() {
               No news published yet.
             </div>
           ) : (
-            <ul className="mt-5 flex flex-col divide-y divide-gold/15">
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {news.map((n) => (
-                <li key={n.id}>
-                  <Link href={`/news/${n.slug}`} className="group flex items-center gap-3 py-3 first:pt-0">
-                    <div className="h-12 w-14 shrink-0 overflow-hidden rounded-md border border-gold/15 bg-beige">
-                      <img
-                        src={n.imageUrl || "/placeholder.svg?height=96&width=112&query=news"}
-                        alt={n.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <h3 className="line-clamp-2 min-w-0 font-serif text-sm font-semibold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
-                      {n.title}
-                    </h3>
-                  </Link>
-                </li>
+                <Link key={n.id} href={`/news/${n.slug}`} className="group flex flex-col">
+                  <div className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-beige">
+                    <img
+                      src={n.imageUrl || "/placeholder.svg?height=225&width=400&query=news"}
+                      alt={n.title}
+                      className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 className="mt-3 line-clamp-2 font-serif text-base font-bold leading-snug text-navy-text transition-colors group-hover:text-awaj-red">
+                    {n.title}
+                  </h3>
+                </Link>
               ))}
-            </ul>
+            </div>
           )}
-        </div>
         </div>
       </div>
     </section>
