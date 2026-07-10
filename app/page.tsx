@@ -30,10 +30,10 @@ export default async function Page() {
       <SiteHeader />
       <AdSlot page="home" placement="top" className="px-5 pt-6 lg:px-10" />
       <Hero bannerUrl={resolveImageUrl(settings.heroBannerUrl)} banners={banners} />
-      {/* Trust signals sit immediately below the hero to establish credibility before users explore further. */}
+      {/* Key metrics lead immediately below the hero to establish credibility, followed by trust signals. */}
+      <Stats />
       <PartnersMarquee />
       <EventsNews />
-      <Stats />
       <GrowthJourney />
       <Team />
       <Programs />

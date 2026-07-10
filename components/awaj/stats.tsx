@@ -19,24 +19,26 @@ const STATS: Stat[] = [
 
 export function Stats() {
   return (
-    <section className="relative z-20 -mt-28 px-5 lg:px-10">
-      <div className="mx-auto max-w-[1280px] rounded-[2rem] border border-gold/25 bg-white px-6 py-10 shadow-xl md:px-10">
-        <div className="grid grid-cols-2 gap-y-10 md:grid-cols-3 lg:grid-cols-6">
+    <section className="relative z-20 -mt-20 px-5 sm:-mt-24 lg:px-10">
+      <div className="mx-auto max-w-[1280px] rounded-3xl border border-gold/25 bg-white p-5 shadow-xl sm:p-6 md:p-8">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-6 sm:grid-cols-3 sm:gap-y-8 lg:grid-cols-6 lg:gap-x-0">
           {STATS.map((s, i) => (
             <div
               key={s.label}
-              className={`flex flex-col items-center px-2 text-center lg:px-4 ${
+              className={`flex flex-col items-center px-1 text-center sm:px-3 ${
                 i !== STATS.length - 1 ? "lg:border-r lg:border-gold/20" : ""
               }`}
             >
-              <s.icon className="mb-2 h-7 w-7 text-gold" strokeWidth={1.5} />
-              <p className="font-serif text-3xl font-bold text-gold">{s.value}</p>
-              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-navy-text">{s.label}</p>
-              {s.sub && <p className="mt-0.5 text-xs text-navy-text/60">{s.sub}</p>}
+              <s.icon className="mb-1.5 h-6 w-6 text-gold sm:h-7 sm:w-7" strokeWidth={1.5} />
+              <p className="font-serif text-2xl font-bold leading-none text-gold sm:text-3xl">{s.value}</p>
+              <p className="mt-1.5 text-[11px] font-semibold uppercase leading-snug tracking-wide text-navy-text sm:text-xs">
+                {s.label}
+              </p>
+              {s.sub && <p className="mt-0.5 text-[11px] leading-snug text-navy-text/60 sm:text-xs">{s.sub}</p>}
             </div>
           ))}
         </div>
-        <div className="mt-9 border-t border-gold/15 pt-5 text-center text-sm text-navy-text/60">
+        <div className="mt-5 border-t border-gold/15 pt-4 text-center text-xs text-navy-text/60 sm:text-sm">
           Delivered through public–private partnerships and strategic industry collaboration
         </div>
       </div>
