@@ -1,11 +1,15 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Building2, Globe, ArrowUpRight, Search, X } from "lucide-react"
 import type { DirectoryOrganization } from "@/lib/organization-types"
+import { latestNThenShuffle, recencyMs } from "@/lib/shuffle"
 
 type FilterKey = "tag" | "country" | "industry" | "event" | "program"
+
+// Number of most-recent organizations pinned to the top before randomizing the rest.
+const LATEST_PINNED = 20
 
 const ALL = "all"
 
@@ -13,7 +17,7 @@ function OrganizationCard({ o }: { o: DirectoryOrganization }) {
   return (
     <div className="flex h-full flex-col rounded-2xl border border-gold/20 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-white p-2.5">
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-white p-2">
           {o.logoUrl ? (
             <img
               src={o.logoUrl || "/placeholder.svg"}
@@ -21,7 +25,7 @@ function OrganizationCard({ o }: { o: DirectoryOrganization }) {
               className="max-h-full max-w-full object-contain"
             />
           ) : (
-            <Building2 className="h-6 w-6 text-gold" />
+            <Building2 className="h-9 w-9 text-gold" />
           )}
         </div>
         <div className="min-w-0">
@@ -134,6 +138,15 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
     program: ALL,
   })
 
+  // Base ordering: the 20 newest added/updated organizations first (in newest-first order),
+  // then the remaining organizations shuffled. Done AFTER mount (not during render) so the SSR
+  // HTML and first client paint match — avoiding hydration mismatches — while still producing a
+  // fresh random order for the rest on every page load/visit.
+  const [ordered, setOrdered] = useState<DirectoryOrganization[]>(organizations)
+  useEffect(() => {
+    setOrdered(latestNThenShuffle(organizations, LATEST_PINNED, (o) => recencyMs(o.createdAt, o.updatedAt)))
+  }, [organizations])
+
   // Build the distinct option lists from the data itself.
   const options = useMemo(() => {
     const tags = new Set<string>()
@@ -170,7 +183,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
   }, [organizations])
 
   const filtered = useMemo(() => {
-    return organizations.filter((o) => {
+    return ordered.filter((o) => {
       const oTags = o.tags && o.tags.length > 0 ? o.tags : [o.type]
       if (filters.tag !== ALL && !oTags.includes(filters.tag)) return false
       if (filters.country !== ALL && o.country !== filters.country) return false
@@ -185,7 +198,7 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
       }
       return true
     })
-  }, [organizations, filters, search])
+  }, [ordered, filters, search])
 
   const hasActiveFilters =
     search.trim() !== "" || (Object.keys(filters) as FilterKey[]).some((k) => filters[k] !== ALL)

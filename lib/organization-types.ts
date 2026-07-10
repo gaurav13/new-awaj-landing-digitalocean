@@ -86,5 +86,6 @@ export type OrganizationInput = {
   description?: string
   status?: string
   featured?: boolean
+  showOnHomepage?: boolean
   sortOrder?: number
 }

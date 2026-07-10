@@ -3,11 +3,20 @@
 import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { Person } from "@/app/actions/people"
+import { shuffle } from "@/lib/shuffle"
 
 export function LeadersSlider({ leaders }: { leaders: Person[] }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(true)
+
+  // Fully randomize the leadership order so returning visitors see different leaders first
+  // and everyone gets equal visibility. Shuffled AFTER mount (not during render) so the SSR
+  // HTML matches first paint — avoiding hydration mismatches — and reshuffles on every visit.
+  const [shuffledLeaders, setShuffledLeaders] = useState<Person[]>(leaders)
+  useEffect(() => {
+    setShuffledLeaders(shuffle(leaders))
+  }, [leaders])
 
   function updateButtons() {
     const el = trackRef.current
@@ -65,7 +74,7 @@ export function LeadersSlider({ leaders }: { leaders: Person[] }) {
         ref={trackRef}
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {leaders.map((p) => (
+        {shuffledLeaders.map((p) => (
           <article
             key={p.id}
             data-leader-card

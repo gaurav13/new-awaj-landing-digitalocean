@@ -8,6 +8,9 @@ import { Offerings } from "@/components/awaj/offerings"
 import { Pathways } from "@/components/awaj/pathways"
 import { Team } from "@/components/awaj/team"
 import { PartnersMarquee } from "@/components/awaj/partners-marquee"
+import { InstitutionsStrip } from "@/components/awaj/institutions-strip"
+import { MembersSlider } from "@/components/awaj/members-slider"
+import { getHomepageMembers } from "@/app/actions/organizations"
 import { FeaturedMedia } from "@/components/awaj/featured-media"
 import { GallerySection } from "@/components/awaj/gallery-section"
 import { JoinCta } from "@/components/awaj/join-cta"
@@ -24,21 +27,33 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const [settings, banners] = await Promise.all([getSiteSettings(), getActiveBanners()])
+  const [settings, banners, organizations] = await Promise.all([
+    getSiteSettings(),
+    getActiveBanners(),
+    getHomepageMembers(),
+  ])
   return (
     <main className="min-h-screen bg-ivory">
       <SiteHeader />
       <AdSlot page="home" placement="top" className="px-5 pt-6 lg:px-10" />
       <Hero bannerUrl={resolveImageUrl(settings.heroBannerUrl)} banners={banners} />
+      {/* Key metrics lead below the hero, then the government/institution trust strip for immediate credibility. */}
       <Stats />
+      <div className="mx-auto max-w-[1280px] px-5 pb-4 pt-10 lg:px-10 lg:pb-6 lg:pt-16">
+        <InstitutionsStrip />
+      </div>
+      {/* New members slider: 10 latest companies first, then 10 random, refreshed each visit.
+          Admins choose which companies are eligible via the "Show in homepage slider" toggle. */}
+      <MembersSlider organizations={organizations} />
+      <EventsNews />
       <GrowthJourney />
       <Team />
+      {/* Full tiered partner marquee follows the ecosystem leaders section. */}
+      <PartnersMarquee />
       <Programs />
       <Pathways />
       <AdSlot page="home" placement="mid" className="px-5 py-8 lg:px-10" />
       <Offerings />
-      <PartnersMarquee />
-      <EventsNews />
       <GallerySection />
       <FeaturedMedia />
       <JoinCta />
