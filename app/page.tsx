@@ -55,9 +55,10 @@ export default async function Page() {
       <Team />
       {/* Full tiered partner marquee follows the ecosystem leaders section. */}
       <PartnersMarquee />
-      <Programs />
       <GallerySection />
       <FeaturedMedia />
+      {/* "Our Core Programs" sits directly before the Join CTA. */}
+      <Programs />
       <JoinCta />
       <AdSlot page="home" placement="bottom" className="px-5 pb-10 lg:px-10" />
       <SiteFooter />
