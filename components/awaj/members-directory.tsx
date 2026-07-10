@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Building2, Globe, ArrowUpRight, Search, X } from "lucide-react"
 import type { DirectoryOrganization } from "@/lib/organization-types"
-import { newestFirstThenShuffle, recencyMs } from "@/lib/shuffle"
+import { latestNThenShuffle, recencyMs } from "@/lib/shuffle"
 
 type FilterKey = "tag" | "country" | "industry" | "event" | "program"
+
+// Number of most-recent organizations pinned to the top before randomizing the rest.
+const LATEST_PINNED = 20
 
 const ALL = "all"
 
@@ -135,12 +138,13 @@ export function MembersDirectory({ organizations }: { organizations: DirectoryOr
     program: ALL,
   })
 
-  // Base ordering: newest added/updated organization first, remaining shuffled. Done AFTER mount
-  // (not during render) so the SSR HTML and first client paint match — avoiding hydration
-  // mismatches — while still producing a fresh random order on every page load/visit.
+  // Base ordering: the 20 newest added/updated organizations first (in newest-first order),
+  // then the remaining organizations shuffled. Done AFTER mount (not during render) so the SSR
+  // HTML and first client paint match — avoiding hydration mismatches — while still producing a
+  // fresh random order for the rest on every page load/visit.
   const [ordered, setOrdered] = useState<DirectoryOrganization[]>(organizations)
   useEffect(() => {
-    setOrdered(newestFirstThenShuffle(organizations, (o) => recencyMs(o.createdAt, o.updatedAt)))
+    setOrdered(latestNThenShuffle(organizations, LATEST_PINNED, (o) => recencyMs(o.createdAt, o.updatedAt)))
   }, [organizations])
 
   // Build the distinct option lists from the data itself.
