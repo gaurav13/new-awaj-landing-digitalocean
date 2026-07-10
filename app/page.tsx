@@ -51,14 +51,14 @@ export default async function Page() {
           section and precede the Team section. */}
       <Pathways />
       <Offerings />
+      {/* "Our Core Programs" follows the "What We Offer" services cards. */}
+      <Programs />
       <AdSlot page="home" placement="mid" className="px-5 py-8 lg:px-10" />
       <Team />
       {/* Full tiered partner marquee follows the ecosystem leaders section. */}
       <PartnersMarquee />
       <GallerySection />
       <FeaturedMedia />
-      {/* "Our Core Programs" sits directly before the Join CTA. */}
-      <Programs />
       <JoinCta />
       <AdSlot page="home" placement="bottom" className="px-5 pb-10 lg:px-10" />
       <SiteFooter />
