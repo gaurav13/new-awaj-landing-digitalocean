@@ -176,6 +176,53 @@
   html {
     @apply font-sans;
   }
+
+  /* Enforce input text color across all browsers and prevent autofill overrides */
+  input,
+  textarea,
+  select {
+    color: #10243d !important;
+    background-color: #ffffff !important;
+    -webkit-text-fill-color: #10243d !important;
+    -webkit-autofill-text-color: #10243d !important;
+  }
+
+  /* Prevent browser autofill background color from overriding */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+    -webkit-text-fill-color: #10243d !important;
+  }
+
+  /* Firefox autofill override */
+  input:autofill {
+    background-color: #ffffff !important;
+    color: #10243d !important;
+  }
+
+  /* Placeholder text color */
+  input::placeholder,
+  textarea::placeholder {
+    color: #10243d !important;
+    opacity: 0.5 !important;
+  }
+
+  input::-webkit-input-placeholder {
+    color: #10243d !important;
+    opacity: 0.5 !important;
+  }
+
+  input:-moz-placeholder {
+    color: #10243d !important;
+    opacity: 0.5 !important;
+  }
+
+  input::-moz-placeholder {
+    color: #10243d !important;
+    opacity: 0.5 !important;
+  }
 }
 
 /* Rich text editor (admin) */
