@@ -86,11 +86,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  // The site is intentionally light-only. Declaring a single light color scheme
+  // stops browsers (and private/incognito windows following system dark mode)
+  // from rendering native form controls with dark backgrounds and white text.
+  colorScheme: 'light',
+  themeColor: 'white',
 }
 
 export default async function RootLayout({
