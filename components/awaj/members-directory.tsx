@@ -17,7 +17,7 @@ function OrganizationCard({ o }: { o: DirectoryOrganization }) {
   return (
     <div className="flex h-full flex-col rounded-2xl border border-gold/20 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center gap-4">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-white p-2">
+        <div className="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gold/15 bg-white p-3">
           {o.logoUrl ? (
             <img
               src={o.logoUrl || "/placeholder.svg"}
@@ -25,7 +25,7 @@ function OrganizationCard({ o }: { o: DirectoryOrganization }) {
               className="max-h-full max-w-full object-contain"
             />
           ) : (
-            <Building2 className="h-9 w-9 text-gold" />
+            <Building2 className="h-12 w-12 text-gold" />
           )}
         </div>
         <div className="min-w-0">
