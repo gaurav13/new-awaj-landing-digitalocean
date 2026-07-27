@@ -180,7 +180,7 @@ export function MembershipApplicationForm({ defaultCategory }: { defaultCategory
         </Field>
 
         <Field label="Company logo">
-          <PublicImageUpload value={form.logoUrl} onChange={(url) => update("logoUrl", url)} label="logo" />
+          <PublicImageUpload value={form.logoUrl} onChange={(url) => update("logoUrl", url)} label="logo" size="lg" />
         </Field>
       </fieldset>
 

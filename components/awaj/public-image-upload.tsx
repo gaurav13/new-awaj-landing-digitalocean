@@ -13,12 +13,16 @@ export function PublicImageUpload({
   onChange,
   label,
   circle = false,
+  size = "md",
 }: {
   value: string
   onChange: (url: string) => void
   label: string
   circle?: boolean
+  size?: "md" | "lg"
 }) {
+  const previewSize = size === "lg" ? "h-32 w-32" : "h-20 w-20"
+  const dropzoneHeight = size === "lg" ? "h-40" : "h-28"
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,7 +67,7 @@ export function PublicImageUpload({
           <img
             src={previewUrl || "/placeholder.svg"}
             alt={`${label} preview`}
-            className={`h-20 w-20 border border-gold/30 bg-beige object-contain ${circle ? "rounded-full object-cover" : "rounded-xl"}`}
+            className={`${previewSize} border border-gold/30 bg-beige object-contain ${circle ? "rounded-full object-cover" : "rounded-xl"}`}
           />
           <div className="flex flex-col gap-1">
             <button
@@ -88,7 +92,7 @@ export function PublicImageUpload({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="flex h-28 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gold/40 bg-white text-navy-text/60 transition-colors hover:border-gold hover:bg-beige/40"
+          className={`flex ${dropzoneHeight} flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gold/40 bg-white text-navy-text/60 transition-colors hover:border-gold hover:bg-beige/40`}
         >
           {uploading ? (
             <>
@@ -97,8 +101,8 @@ export function PublicImageUpload({
             </>
           ) : (
             <>
-              <UploadCloud className="h-5 w-5" />
-              <span className="text-sm font-medium">Upload {label}</span>
+              <UploadCloud className={size === "lg" ? "h-8 w-8" : "h-5 w-5"} />
+              <span className={size === "lg" ? "text-base font-semibold" : "text-sm font-medium"}>Upload {label}</span>
               <span className="text-xs text-navy-text/40">PNG, JPG, WebP · max 5 MB</span>
             </>
           )}
