@@ -332,9 +332,23 @@ export function OrganizationsPanel({
                     {[o.country, o.industry].filter(Boolean).join(" · ") || "—"}
                   </p>
                   <p className="mt-0.5 text-xs text-navy-text/45">
-                    {o.eventCount} event{o.eventCount === 1 ? "" : "s"} · {o.programCount} program
+                    {o.peopleCount} member{o.peopleCount === 1 ? "" : "s"} · {o.eventCount} event
+                    {o.eventCount === 1 ? "" : "s"} · {o.programCount} program
                     {o.programCount === 1 ? "" : "s"}
                   </p>
+                  {o.people.length > 0 ? (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      {o.people.map((person) => (
+                        <span
+                          key={`person-${person.id}`}
+                          className="rounded-full bg-gold/20 px-2 py-0.5 text-[10px] font-medium text-navy-text"
+                          title={person.jobTitle ?? undefined}
+                        >
+                          {person.fullName}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                   {o.events.length > 0 || o.programs.length > 0 ? (
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       {o.events.map((e) => (

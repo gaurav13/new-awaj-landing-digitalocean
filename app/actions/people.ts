@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { people, eventsPeople, programsPeople, events, programs, teamMembers } from "@/lib/db/schema"
+import { people, eventsPeople, programsPeople, events, programs, teamMembers, organizations } from "@/lib/db/schema"
 import { and, asc, eq, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
@@ -30,6 +30,7 @@ export type PersonInput = {
   showCompanyLogo?: boolean
   showLinkedin?: boolean
   showRoleBadge?: boolean
+  organizationId?: number | null
 }
 
 // ---- Public reads ----
@@ -260,9 +261,29 @@ export async function reorderPerson(id: number, direction: "up" | "down") {
 
 // ---- Admin reads ----
 
-export async function getMyPeople(): Promise<Person[]> {
+export type AdminPerson = Person & { organizationName: string | null }
+
+export async function getMyPeople(): Promise<AdminPerson[]> {
   await getUserId()
-  return db.select().from(people).orderBy(asc(people.sortOrder), asc(people.id))
+  const rows = await db
+    .select({ person: people, orgName: organizations.name })
+    .from(people)
+    .leftJoin(organizations, eq(organizations.id, people.organizationId))
+    .orderBy(asc(people.sortOrder), asc(people.id))
+  return rows.map((r) => ({ ...r.person, organizationName: r.orgName ?? null }))
+}
+
+/** Lightweight organization option list for linking a person to a company. */
+export async function getOrganizationOptionsForPeople(): Promise<{ id: number; name: string; subtitle: string | null }[]> {
+  await getUserId()
+  return withDb(async () => {
+    const rows = await db.select().from(organizations).orderBy(asc(organizations.name))
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      subtitle: [r.type, r.country].filter(Boolean).join(" · ") || null,
+    }))
+  }, [])
 }
 
 export async function getPeopleCounts() {
@@ -306,6 +327,10 @@ function normalize(input: PersonInput) {
     showCompanyLogo: input.showCompanyLogo ?? true,
     showLinkedin: input.showLinkedin ?? true,
     showRoleBadge: input.showRoleBadge ?? false,
+    organizationId:
+      input.organizationId === undefined || input.organizationId === null || Number.isNaN(input.organizationId)
+        ? null
+        : Number(input.organizationId),
   }
 }
 

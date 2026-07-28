@@ -58,6 +58,9 @@ export function tagFromApplicationCategory(category: string | null | undefined):
 
 export type OrgConnection = { id: number; title: string; slug: string }
 
+/** A person linked to an organization (their company). */
+export type OrgPerson = { id: number; fullName: string; jobTitle: string | null }
+
 export type DirectoryOrganization = Organization & {
   events: OrgConnection[]
   programs: OrgConnection[]
@@ -68,6 +71,8 @@ export type AdminOrganization = Organization & {
   programCount: number
   events: OrgConnection[]
   programs: OrgConnection[]
+  peopleCount: number
+  people: OrgPerson[]
 }
 
 export type EventProgramOptions = {

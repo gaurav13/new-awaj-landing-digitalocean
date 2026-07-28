@@ -70,16 +70,29 @@ export async function findOrCreatePersonByName(input: {
   companyLogo?: string | null
   profilePhoto?: string | null
   linkedinUrl?: string | null
+  email?: string | null
+  country?: string | null
+  organizationId?: number | null
   roleTypes?: string[]
   roleHints?: (string | null | undefined)[]
+  status?: string
 }): Promise<number> {
   const key = normalizeName(input.fullName)
   const existing = await db
-    .select({ id: people.id })
+    .select({ id: people.id, organizationId: people.organizationId })
     .from(people)
     .where(sql`lower(${people.fullName}) = ${key}`)
     .limit(1)
-  if (existing[0]) return existing[0].id
+  if (existing[0]) {
+    // Backfill the organization link if the existing person doesn't have one yet.
+    if (input.organizationId && !existing[0].organizationId) {
+      await db
+        .update(people)
+        .set({ organizationId: input.organizationId, updatedAt: new Date() })
+        .where(eq(people.id, existing[0].id))
+    }
+    return existing[0].id
+  }
 
   const userId = await getUserId()
   const roles =
@@ -96,18 +109,19 @@ export async function findOrCreatePersonByName(input: {
       companyName: input.companyName || null,
       companyLogo: input.companyLogo || null,
       linkedinUrl: input.linkedinUrl || null,
-      email: null,
-      country: null,
+      email: input.email || null,
+      country: input.country || null,
       bio: null,
       roleTypes: roles,
       tags: [],
       featured: false,
-      status: "published",
+      status: input.status || "published",
       sortOrder: 0,
       showOnHomepage: false,
       showCompanyLogo: Boolean(input.companyLogo),
       showLinkedin: Boolean(input.linkedinUrl),
       showRoleBadge: true,
+      organizationId: input.organizationId ?? null,
       authorId: userId,
     })
     .returning({ id: people.id })

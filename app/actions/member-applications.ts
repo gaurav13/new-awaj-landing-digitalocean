@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 import { resolveOptionalImage, toStoredImagePath } from "@/lib/images"
 import { findOrCreateOrganizationByName } from "@/lib/organizations-sync"
+import { findOrCreatePersonByName } from "@/lib/people-sync"
 import { MEMBER_TAGS, tagFromApplicationCategory, type ApplicationStatus } from "@/lib/organization-types"
 
 export type PublicApplicationInput = {
@@ -182,6 +183,24 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
       }
     }
 
+    // Create (or reuse) the contact Person for this application and link them to the
+    // organization, so the approved member shows up in Admin → People connected to their company.
+    // Prefer the founder identity when supplied, otherwise the applicant.
+    const personName = clean(app.founderName) ?? app.applicantName
+    if (personName?.trim()) {
+      await findOrCreatePersonByName({
+        fullName: personName,
+        companyName: app.companyName,
+        companyLogo: app.logoUrl,
+        profilePhoto: app.founderPhoto,
+        linkedinUrl: app.linkedinUrl,
+        email: clean(app.founderEmail) ?? app.email,
+        country: app.country,
+        organizationId: orgId,
+        roleHints: [app.category, app.description],
+      })
+    }
+
     await db
       .update(memberApplications)
       .set({ status: "approved", organizationId: orgId, isRead: true, updatedAt: new Date() })
@@ -189,6 +208,7 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
 
     revalidatePath("/admin")
     revalidatePath("/members")
+    revalidatePath("/team")
     revalidatePath("/")
     return { ok: true, organizationId: orgId }
   } catch (err) {
