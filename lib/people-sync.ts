@@ -76,13 +76,23 @@ export async function findOrCreatePersonByName(input: {
   roleTypes?: string[]
   roleHints?: (string | null | undefined)[]
   status?: string
+  /** Author to attribute new rows to. Falls back to the signed-in admin (public submissions pass their own). */
+  authorId?: string
 }): Promise<number> {
-  const key = normalizeName(input.fullName)
-  const existing = await db
-    .select({ id: people.id, organizationId: people.organizationId })
-    .from(people)
-    .where(sql`lower(${people.fullName}) = ${key}`)
-    .limit(1)
+  const emailKey = (input.email ?? "").trim().toLowerCase()
+  // Prefer matching by email (unique) so we never create a duplicate person for the same address,
+  // then fall back to a case-insensitive name match.
+  const existing = emailKey
+    ? await db
+        .select({ id: people.id, organizationId: people.organizationId })
+        .from(people)
+        .where(sql`lower(${people.email}) = ${emailKey}`)
+        .limit(1)
+    : await db
+        .select({ id: people.id, organizationId: people.organizationId })
+        .from(people)
+        .where(sql`lower(${people.fullName}) = ${normalizeName(input.fullName)}`)
+        .limit(1)
   if (existing[0]) {
     // Backfill the organization link if the existing person doesn't have one yet.
     if (input.organizationId && !existing[0].organizationId) {
@@ -94,7 +104,7 @@ export async function findOrCreatePersonByName(input: {
     return existing[0].id
   }
 
-  const userId = await getUserId()
+  const userId = input.authorId ?? (await getUserId())
   const roles =
     input.roleTypes && input.roleTypes.length > 0
       ? input.roleTypes
