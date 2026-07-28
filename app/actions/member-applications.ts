@@ -50,6 +50,16 @@ function orgTypeFromTag(tag: string): string {
   return "Member"
 }
 
+/** Maps an application category to the role types shown on /team for that person. */
+function memberRoleTypesFromCategory(category: string | null | undefined): string[] {
+  const c = (category ?? "").toLowerCase()
+  if (c.includes("startup")) return ["Member", "Startup Founder"]
+  if (c.includes("sponsor")) return ["Member", "Ecosystem Partner"]
+  if (c.includes("government") || c.includes("public")) return ["Member", "Government"]
+  if (c.includes("investor") || c.includes("vc")) return ["Member", "Investor"]
+  return ["Member"]
+}
+
 // ---- Public write ----
 
 /**
@@ -143,6 +153,7 @@ export async function createMemberApplication(
         email: clean(input.founderEmail) ?? email,
         country: clean(input.country),
         organizationId: orgId,
+        roleTypes: memberRoleTypesFromCategory(category),
         roleHints: [category, input.description],
         status: "draft",
         authorId: PUBLIC_AUTHOR_ID,
@@ -247,6 +258,9 @@ export async function approveApplication(
 
     const personName = clean(app.founderName) ?? app.applicantName
     if (personName?.trim()) {
+      // Derive role types from the application category so the person appears
+      // under the correct filter chips on /team.
+      const memberRoles = memberRoleTypesFromCategory(app.category)
       const personId = await findOrCreatePersonByName({
         fullName: personName,
         companyName: app.companyName,
@@ -256,11 +270,18 @@ export async function approveApplication(
         email: clean(app.founderEmail) ?? app.email,
         country: app.country,
         organizationId: orgId,
+        roleTypes: memberRoles,
         roleHints: [app.category, app.description],
       })
       await db
         .update(people)
-        .set({ status: "published", organizationId: orgId, updatedAt: new Date() })
+        .set({
+          status: "published",
+          organizationId: orgId,
+          roleTypes: memberRoles,
+          showOnHomepage: true,
+          updatedAt: new Date(),
+        })
         .where(eq(people.id, personId))
     }
 
