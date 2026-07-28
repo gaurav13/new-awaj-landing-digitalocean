@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Inbox, Building2, Check, X, HelpCircle, Trash2, Globe, Mail, Phone, Link2, User } from "lucide-react"
+import { Inbox, Building2, Check, X, HelpCircle, Trash2, Globe, Mail, Phone, Link2, User, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatLongDate } from "@/lib/format-date"
 import type { MemberApplication } from "@/lib/db/schema"
@@ -13,6 +13,7 @@ import {
   setApplicationStatus,
   deleteApplication,
   markApplicationRead,
+  syncPeopleFromApplications,
 } from "@/app/actions/member-applications"
 
 const STATUS_FILTERS: { value: "all" | ApplicationStatus; label: string }[] = [
@@ -36,8 +37,26 @@ export function ApplicationsPanel({ applications }: { applications: MemberApplic
   const [openId, setOpenId] = useState<number | null>(null)
   const [filter, setFilter] = useState<"all" | ApplicationStatus>("all")
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
 
   const visible = applications.filter((a) => filter === "all" || a.status === filter)
+
+  function handleSync() {
+    setError(null)
+    setNotice(null)
+    startTransition(async () => {
+      const res = await syncPeopleFromApplications()
+      if (!res.ok) {
+        setError(res.error)
+      } else {
+        setNotice(
+          `Synced ${res.scanned} application${res.scanned === 1 ? "" : "s"} → People & Organizations updated. ` +
+            "Approved members are published; pending ones are saved as drafts.",
+        )
+      }
+      router.refresh()
+    })
+  }
 
   function toggleOpen(app: MemberApplication) {
     const next = openId === app.id ? null : app.id
@@ -84,7 +103,20 @@ export function ApplicationsPanel({ applications }: { applications: MemberApplic
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-serif text-xl font-bold text-navy-text">Membership Applications</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="font-serif text-xl font-bold text-navy-text">Membership Applications</h2>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={handleSync}
+            className="rounded-full border-gold/40 text-navy-text hover:bg-gold/10"
+            title="Create or update People and Organizations from every application (safe to run repeatedly)"
+          >
+            <RefreshCw className={`mr-1.5 h-4 w-4 ${pending ? "animate-spin" : ""}`} />
+            Sync to People
+          </Button>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {STATUS_FILTERS.map((f) => {
             const count = f.value === "all" ? applications.length : applications.filter((a) => a.status === f.value).length
@@ -106,6 +138,9 @@ export function ApplicationsPanel({ applications }: { applications: MemberApplic
 
       {error ? (
         <p className="mb-4 rounded-lg border border-awaj-red/30 bg-awaj-red/5 px-4 py-2 text-sm text-awaj-red">{error}</p>
+      ) : null}
+      {notice ? (
+        <p className="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">{notice}</p>
       ) : null}
 
       {visible.length === 0 ? (
