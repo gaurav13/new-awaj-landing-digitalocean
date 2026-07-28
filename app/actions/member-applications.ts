@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { memberApplications, organizations, people, type MemberApplication } from "@/lib/db/schema"
+import { memberApplications, organizations, type MemberApplication } from "@/lib/db/schema"
 import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
@@ -205,109 +205,6 @@ export async function getApplicationCounts() {
 
 // ---- Admin writes ----
 
-export async function markApplicationRead(id: number) {
-  await getUserId()
-  await db.update(memberApplications).set({ isRead: true }).where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
 
-export async function setApplicationStatus(id: number, status: ApplicationStatus, reviewNotes?: string) {
-  await getUserId()
-  await db
-    .update(memberApplications)
-    .set({ status, reviewNotes: reviewNotes?.trim() || null, isRead: true, updatedAt: new Date() })
-    .where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
-
-/**
- * Approve an application: create (or reuse) the central organization, de-duplicated by name.
- * If the company already exists, its category tag is merged in (never duplicating the company).
- * Links the application to the resulting organization.
- */
-export async function approveApplication(id: number): Promise<{ ok: true; organizationId: number } | { ok: false; error: string }> {
-  await getUserId()
-  try {
-    const [app] = await db.select().from(memberApplications).where(eq(memberApplications.id, id)).limit(1)
-    if (!app) return { ok: false, error: "Application not found." }
-
-    const tag = tagFromApplicationCategory(app.category)
-
-    const { id: orgId, duplicate } = await findOrCreateOrganizationByName({
-      name: app.companyName,
-      type: tag.includes("Startup") ? "Startup" : tag.includes("Media") ? "Media" : tag.includes("Government") ? "Government" : tag.includes("Sponsor") ? "Sponsor" : "Member",
-      tags: [tag],
-      logoUrl: app.logoUrl,
-      websiteUrl: app.website,
-      country: app.country,
-      description: app.description,
-      status: "approved",
-    })
-
-    // Existing company: merge the new tag + backfill any empty fields without overwriting.
-    if (duplicate) {
-      const [org] = await db.select().from(organizations).where(eq(organizations.id, orgId)).limit(1)
-      if (org) {
-        const nextTags = Array.from(new Set([...(org.tags ?? []), tag]))
-        await db
-          .update(organizations)
-          .set({
-            tags: nextTags,
-            logoUrl: org.logoUrl ?? app.logoUrl,
-            websiteUrl: org.websiteUrl ?? app.website,
-            country: org.country ?? app.country,
-            description: org.description ?? app.description,
-            status: "approved",
-            updatedAt: new Date(),
-          })
-          .where(eq(organizations.id, orgId))
-      }
-    }
-
-    // Create (or reuse) the contact Person for this application and link them to the
-    // organization, so the approved member shows up in Admin → People connected to their company.
-    // Prefer the founder identity when supplied, otherwise the applicant.
-    const personName = clean(app.founderName) ?? app.applicantName
-    if (personName?.trim()) {
-      const personId = await findOrCreatePersonByName({
-        fullName: personName,
-        companyName: app.companyName,
-        companyLogo: app.logoUrl,
-        profilePhoto: app.founderPhoto,
-        linkedinUrl: app.linkedinUrl,
-        email: clean(app.founderEmail) ?? app.email,
-        country: app.country,
-        organizationId: orgId,
-        roleHints: [app.category, app.description],
-      })
-      // Approval makes the member public: flip the (possibly pending) person to published
-      // and ensure they are linked to the approved organization.
-      await db
-        .update(people)
-        .set({ status: "published", organizationId: orgId, updatedAt: new Date() })
-        .where(eq(people.id, personId))
-    }
-
-    await db
-      .update(memberApplications)
-      .set({ status: "approved", organizationId: orgId, isRead: true, updatedAt: new Date() })
-      .where(eq(memberApplications.id, id))
-
-    revalidatePath("/admin")
-    revalidatePath("/members")
-    revalidatePath("/team")
-    revalidatePath("/")
-    return { ok: true, organizationId: orgId }
-  } catch (err) {
-    console.error("[member-applications] approve failed:", err)
-    return { ok: false, error: err instanceof Error ? err.message : "Failed to approve application." }
-  }
-}
-
-export async function deleteApplication(id: number) {
-  await getUserId()
-  await db.delete(memberApplications).where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
 
 

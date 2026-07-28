@@ -13,7 +13,7 @@ import {
   setApplicationStatus,
   deleteApplication,
   markApplicationRead,
-} from "@/app/actions/member-applications"
+} from "@/app/actions/admin-application-actions"
 
 const STATUS_FILTERS: { value: "all" | ApplicationStatus; label: string }[] = [
   { value: "all", label: "All" },
