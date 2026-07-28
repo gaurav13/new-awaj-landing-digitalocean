@@ -6,6 +6,8 @@ import { getPeopleDirectory } from "@/app/actions/people"
 import { getSiteSettings } from "@/app/actions/settings"
 import { buildPageMetadata } from "@/lib/seo"
 
+export const dynamic = "force-dynamic"
+
 export async function generateMetadata() {
   return buildPageMetadata({
     path: "/team",
