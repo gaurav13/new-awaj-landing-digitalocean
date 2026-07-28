@@ -269,10 +269,14 @@ export const people = pgTable("people", {
   showCompanyLogo: boolean("show_company_logo").notNull().default(true),
   showLinkedin: boolean("show_linkedin").notNull().default(true),
   showRoleBadge: boolean("show_role_badge").notNull().default(false),
+  // Links this person to a central organization (their company). Nullable so people
+  // without a company (or legacy rows) are still valid. ON DELETE SET NULL at the DB level.
+  organizationId: integer("organization_id"),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 })
+export type Person = typeof people.$inferSelect
 
 export const eventsPeople = pgTable("events_people", {
   id: serial("id").primaryKey(),
@@ -404,6 +408,7 @@ export const PEOPLE_ROLE_TYPES = [
   "Speaker",
   "Mentor",
   "Investor",
+  "Member",
   "Ecosystem Partner",
   "Government",
   "Startup Founder",

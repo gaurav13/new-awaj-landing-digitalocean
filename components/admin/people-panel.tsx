@@ -17,11 +17,12 @@ import {
   deletePerson,
   importPeopleFromSources,
   reorderPerson,
-  type Person,
+  type AdminPerson,
   type PersonInput,
 } from "@/app/actions/people"
 
 type Counts = { total: number; published: number; draft: number; homepage: number }
+type OrgOption = { id: number; name: string; subtitle: string | null }
 
 const EMPTY: PersonInput = {
   fullName: "",
@@ -42,21 +43,24 @@ const EMPTY: PersonInput = {
   showCompanyLogo: true,
   showLinkedin: true,
   showRoleBadge: false,
+  organizationId: null,
 }
 
 export function PeoplePanel({
   people,
   counts,
   byRole,
+  orgOptions,
 }: {
-  people: Person[]
+  people: AdminPerson[]
   counts: Counts
   byRole: Record<string, number>
+  orgOptions: OrgOption[]
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<Person | null>(null)
+  const [editing, setEditing] = useState<AdminPerson | null>(null)
   const [form, setForm] = useState<PersonInput>(EMPTY)
   const [tagsText, setTagsText] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -72,7 +76,7 @@ export function PeoplePanel({
       else if (statusFilter !== "all" && statusFilter !== "homepage" && p.status !== statusFilter) return false
       if (search.trim()) {
         const q = search.toLowerCase()
-        const hay = `${p.fullName} ${p.companyName ?? ""} ${p.jobTitle ?? ""} ${(p.tags ?? []).join(" ")}`.toLowerCase()
+        const hay = `${p.fullName} ${p.companyName ?? ""} ${p.organizationName ?? ""} ${p.jobTitle ?? ""} ${(p.tags ?? []).join(" ")}`.toLowerCase()
         if (!hay.includes(q)) return false
       }
       return true
@@ -87,7 +91,7 @@ export function PeoplePanel({
     setShowForm(true)
   }
 
-  function openEdit(p: Person) {
+  function openEdit(p: AdminPerson) {
     setEditing(p)
     setForm({
       fullName: p.fullName,
@@ -108,6 +112,7 @@ export function PeoplePanel({
       showCompanyLogo: p.showCompanyLogo,
       showLinkedin: p.showLinkedin,
       showRoleBadge: p.showRoleBadge,
+      organizationId: p.organizationId ?? null,
     })
     setTagsText((p.tags ?? []).join(", "))
     setError(null)
@@ -328,6 +333,13 @@ export function PeoplePanel({
                   <p className="mt-0.5 truncate text-sm text-navy-text/60">
                     {[p.jobTitle, p.companyName].filter(Boolean).join(" · ") || "—"}
                   </p>
+                  {p.organizationName ? (
+                    <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-navy-text/50">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
+                      Linked to{" "}
+                      <span className="font-medium text-navy-text/70">{p.organizationName}</span>
+                    </p>
+                  ) : null}
                   {(p.roleTypes ?? []).length > 0 ? (
                     <div className="mt-1 flex flex-wrap gap-1">
                       {(p.roleTypes ?? []).map((r) => (
@@ -427,6 +439,34 @@ export function PeoplePanel({
                 <Field label="Country">
                   <Input value={form.country ?? ""} onChange={(e) => setForm({ ...form, country: e.target.value })} />
                 </Field>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label>Organization (member company)</Label>
+                <p className="-mt-1 text-xs text-navy-text/55">
+                  Link this person to a company in the Organizations directory. Selecting one fills in the company name.
+                </p>
+                <select
+                  value={form.organizationId ? String(form.organizationId) : ""}
+                  onChange={(e) => {
+                    const id = e.target.value ? Number(e.target.value) : null
+                    const org = orgOptions.find((o) => o.id === id)
+                    setForm((prev) => ({
+                      ...prev,
+                      organizationId: id,
+                      companyName: org ? org.name : prev.companyName,
+                    }))
+                  }}
+                  className="h-9 rounded-md border border-input bg-white px-3 text-sm text-navy-text"
+                >
+                  <option value="">Not linked</option>
+                  {orgOptions.map((o) => (
+                    <option key={o.id} value={String(o.id)}>
+                      {o.name}
+                      {o.subtitle ? ` — ${o.subtitle}` : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <Field label="Company name">

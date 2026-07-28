@@ -6,6 +6,8 @@ import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
 import { buildPageMetadata } from "@/lib/seo"
 
+export const dynamic = "force-dynamic"
+
 export async function generateMetadata() {
   return buildPageMetadata({
     path: "/members",

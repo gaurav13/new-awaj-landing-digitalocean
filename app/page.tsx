@@ -22,6 +22,8 @@ import { buildPageMetadata } from "@/lib/seo"
 import { AdSlot } from "@/components/ads/ad-slot"
 import { PageAds } from "@/components/ads/page-ads"
 
+export const dynamic = "force-dynamic"
+
 export async function generateMetadata() {
   return buildPageMetadata({ path: "/" })
 }

@@ -70,18 +70,41 @@ export async function findOrCreatePersonByName(input: {
   companyLogo?: string | null
   profilePhoto?: string | null
   linkedinUrl?: string | null
+  email?: string | null
+  country?: string | null
+  organizationId?: number | null
   roleTypes?: string[]
   roleHints?: (string | null | undefined)[]
+  status?: string
+  /** Author to attribute new rows to. Falls back to the signed-in admin (public submissions pass their own). */
+  authorId?: string
 }): Promise<number> {
-  const key = normalizeName(input.fullName)
-  const existing = await db
-    .select({ id: people.id })
-    .from(people)
-    .where(sql`lower(${people.fullName}) = ${key}`)
-    .limit(1)
-  if (existing[0]) return existing[0].id
+  const emailKey = (input.email ?? "").trim().toLowerCase()
+  // Prefer matching by email (unique) so we never create a duplicate person for the same address,
+  // then fall back to a case-insensitive name match.
+  const existing = emailKey
+    ? await db
+        .select({ id: people.id, organizationId: people.organizationId })
+        .from(people)
+        .where(sql`lower(${people.email}) = ${emailKey}`)
+        .limit(1)
+    : await db
+        .select({ id: people.id, organizationId: people.organizationId })
+        .from(people)
+        .where(sql`lower(${people.fullName}) = ${normalizeName(input.fullName)}`)
+        .limit(1)
+  if (existing[0]) {
+    // Backfill the organization link if the existing person doesn't have one yet.
+    if (input.organizationId && !existing[0].organizationId) {
+      await db
+        .update(people)
+        .set({ organizationId: input.organizationId, updatedAt: new Date() })
+        .where(eq(people.id, existing[0].id))
+    }
+    return existing[0].id
+  }
 
-  const userId = await getUserId()
+  const userId = input.authorId ?? (await getUserId())
   const roles =
     input.roleTypes && input.roleTypes.length > 0
       ? input.roleTypes
@@ -96,18 +119,19 @@ export async function findOrCreatePersonByName(input: {
       companyName: input.companyName || null,
       companyLogo: input.companyLogo || null,
       linkedinUrl: input.linkedinUrl || null,
-      email: null,
-      country: null,
+      email: input.email || null,
+      country: input.country || null,
       bio: null,
       roleTypes: roles,
       tags: [],
       featured: false,
-      status: "published",
+      status: input.status || "published",
       sortOrder: 0,
       showOnHomepage: false,
       showCompanyLogo: Boolean(input.companyLogo),
       showLinkedin: Boolean(input.linkedinUrl),
       showRoleBadge: true,
+      organizationId: input.organizationId ?? null,
       authorId: userId,
     })
     .returning({ id: people.id })

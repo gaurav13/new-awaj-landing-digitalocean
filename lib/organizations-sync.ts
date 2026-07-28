@@ -31,6 +31,8 @@ export async function findOrCreateOrganizationByName(input: {
   industry?: string | null
   description?: string | null
   status?: string
+  /** Author to attribute a newly created org to. Falls back to the signed-in admin. */
+  authorId?: string
 }): Promise<{ id: number; duplicate: boolean }> {
   const cleanName = input.name.trim()
   if (!cleanName) throw new Error("Organization name is required.")
@@ -42,7 +44,7 @@ export async function findOrCreateOrganizationByName(input: {
     .limit(1)
   if (existing[0]) return { id: existing[0].id, duplicate: true }
 
-  const userId = await getUserId()
+  const userId = input.authorId ?? (await getUserId())
   const [row] = await db
     .insert(organizations)
     .values({

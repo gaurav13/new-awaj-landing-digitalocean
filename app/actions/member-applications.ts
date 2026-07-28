@@ -2,12 +2,13 @@
 
 import { db } from "@/lib/db"
 import { withDb } from "@/lib/db/with-db"
-import { memberApplications, organizations, type MemberApplication } from "@/lib/db/schema"
+import { memberApplications, organizations, people, type MemberApplication } from "@/lib/db/schema"
 import { asc, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { getUserId } from "@/lib/admin-helpers"
 import { resolveOptionalImage, toStoredImagePath } from "@/lib/images"
 import { findOrCreateOrganizationByName } from "@/lib/organizations-sync"
+import { findOrCreatePersonByName } from "@/lib/people-sync"
 import { MEMBER_TAGS, tagFromApplicationCategory, type ApplicationStatus } from "@/lib/organization-types"
 
 export type PublicApplicationInput = {
@@ -38,6 +39,27 @@ function normalizeCategory(category?: string): string {
   return match ?? "Corporate Member"
 }
 
+// Author id used for records created by public (unauthenticated) membership submissions.
+const PUBLIC_AUTHOR_ID = "public-application"
+
+function orgTypeFromTag(tag: string): string {
+  if (tag.includes("Startup")) return "Startup"
+  if (tag.includes("Media")) return "Media"
+  if (tag.includes("Government")) return "Government"
+  if (tag.includes("Sponsor")) return "Sponsor"
+  return "Member"
+}
+
+/** Maps an application category to the role types shown on /team for that person. */
+function memberRoleTypesFromCategory(category: string | null | undefined): string[] {
+  const c = (category ?? "").toLowerCase()
+  if (c.includes("startup")) return ["Member", "Startup Founder"]
+  if (c.includes("sponsor")) return ["Member", "Ecosystem Partner"]
+  if (c.includes("government") || c.includes("public")) return ["Member", "Government"]
+  if (c.includes("investor") || c.includes("vc")) return ["Member", "Investor"]
+  return ["Member"]
+}
+
 // ---- Public write ----
 
 /**
@@ -55,26 +77,97 @@ export async function createMemberApplication(
   if (!applicantName) return { ok: false, error: "Your name is required." }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "A valid email address is required." }
 
+  const category = normalizeCategory(input.category)
+  const logoUrl = input.logoUrl ? toStoredImagePath(input.logoUrl) : null
+  const founderPhoto = input.founderPhoto ? toStoredImagePath(input.founderPhoto) : null
+
   try {
-    await db.insert(memberApplications).values({
-      companyName,
-      applicantName,
-      email,
-      phone: clean(input.phone),
-      website: clean(input.website),
+    // 1) Store the raw application as the review/audit record.
+    const [appRow] = await db
+      .insert(memberApplications)
+      .values({
+        companyName,
+        applicantName,
+        email,
+        phone: clean(input.phone),
+        website: clean(input.website),
+        country: clean(input.country),
+        category,
+        description: clean(input.description),
+        logoUrl,
+        reasonForJoining: clean(input.reasonForJoining),
+        linkedinUrl: clean(input.linkedinUrl),
+        message: clean(input.message),
+        founderName: clean(input.founderName),
+        founderPhoto,
+        founderEmail: clean(input.founderEmail),
+        status: "pending",
+      })
+      .returning({ id: memberApplications.id })
+
+    // 2) Immediately create/link the central Organization and Person so the submission
+    //    appears in Admin → People and Organizations right away. They are created in a
+    //    non-public state (org "pending", person "draft") so they stay off the public
+    //    site until an admin approves the application.
+    const tag = tagFromApplicationCategory(category)
+    const { id: orgId, duplicate } = await findOrCreateOrganizationByName({
+      name: companyName,
+      type: orgTypeFromTag(tag),
+      tags: [tag],
+      logoUrl,
+      websiteUrl: clean(input.website),
       country: clean(input.country),
-      category: normalizeCategory(input.category),
       description: clean(input.description),
-      logoUrl: input.logoUrl ? toStoredImagePath(input.logoUrl) : null,
-      reasonForJoining: clean(input.reasonForJoining),
-      linkedinUrl: clean(input.linkedinUrl),
-      message: clean(input.message),
-      founderName: clean(input.founderName),
-      founderPhoto: input.founderPhoto ? toStoredImagePath(input.founderPhoto) : null,
-      founderEmail: clean(input.founderEmail),
       status: "pending",
+      authorId: PUBLIC_AUTHOR_ID,
     })
+
+    // Merge the tag into an existing org without overwriting admin edits, but never flip
+    // an already-approved org back to pending.
+    if (duplicate) {
+      const [org] = await db.select().from(organizations).where(eq(organizations.id, orgId)).limit(1)
+      if (org) {
+        const nextTags = Array.from(new Set([...(org.tags ?? []), tag]))
+        await db
+          .update(organizations)
+          .set({
+            tags: nextTags,
+            logoUrl: org.logoUrl ?? logoUrl,
+            websiteUrl: org.websiteUrl ?? clean(input.website),
+            country: org.country ?? clean(input.country),
+            description: org.description ?? clean(input.description),
+            updatedAt: new Date(),
+          })
+          .where(eq(organizations.id, orgId))
+      }
+    }
+
+    const personName = clean(input.founderName) ?? applicantName
+    if (personName.trim()) {
+      await findOrCreatePersonByName({
+        fullName: personName,
+        companyName,
+        companyLogo: logoUrl,
+        profilePhoto: founderPhoto,
+        linkedinUrl: clean(input.linkedinUrl),
+        email: clean(input.founderEmail) ?? email,
+        country: clean(input.country),
+        organizationId: orgId,
+        roleTypes: memberRoleTypesFromCategory(category),
+        roleHints: [category, input.description],
+        status: "draft",
+        authorId: PUBLIC_AUTHOR_ID,
+      })
+    }
+
+    // Link the application row to the resolved organization.
+    await db
+      .update(memberApplications)
+      .set({ organizationId: orgId })
+      .where(eq(memberApplications.id, appRow.id))
+
     revalidatePath("/membership/apply")
+    revalidatePath("/admin")
     return { ok: true }
   } catch (err) {
     console.error("[member-applications] create failed:", err)
@@ -123,27 +216,9 @@ export async function getApplicationCounts() {
 
 // ---- Admin writes ----
 
-export async function markApplicationRead(id: number) {
-  await getUserId()
-  await db.update(memberApplications).set({ isRead: true }).where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
-
-export async function setApplicationStatus(id: number, status: ApplicationStatus, reviewNotes?: string) {
-  await getUserId()
-  await db
-    .update(memberApplications)
-    .set({ status, reviewNotes: reviewNotes?.trim() || null, isRead: true, updatedAt: new Date() })
-    .where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
-
-/**
- * Approve an application: create (or reuse) the central organization, de-duplicated by name.
- * If the company already exists, its category tag is merged in (never duplicating the company).
- * Links the application to the resulting organization.
- */
-export async function approveApplication(id: number): Promise<{ ok: true; organizationId: number } | { ok: false; error: string }> {
+export async function approveApplication(
+  id: number,
+): Promise<{ ok: true; organizationId: number } | { ok: false; error: string }> {
   await getUserId()
   try {
     const [app] = await db.select().from(memberApplications).where(eq(memberApplications.id, id)).limit(1)
@@ -153,7 +228,7 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
 
     const { id: orgId, duplicate } = await findOrCreateOrganizationByName({
       name: app.companyName,
-      type: tag.includes("Startup") ? "Startup" : tag.includes("Media") ? "Media" : tag.includes("Government") ? "Government" : tag.includes("Sponsor") ? "Sponsor" : "Member",
+      type: orgTypeFromTag(tag),
       tags: [tag],
       logoUrl: app.logoUrl,
       websiteUrl: app.website,
@@ -162,7 +237,6 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
       status: "approved",
     })
 
-    // Existing company: merge the new tag + backfill any empty fields without overwriting.
     if (duplicate) {
       const [org] = await db.select().from(organizations).where(eq(organizations.id, orgId)).limit(1)
       if (org) {
@@ -182,6 +256,35 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
       }
     }
 
+    const personName = clean(app.founderName) ?? app.applicantName
+    if (personName?.trim()) {
+      // Derive role types from the application category so the person appears
+      // under the correct filter chips on /team.
+      const memberRoles = memberRoleTypesFromCategory(app.category)
+      const personId = await findOrCreatePersonByName({
+        fullName: personName,
+        companyName: app.companyName,
+        companyLogo: app.logoUrl,
+        profilePhoto: app.founderPhoto,
+        linkedinUrl: app.linkedinUrl,
+        email: clean(app.founderEmail) ?? app.email,
+        country: app.country,
+        organizationId: orgId,
+        roleTypes: memberRoles,
+        roleHints: [app.category, app.description],
+      })
+      await db
+        .update(people)
+        .set({
+          status: "published",
+          organizationId: orgId,
+          roleTypes: memberRoles,
+          showOnHomepage: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(people.id, personId))
+    }
+
     await db
       .update(memberApplications)
       .set({ status: "approved", organizationId: orgId, isRead: true, updatedAt: new Date() })
@@ -189,6 +292,7 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
 
     revalidatePath("/admin")
     revalidatePath("/members")
+    revalidatePath("/team")
     revalidatePath("/")
     return { ok: true, organizationId: orgId }
   } catch (err) {
@@ -197,8 +301,6 @@ export async function approveApplication(id: number): Promise<{ ok: true; organi
   }
 }
 
-export async function deleteApplication(id: number) {
-  await getUserId()
-  await db.delete(memberApplications).where(eq(memberApplications.id, id))
-  revalidatePath("/admin")
-}
+
+
+

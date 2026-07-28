@@ -8,6 +8,7 @@ import {
   programsOrganizations,
   events,
   programs,
+  people,
 } from "@/lib/db/schema"
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -19,6 +20,7 @@ import { defaultTagForType } from "@/lib/organization-types"
 import type {
   Organization,
   OrgConnection,
+  OrgPerson,
   DirectoryOrganization,
   AdminOrganization,
   OrganizationInput,
@@ -163,11 +165,23 @@ export async function getMyOrganizations(): Promise<AdminOrganization[]> {
     const ids = rows.map((r) => r.id)
     const eventsByOrg = new Map<number, OrgConnection[]>()
     const programsByOrg = new Map<number, OrgConnection[]>()
+    const peopleByOrg = new Map<number, OrgPerson[]>()
     for (const id of ids) {
       eventsByOrg.set(id, [])
       programsByOrg.set(id, [])
+      peopleByOrg.set(id, [])
     }
     if (ids.length > 0) {
+      const peopleLinks = await db
+        .select({ id: people.id, fullName: people.fullName, jobTitle: people.jobTitle, organizationId: people.organizationId })
+        .from(people)
+        .where(inArray(people.organizationId, ids))
+        .orderBy(asc(people.sortOrder), asc(people.fullName))
+      for (const p of peopleLinks) {
+        if (p.organizationId != null) {
+          peopleByOrg.get(p.organizationId)?.push({ id: p.id, fullName: p.fullName, jobTitle: p.jobTitle })
+        }
+      }
       const [eventLinks, programLinks] = await Promise.all([
         db
           .select({
@@ -199,12 +213,15 @@ export async function getMyOrganizations(): Promise<AdminOrganization[]> {
     return rows.map((r) => {
       const evs = eventsByOrg.get(r.id) ?? []
       const prs = programsByOrg.get(r.id) ?? []
+      const ppl = peopleByOrg.get(r.id) ?? []
       return {
         ...r,
         eventCount: evs.length,
         programCount: prs.length,
         events: evs,
         programs: prs,
+        peopleCount: ppl.length,
+        people: ppl,
       }
     })
   }, [])

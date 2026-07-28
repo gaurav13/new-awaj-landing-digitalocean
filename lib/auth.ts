@@ -13,6 +13,7 @@ const superadminRole = ac.newRole(adminAc.statements)
 
 function getAuthBaseUrl() {
   if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
@@ -55,11 +56,13 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // 1 day
   },
   // The v0 preview renders the app inside a cross-site HTTPS iframe, so the
-  // session cookie must be SameSite=None; Secure or the browser drops it.
+  // session cookie must always be SameSite=None; Secure or the browser drops it.
+  // This must apply in all environments, not just development.
   advanced: {
     defaultCookieAttributes: {
       sameSite: "none" as const,
       secure: true,
+      httpOnly: true,
     },
   },
   plugins: [
