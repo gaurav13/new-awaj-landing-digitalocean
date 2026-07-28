@@ -408,6 +408,7 @@ export const PEOPLE_ROLE_TYPES = [
   "Speaker",
   "Mentor",
   "Investor",
+  "Member",
   "Ecosystem Partner",
   "Government",
   "Startup Founder",
