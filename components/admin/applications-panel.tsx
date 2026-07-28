@@ -8,12 +8,7 @@ import { Button } from "@/components/ui/button"
 import { formatLongDate } from "@/lib/format-date"
 import type { MemberApplication } from "@/lib/db/schema"
 import { APPLICATION_STATUS_LABELS, type ApplicationStatus } from "@/lib/organization-types"
-import {
-  approveApplication,
-  setApplicationStatus,
-  deleteApplication,
-  markApplicationRead,
-} from "@/app/actions/admin-application-actions"
+import { setApplicationStatus, deleteApplication, markApplicationRead } from "@/app/actions/admin-application-actions"
 
 const STATUS_FILTERS: { value: "all" | ApplicationStatus; label: string }[] = [
   { value: "all", label: "All" },
@@ -30,7 +25,13 @@ const STATUS_STYLES: Record<ApplicationStatus, string> = {
   info_requested: "bg-navy/10 text-navy-text",
 }
 
-export function ApplicationsPanel({ applications }: { applications: MemberApplication[] }) {
+export function ApplicationsPanel({
+  applications,
+  onApprove,
+}: {
+  applications: MemberApplication[]
+  onApprove: (id: number) => Promise<{ ok: true; organizationId: number } | { ok: false; error: string }>
+}) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [openId, setOpenId] = useState<number | null>(null)
@@ -53,7 +54,7 @@ export function ApplicationsPanel({ applications }: { applications: MemberApplic
   function handleApprove(id: number) {
     setError(null)
     startTransition(async () => {
-      const res = await approveApplication(id)
+      const res = await onApprove(id)
       if (!res.ok) setError(res.error)
       router.refresh()
     })

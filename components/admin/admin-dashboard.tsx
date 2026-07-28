@@ -530,6 +530,7 @@ export function AdminDashboard({
   banners,
   messages,
   applications,
+  onApproveApplication,
   settings,
   users,
 }: {
@@ -562,6 +563,7 @@ export function AdminDashboard({
   banners: Banner[]
   messages: Message[]
   applications: MemberApplication[]
+  onApproveApplication: (id: number) => Promise<{ ok: true; organizationId: number } | { ok: false; error: string }>
   settings: SiteSettings
   users: AdminUser[]
 }) {
@@ -1005,7 +1007,7 @@ export function AdminDashboard({
           </TabsContent>
 
           <TabsContent value="applications" className="mt-6">
-            <ApplicationsPanel applications={applications} />
+            <ApplicationsPanel applications={applications} onApprove={onApproveApplication} />
           </TabsContent>
 
           <TabsContent value="team" className="mt-6">

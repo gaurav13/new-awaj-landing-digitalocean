@@ -14,7 +14,7 @@ import { getMembershipContent } from "@/app/actions/membership-content"
 import { getMyPeople, getPeopleCounts } from "@/app/actions/people"
 import { getMyOrganizations, getOrganizationCounts, getEventProgramOptions } from "@/app/actions/organizations"
 import { getMyMessages } from "@/app/actions/contact"
-import { getMyApplications } from "@/app/actions/member-applications"
+import { getMyApplications, approveApplication } from "@/app/actions/member-applications"
 import { getMyBanners } from "@/app/actions/banners"
 import { getMyAds, getSubscribers } from "@/app/actions/ads"
 import { getAllUsers } from "@/app/actions/users"
@@ -105,6 +105,7 @@ export default async function AdminPage() {
       banners={banners}
       messages={messages}
       applications={applications}
+      onApproveApplication={approveApplication}
       settings={settings}
       users={users}
     />
