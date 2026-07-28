@@ -13,8 +13,8 @@ import {
   setApplicationStatus,
   deleteApplication,
   markApplicationRead,
-  syncPeopleFromApplications,
 } from "@/app/actions/member-applications"
+import { syncPeopleFromApplications } from "@/app/actions/sync-from-applications"
 
 const STATUS_FILTERS: { value: "all" | ApplicationStatus; label: string }[] = [
   { value: "all", label: "All" },
