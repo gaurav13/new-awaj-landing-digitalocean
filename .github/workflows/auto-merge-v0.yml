@@ -3,14 +3,83 @@ name: Auto-merge v0 PRs
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - "v0/**"
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  auto-merge-v0:
-    if: github.event.pull_request.base.ref == 'main'
+  auto-merge-from-push:
+    if: github.event_name == 'push' && startsWith(github.ref_name, 'v0/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create PR from v0 branch and merge into main
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+            const headRef = context.ref.replace("refs/heads/", "")
+
+            core.info(`Processing pushed v0 branch: ${headRef}`)
+
+            const { data: existingPrs } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              base: "main",
+              head: `${owner}:${headRef}`,
+            })
+
+            let prNumber = existingPrs[0]?.number
+
+            if (!prNumber) {
+              const { data: createdPr } = await github.rest.pulls.create({
+                owner,
+                repo,
+                title: `Auto-merge ${headRef}`,
+                head: headRef,
+                base: "main",
+                body: "Automated merge of a v0 branch into main.",
+              })
+              prNumber = createdPr.number
+              core.info(`Created PR #${prNumber} for ${headRef}`)
+            } else {
+              core.info(`Using existing open PR #${prNumber} for ${headRef}`)
+            }
+
+            try {
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: prNumber,
+                merge_method: "squash",
+              })
+              core.info(`Squash-merged PR #${prNumber}`)
+            } catch (error) {
+              if (error.status === 405) {
+                core.info(`PR #${prNumber} is already merged or not mergeable yet`)
+              } else {
+                throw error
+              }
+            }
+
+            try {
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${headRef}`,
+              })
+              core.info(`Deleted branch ${headRef}`)
+            } catch (error) {
+              core.warning(`Could not delete branch ${headRef}: ${error.message}`)
+            }
+
+  auto-merge-from-pr:
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Merge v0 pull requests into main
