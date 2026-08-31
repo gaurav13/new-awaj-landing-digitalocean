@@ -3,10 +3,13 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import {
   acquireDeployLock,
+  createScheduledPm2RestartResult,
   DEPLOY_CONFIG,
   getDeployCommands,
+  getPm2RestartCommand,
   releaseDeployLock,
   runDeployStep,
+  schedulePm2Restart,
 } from "@/lib/deploy"
 
 export const runtime = "nodejs"
@@ -24,6 +27,7 @@ export async function POST() {
   }
 
   const encoder = new TextEncoder()
+  let restartScheduled = false
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -54,11 +58,20 @@ export async function POST() {
           }
         }
 
+        const pm2Command = getPm2RestartCommand()
+        send({ type: "step", step: "pm2 restart", status: "running", command: pm2Command })
+
+        const pm2Result = createScheduledPm2RestartResult()
+        send({ type: "step", ...pm2Result })
+
         send({
           type: "complete",
           success: true,
-          message: "Deployment completed successfully. The live site has been updated.",
+          message:
+            "Deployment completed successfully. The live site will restart in the background momentarily.",
         })
+
+        restartScheduled = true
       } catch (error) {
         send({
           type: "complete",
@@ -68,6 +81,10 @@ export async function POST() {
       } finally {
         releaseDeployLock()
         controller.close()
+      }
+
+      if (restartScheduled) {
+        setImmediate(() => schedulePm2Restart())
       }
     },
   })

@@ -10,6 +10,8 @@ export const DEPLOY_CONFIG = {
   projectDir: process.env.DEPLOY_PROJECT_DIR || "/var/www/asiaweb3",
   gitBranch: process.env.DEPLOY_GIT_BRANCH || "main",
   pm2Process: process.env.DEPLOY_PM2_PROCESS || "asiaweb3",
+  pm2AppId: process.env.DEPLOY_PM2_APP_ID || "2",
+  pm2Bin: process.env.DEPLOY_PM2_BIN || "/usr/bin/pm2",
   execTimeoutMs: Number(process.env.DEPLOY_TIMEOUT_MS || 15 * 60 * 1000),
 }
 
@@ -25,7 +27,7 @@ export function releaseDeployLock() {
   deployLock = false
 }
 
-/** Ensure npx/pm2 resolve from standard system paths when Next.js runs under PM2. */
+/** Ensure system binaries resolve when Next.js runs under PM2. */
 export function buildDeployEnv(): NodeJS.ProcessEnv {
   return {
     ...process.env,
@@ -35,17 +37,33 @@ export function buildDeployEnv(): NodeJS.ProcessEnv {
 }
 
 export function getPm2RestartCommand(): string {
-  const { pm2Process } = DEPLOY_CONFIG
-  return `npx pm2 restart ${pm2Process} --update-env || pm2 restart ${pm2Process} --update-env`
+  const { pm2Bin, pm2Process, pm2AppId } = DEPLOY_CONFIG
+  return `${pm2Bin} restart ${pm2Process} --update-env || ${pm2Bin} restart ${pm2AppId} --update-env`
 }
 
+/** Build/deploy steps only — PM2 restart is scheduled separately after the HTTP response. */
 export function getDeployCommands(): { step: DeployStepName; command: string }[] {
   const { gitBranch } = DEPLOY_CONFIG
   return [
     { step: "git pull", command: `git pull origin ${gitBranch}` },
     { step: "npm run build", command: "npm run build" },
-    { step: "pm2 restart", command: getPm2RestartCommand() },
   ]
+}
+
+/**
+ * Restart PM2 in a detached background shell so the HTTP stream can finish
+ * before this Node process is killed by the restart.
+ */
+export function schedulePm2Restart(): void {
+  const inner = getPm2RestartCommand()
+  const command = `nohup sh -c ${JSON.stringify(inner)} > /dev/null 2>&1 &`
+
+  const child = exec(command, {
+    cwd: DEPLOY_CONFIG.projectDir,
+    env: buildDeployEnv(),
+  })
+
+  child.unref()
 }
 
 export async function runDeployStep(step: DeployStepName, command: string): Promise<DeployStepResult> {
@@ -76,5 +94,15 @@ export async function runDeployStep(step: DeployStepName, command: string): Prom
       error: err.message,
       durationMs: Date.now() - started,
     }
+  }
+}
+
+export function createScheduledPm2RestartResult(): DeployStepResult {
+  return {
+    step: "pm2 restart",
+    status: "success",
+    command: getPm2RestartCommand(),
+    stdout: "Server restart scheduled in the background. The site will reload momentarily.",
+    durationMs: 0,
   }
 }
