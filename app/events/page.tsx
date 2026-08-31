@@ -41,7 +41,7 @@ export default async function EventsPage() {
             Upcoming Events &amp; Programs
           </h1>
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-white/70">
-            Join our exclusive Demo Days, VC Connect sessions, and exhibitions across Asia, Japan, and beyond.
+            Discover premier Demo Days, VC Connect sessions, and key exhibitions across Asia, Japan, and beyond.
           </p>
         </div>
       </section>
