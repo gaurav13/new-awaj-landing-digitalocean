@@ -1,0 +1,1014 @@
+{
+  "speakers": [
+    {
+      "name": "Markus Infanger",
+      "role": "SVP, RippleX",
+      "company": "Ripple",
+      "bio": "Markus Infanger氏は、RippleのRippleX部門におけるSVP（シニア・バイスプレジデント）です。彼はプロダクト開発、戦略的パートナーシップ、そしてXRP Ledgerの開発者エコシステムの拡大を統括しています。\n\n世界有数の金融機関において、グローバル外国為替（FX）分野のリーダーシップで20年以上の経験を持ち、伝統的金融とブロックチェーン・イノベーションの世界を橋渡しする役割を担っています。",
+      "bio_en": "Markus Infanger, SVP of RippleX at Ripple.  He leads product development, strategic partnerships, and the expansion of the XRP Ledger developer ecosystem.  Bringing 20+ years of experience in global Foreign Exchange leadership at top-tier financial institutions, he bridges the worlds of traditional finance and blockchain innovation.",
+      "image": "https://www.xrp-tokyo.io/Markus-Infanger.jpg",
+      "twitter": "https://x.com/markusinfanger",
+      "linkedin": "https://www.linkedin.com/in/markus-infanger-8a6ba747/",
+      "website": "https://ripple.com/",
+      "nameJa": "Markus Infanger",
+      "roleJa": "RippleX シニア副社長（SVP）",
+      "companyJa": "Ripple"
+    },
+    {
+      "name": "Christina Chan",
+      "role": "Senior Director, Ecosystem Growth Ripple",
+      "company": "Ripple",
+      "bio": "Ripple Christina Chan氏は、Rippleのシニアディレクター兼エコシステム成長担当です。Rippleにおいてファンディングプログラム責任者として、XRP Ledgerエコシステム上のビルダーを支援する10億XRP規模のファンドを管理する、部門横断型のグローバルチームを率いています。\n\nWeb3、ブロックチェーン、暗号資産、フィンテック分野で10年以上の経験を持ち、戦略的な協業やパートナーシップを推進することで、Web3エコシステムの成長と強化に貢献しています。",
+      "bio_en": "Christina Chan, Senior Director and Ecosystem Growth of Ripple  As the Head of Funding Programs at Ripple, she leads a cross-functional global team that manages a 1 billion XRP fund for builders on the XRP Ledger ecosystem. With over 10 years of experience in web3, blockchain, crypto, and fintech, she fosters strategic collaborations and partnerships to grow and strengthen the web3 ecosystem.",
+      "image": "https://www.xrp-tokyo.io/Christina-Chan.jpg",
+      "twitter": "https://x.com/ghostfacex_0",
+      "linkedin": "https://www.linkedin.com/in/christinabchan",
+      "website": "https://ripple.com/",
+      "nameJa": "Christina Chan",
+      "roleJa": "シニアディレクター、エコシステム成長",
+      "companyJa": "Ripple"
+    },
+    {
+      "name": "Tatsuya Yamada",
+      "role": "President",
+      "company": "Rakuten Wallet, Inc.",
+      "bio": "約30年にわたり、証券、商品、外国為替を含む金融サービスに従事。主にファンド組成および国内外のデリバティブ取引に携わる。\n2008年、ソシエテジェネラルよりニューエッジグループに入社、2013年より楽天証券に入社後、法人取引、エクイティファイナンス、フィンテック部門における新サービス企画を推進。\n2018年、楽天ウォレット株式会社代表取締役社長に就任し、楽天グループの暗号資産取引所事業およびWeb3事業の立ち上げを主導。日本暗号資産ビジネス協会の理事を務める。",
+      "bio_en": "Has been engaged in financial services, including securities, commodities, and FX, for approximately 30 years. Primarily involved in fund formation and domestic and international derivative transactions. Joined Newedge Group from Société Générale in 2008, where they were responsible for derivative transactions. From 2013, after joining Rakuten Securities, they promoted new service planning in corporate transactions, equity finance, and the FinTech division. In 2018, they were appointed President of Rakuten Wallet, Inc., where they spearheaded the launch of Rakuten Group's crypto asset exchange business and web3 initiatives. Serves as a Director of the Japan Crypto Asset Business Association.",
+      "image": "https://www.xrp-tokyo.io/speakers/Tatsuya Yamada.png",
+      "twitter": "",
+      "linkedin": "https://jp.linkedin.com/in/tatsuya-yamada-7223352a",
+      "website": "https://www.rakuten-wallet.co.jp/",
+      "nameJa": "山田 達也",
+      "roleJa": "代表取締役社長",
+      "companyJa": "楽天ウォレット株式会社"
+    },
+    {
+      "name": "SungMo Park",
+      "role": "Partner, Head of APAC GTM",
+      "company": "A16z Crypto",
+      "bio": "a16z cryptoにてPartner兼APAC Go-to-Market責任者を務めるSungMo Park氏は、アジア太平洋地域におけるWeb3エコシステムの成長をリードしています。\n\na16z crypto参画以前は、Monad FoundationにてAPAC Leadを務め、東アジア・大中華圏・東南アジア・インドにおけるGo-to-Marketおよびエコシステム戦略の構築を推進しました。さらに、Polygon LabsではAPAC事業開発責任者として、エンタープライズパートナーシップや新興クリプトプロジェクトとの協業を主導。NFTマーケットプレイスの共同創業や、NAVERの検索広告チームにてプロダクトプランナーとしての経験も有しています。\n\nソウル大学にて国際関係およびアントレプレナーシップを専攻し、学位を取得しています。",
+      "bio_en": "SungMo Park is a Partner and Head of APAC Go-to-Market at a16z crypto, leading the growth of the Web3 ecosystem across the Asia-Pacific region.\n\nPrior to joining a16z crypto, he served as APAC Lead at Monad Foundation, driving go-to-market and ecosystem strategies across East Asia, Greater China, Southeast Asia, and India.\n\nHe also led APAC business development at Polygon Labs, spearheading enterprise partnerships and collaborations with emerging crypto projects. His experience includes co-founding an NFT marketplace and working as a product planner on NAVER's search advertising team.\n\nHe holds a degree in International Relations and Entrepreneurship from Seoul National University.",
+      "image": "https://www.xrp-tokyo.io/speakers/SungMo Park.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/smp0910/",
+      "website": "https://a16zcrypto.com/team/sungmo-park/",
+      "nameJa": "SungMo Park",
+      "roleJa": "Partner、APAC Go-to-Market 責任者",
+      "companyJa": "a16z crypto"
+    },
+    {
+      "name": "Cody Carbone",
+      "role": "CEO at The Digital Chamber",
+      "company": "The Digital Chamber",
+      "bio": "The Digital ChamberのCEOを務めるCody Carbone氏は、デジタル資産およびブロックチェーン分野における政策・規制の専門家です。\n\n同団体において、米国議会や規制当局との連携を通じた政策提言やアドボカシー活動をリードし、業界と政府の橋渡し役を担っています。\n\nこれまでに、Ernst & Young（EY）の公共政策部門や米国議会での経験を通じて、金融およびテクノロジー分野における政策形成に携わってきました。",
+      "bio_en": "Cody Carbone is CEO of The Digital Chamber, specializing in digital asset and blockchain policy and regulation.\n\nHe leads policy advocacy and engagement with the U.S. Congress and regulatory authorities, serving as a bridge between the industry and government.\n\nHis prior experience includes roles at Ernst & Young (EY)'s public policy division and the U.S. Congress, contributing to policy development in the finance and technology sectors.",
+      "image": "https://www.xrp-tokyo.io/speakers/cody-carbone1.jpg",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/codycarbone/",
+      "website": "https://digitalchamber.org/",
+      "nameJa": "Cody Carbone",
+      "roleJa": "CEO",
+      "companyJa": "The Digital Chamber"
+    },
+    {
+      "name": "Takuya Sugiyama",
+      "role": "Vice President, SBI Ripple Asia",
+      "company": "SBI Holdings",
+      "bio": "杉山 拓也氏は、SBI Ripple Asiaの副社長であり、SBIホールディングスにおいてデジタルスペース部門のゼネラルマネージャーを務めています。ブロックチェーンを活用した革新的な決済ソリューションやデジタル資産インフラの開発を主導しています。\n\n金融サービス業界で20年以上の経験を有し、現在は分散型金融（DeFi）、トークン化資産、クロスボーダー決済システムの分野に注力しています。",
+      "bio_en": "Takuya Sugiyama is the Vice President of SBI Ripple Asia and General Manager of the Digital Space Department at SBI Holdings, where he leads the development of innovative blockchain-based payment solutions and digital asset infrastructure. With over 20 years of experience in the financial services industry, he now focuses on decentralized finance (DeFi), tokenized assets, and cross-border settlement systems.",
+      "image": "https://www.xrp-tokyo.io/Takuy-Sugiyama.jpg",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/takuya-sugiyama-aa1b73a",
+      "website": "https://www.sbigroup.co.jp/",
+      "nameJa": "杉山 拓也",
+      "roleJa": "SBI Ripple Asia 副社長",
+      "companyJa": "SBIホールディングス"
+    },
+    {
+      "name": "Tomohiko Kondo",
+      "role": "CEO",
+      "company": "SBI VC Trade Co., Ltd.",
+      "bio": "2007年、SBIホールディングス株式会社に新卒で入社し、SBIグループの情報システムを担当。同グループの電子決済事業を経て、外国為替関連事業を行うSBIリクイディティ・マーケット株式会社にてシステム担当役員を務める。\n2019年、SBI VCトレード株式会社の取締役に就任し、暗号資産・Web3関連事業に本格的に従事。2023年より同社代表取締役社長として、暗号資産交換業を中心としたステーキングサービスの拡大を推進するほか、2025年3月には国内発かつ唯一の「電子決済手段等取引業者」としての登録を進め、ステーブルコイン取引サービスの提供を主導した。その他、SBIグループ内の複数の暗号資産・Web3関連企業の役員を兼務している。",
+      "bio_en": "Joined SBI Holdings in 2007 as a new graduate, managing IT systems for the SBI Group. After working in the group's electronic payment business, he served as a systems executive at SBI Liquidity Market, an FX-related subsidiary. In 2019, he was appointed Director of SBI VC Trade, fully engaging in crypto asset and Web3 businesses. Since 2023, as President and CEO, he has driven the expansion of staking services centered on the crypto asset exchange business. In March 2025, he led the company's registration as Japan's first and only \"Electronic Payment Instrument Exchange Service Provider,\" pioneering stablecoin trading services. He concurrently serves as a director at multiple crypto asset and Web3-related companies within the SBI Group.",
+      "image": "https://www.xrp-tokyo.io/speakers/Tomohiko Kondo.png",
+      "twitter": "https://x.com/tomohiko_kondo",
+      "linkedin": "https://jp.linkedin.com/in/tomohiko-kondo-78748bab",
+      "nameJa": "近藤 智彦",
+      "roleJa": "代表取締役社長",
+      "companyJa": "SBI VCトレード株式会社"
+    },
+    {
+      "name": "Dave McCombs",
+      "role": "Senior Re-Writer",
+      "company": "NHK World Japan",
+      "bio": "NHK World Japan Senior Re-Writer。日本外国特派員協会（FCCJ）元会長。",
+      "bio_en": "Senior Re-Writer at NHK World Japan. Former President, Foreign Correspondents' Club of Japan (FCCJ).",
+      "image": "https://www.xrp-tokyo.io/speakers/Dave-McComb.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/dave-mccombs-1b0177/",
+      "website": "",
+      "nameJa": "Dave McCombs",
+      "roleJa": "シニアリライター",
+      "companyJa": "NHKワールドジャパン"
+    },
+    {
+      "name": "Hirokuni Onozawa",
+      "role": "Executive Officer",
+      "company": "GMO Aozora Net Bank, Ltd.",
+      "bio": "小野沢 宏晋氏は、日本IBMで長年銀行システム構築や事業開発をリードした後、2019年にGMOあおぞらネット銀行株式会社に参画し、現在、同社の執行役員を務めています。2023年に一般社団法人Fintech協会理事、2024年に一般社団法人電子決済等代行事業者協会理事にも就任されています。\n\nGMOあおぞらネット銀行は、高い技術力と内製化体制による開発スピードの速さを武器に、次々と法人向けサービスを展開しています。中でも銀行APIの公開やBaaS（Banking as a Service）の提供を通じ、\"新たな金融インフラを下支えする黒子の銀行\"として挑戦を続けるテクノロジーバンクです。",
+      "bio_en": "Hirokuni Onozawa joined GMO Aozora Net Bank, Ltd. in 2019 after leading bank system development and business initiatives for many years at IBM Japan. He currently serves as the Executive Officer. In 2023, he was appointed as a Director of the Fintech Association of Japan, and in 2024, he also assumed the role of Director at Japan Association for Financial APIs.\n\nGMO Aozora Net Bank leverages its advanced technological capabilities and in-house development structure to achieve rapid service deployment, continuously launching new offerings for corporate clients. In particular, through the provision of open banking APIs and \"Banking as a Service (BaaS),\" it is a technology-driven bank that continues to take on the challenge of acting as a \"behind-the-scenes enabler supporting new financial infrastructure.\"",
+      "image": "https://www.xrp-tokyo.io/speakers/hirokuni_onozawa.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://gmo-aozora.com/",
+      "nameJa": "小野沢 浩邦",
+      "roleJa": "執行役員",
+      "companyJa": "GMOあおぞらネット銀行株式会社"
+    },
+    {
+      "name": "Seihaku Yoshida",
+      "role": "CEO",
+      "company": "HashPort Inc.",
+      "bio": "吉田 世博氏は、株式会社HashPort 代表取締役CEO。慶應義塾大学法学部卒後、BCG Digital Venturesで最年少Venture Architectを務め、2018年にHashPortを創業。\nWeb3ウォレットやトークンビジネスの社会実装をリードし、日本暗号資産ビジネス協会理事、東京大学共同研究員も務めています。\n\n株式会社HashPortは、2018年創業のWeb3ソリューション企業です。「まだ見ぬ価値を暮らしの中へ」をミッションに、ブロックチェーンを活用したWeb3ウォレット、SBT活用のデジタルIDシステム、コンサルティング・システム開発を提供。\nEXPO2025デジタルウォレット開発など、ブロックチェーン技術の大衆化を推進しています。",
+      "bio_en": "Seihaku Yoshida is the Representative Director and CEO of HashPort Inc. After graduating from the Faculty of Law at Keio University, he became the youngest Venture Architect at BCG Digital Ventures before founding HashPort in 2018. He leads the social implementation of Web3 wallets and token businesses, and also serves as a Director of the Japan Crypto Asset Business Association and a Joint Researcher at the University of Tokyo.\n\nHashPort Inc. is a Web3 solutions company founded in 2018. With the mission of \"bringing unseen value into everyday life,\" the company provides Web3 wallets, SBT-based digital ID systems, consulting, and system development utilizing blockchain technology. The company is driving the democratization of blockchain technology, including the development of digital wallets for EXPO 2025.",
+      "image": "https://www.xrp-tokyo.io/speakers/HashPort Inc.png",
+      "twitter": "https://x.com/seihakuyoshida",
+      "linkedin": "",
+      "website": "https://hashport.io/",
+      "nameJa": "吉田 清白",
+      "roleJa": "代表取締役CEO",
+      "companyJa": "HashPort株式会社"
+    },
+    {
+      "name": "Takafumi Shimoyama",
+      "role": "General Manager, Head of Business Development",
+      "company": "SBI Ripple Asia",
+      "bio": "下山貴史氏は、規制された金融システムとブロックチェーンの交差領域において金融インフラの構築に取り組むプロフェッショナルです。現在はSBI Ripple Asiaのビジネス開発責任者として、日本および韓国におけるトークン化決済やステーブルコイン基盤の開発を推進しています。\n\nこれまでにサーチファンドを創業し、地域企業の買収および経営をCEOとしてリード。野村證券では全国トップクラスの営業成績を収めた後、ニューヨークにて米国の金融機関および資本市場の変革に関する調査に従事しました。\n\n伝統金融とブロックチェーンの融合領域における豊富な知見を活かし、次世代の金融インフラの実現に取り組んでいます。",
+      "bio_en": "Takafumi Shimoyama is a professional dedicated to building financial infrastructure at the intersection of regulated financial systems and blockchain. He currently serves as Head of Business Development at SBI Ripple Asia, driving the development of tokenized payments and stablecoin infrastructure in Japan and South Korea.\n\nHe previously founded a search fund, leading the acquisition and management of a regional company as CEO. At Nomura Securities, he achieved top-tier nationwide sales performance before conducting research on the transformation of U.S. financial institutions and capital markets in New York.\n\nDrawing on extensive expertise at the convergence of traditional finance and blockchain, he is working to realize next-generation financial infrastructure.",
+      "image": "https://www.xrp-tokyo.io/speakers/Takafumi Shimoyama.png",
+      "twitter": "",
+      "linkedin": "https://jp.linkedin.com/in/takafumi-shimoyama-43b949207",
+      "nameJa": "下山 崇文",
+      "roleJa": "事業開発本部長",
+      "companyJa": "SBI Ripple Asia"
+    },
+    {
+      "name": "Toshinari Shinohara",
+      "role": "Director, Future Co-Creation Lab, General Management Division",
+      "company": "TOBU TOP TOURS",
+      "bio": "東急観光入社、宇都宮支店および高崎支店にて、旅行業務全般に関する専門知識を習得。\n\nその後、首都圏統括部販売課長として食事券事業において日本初の電子クーポンを事業化、更に社内初のBPO業務を制度設計から運行までを内製化。官公庁事業部長として、中央省庁へ地域活性化に資するソリューション提案などの事業を推進。コロナ禍ではワクチン接種システムを開発し、63を超える自治体で採用され、旅行業界における先駆的な役割を果たす。また、社内初となるG7サミット閣僚級会合の受託、首都圏統括部長として首都圏14支店のマーケティング戦略にも携わる。\n\n現在は未来共創ラボの部長として、新規事業の創出およびイノベーション推進を牽引。",
+      "bio_en": "Joined Tokyu Kanko and acquired specialist knowledge across travel operations at the Utsunomiya and Takasaki branches.\n\nSubsequently, as head of sales in the Greater Tokyo oversight division, commercialized Japan's first electronic coupons in the meal-voucher business, and in-house developed the company's first BPO operations from system design through deployment. As head of the public-sector business unit, advanced proposals and programs for regional revitalization to central ministries and agencies. During COVID-19, developed a vaccination appointment system adopted by more than 63 municipalities, playing a pioneering role for the travel industry. Also undertook the company's first ministerial-level meeting for the G7 Summit, and as head of the Greater Tokyo oversight division contributed to marketing strategy for 14 branches across the metropolitan area.\n\nHe currently leads new business creation and innovation promotion as head of the Future Co-Creation Lab.",
+      "image": "https://www.xrp-tokyo.io/speakers/Toshinari Shinohara.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://www.tobutoptours.co.jp/",
+      "nameJa": "篠原 俊成",
+      "roleJa": "未来共創研究所 所長",
+      "companyJa": "東武トップツアーズ"
+    },
+    {
+      "name": "Meg Nakamura",
+      "role": "Chief Operating Officer",
+      "company": "Evernorth",
+      "bio": "Meg Nakamura氏は、Evernorthにおいてビジネス領域に関わり、ブロックチェーンおよびデジタル資産分野における取り組みに従事しています。\n金融とWeb3の接点における活動を通じて、実用的なユースケースの発展に貢献しています。",
+      "bio_en": "Meg Nakamura is involved in business operations at Evernorth, working on initiatives in the blockchain and digital asset space. \nThrough her activities at the intersection of finance and Web3, she contributes to the development of practical use cases.",
+      "image": "https://www.xrp-tokyo.io/speakers/Meg Nakamura.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/megnakamura",
+      "website": "https://www.evernorth.xyz/",
+      "nameJa": "Meg Nakamura",
+      "roleJa": "最高執行責任者（COO）",
+      "companyJa": "Evernorth"
+    },
+    {
+      "name": "Mai Furukawa",
+      "role": "Director of XRPL Japan Association and Support at XRPL Labs",
+      "company": "XRPL Japan/XRPL Labs",
+      "bio": "古川 舞氏は、一般社団法人XRPL Japan Co-founder 兼 Director（代表理事）。XRPL Labs（Xamanウォレット）でCustomer Success / Community Builderを務め、日本におけるXRP Ledgerの普及とエコシステム拡大をリードしています。\n\n一般社団法人XRPL Japanは、XRP Ledgerの日本国内での普及・活用を推進する非営利団体です。イベント開催、勉強会、情報発信を通じて、開発者・企業・コミュニティをつなぎ、XRPL技術の社会実装と日本の存在感向上を目指しています。",
+      "bio_en": "Mai Furukawa is the Co-founder and Director (Representative Director) of the XRPL Japan Association. She also serves as Customer Success / Community Builder at XRPL Labs (Xaman Wallet), leading the adoption and ecosystem expansion of XRP Ledger in Japan.\n\nThe XRPL Japan Association is a non-profit organization promoting the adoption and utilization of XRP Ledger in Japan. Through events, study groups, and information sharing, the association connects developers, businesses, and communities, aiming to advance the social implementation of XRPL technology and enhance Japan's presence in the ecosystem.",
+      "image": "https://www.xrp-tokyo.io/speakers/Mai Furukawa1.png",
+      "twitter": "https://x.com/Mai_XRPLJapan",
+      "linkedin": "https://www.linkedin.com/in/mai-furukawa-b26079281/",
+      "nameJa": "古川 舞",
+      "roleJa": "XRPL Japan 協会ディレクター / XRPL Labs サポート",
+      "companyJa": "XRPL Japan / XRPL Labs"
+    },
+    {
+      "name": "Hinza Asif",
+      "role": "President",
+      "company": "Asia Web3 Alliance Japan",
+      "bio": "Hinza Asif氏は、Asia Web3 Alliance Japan（AWAJ）President。Web3起業家として15年以上の経験を持ち、BlockZa Founderも務め、日本とアジアのWeb3エコシステムの橋渡しをリード。政府・規制当局との連携やスタートアップ支援に注力しています。\n\nAsia Web3 Alliance Japan（AWAJ）は、アジアと日本のWeb3業界の協力・成長・イノベーションを促進する非営利団体です。\n政策提言、教育、スタートアップ支援、パートナーシップを通じて、日本企業のグローバル展開とアジア市場参入を支援しています。",
+      "bio_en": "Hinza Asif is the President of Asia Web3 Alliance Japan (AWAJ). With over 15 years of experience as a Web3 entrepreneur and Founder of BlockZa, he leads the bridging of Web3 ecosystems between Japan and Asia, focusing on collaboration with government and regulatory authorities as well as startup support.\n\nAsia Web3 Alliance Japan (AWAJ) is a non-profit organization fostering collaboration, growth, and innovation in the Web3 industry across Asia and Japan. Through policy advocacy, education, startup support, and partnerships, it assists Japanese companies in expanding globally and entering Asian markets.",
+      "image": "https://www.xrp-tokyo.io/speakers/Hinza Asif.png",
+      "twitter": "https://x.com/thehinza",
+      "linkedin": "https://jp.linkedin.com/in/hinza-asif",
+      "website": "https://asiaweb3alliance.jp/",
+      "nameJa": "Hinza Asif",
+      "roleJa": "代表",
+      "companyJa": "Asia Web3 Alliance Japan"
+    },
+    {
+      "name": "Noritaka Okabe",
+      "role": "Founder & CEO",
+      "company": "JPYC Inc.",
+      "bio": "JPYC株式会社の代表取締役を務める岡部典孝氏は、日本におけるステーブルコイン分野の先駆者として知られています。\n\n2001年に一橋大学在学中に起業し、以降、代表取締役やCTOなどを歴任。2017年にはリアルワールドゲームス株式会社を共同創業し、取締役CTO/CFOを経て経営に携わりました。\n\n2019年に日本暗号資産市場株式会社（現JPYC株式会社）を創業し、2021年より日本円建プリペイド型トークン「JPYC Prepaid」を発行。国内におけるステーブルコインの普及を牽引しています。\n\nまた、iU情報経営イノベーション専門職大学の客員教授を務めるほか、BCCC「ステーブルコイン普及推進部会」部会長、一般社団法人日本暗号資産ビジネス協会（JCBA）理事、一般社団法人ブロックチェーン推進協会（BCCC）副代表理事などを歴任し、業界の発展に幅広く貢献しています。",
+      "bio_en": "Noritaka Okabe, Representative Director of JPYC Inc., is known as a pioneer in the stablecoin space in Japan.\n\nHe started his first business while attending Hitotsubashi University in 2001, going on to hold positions including CEO and CTO. In 2017, he co-founded Real World Games Inc., serving as Director, CTO/CFO.\n\nIn 2019, he founded Japan Crypto Asset Market Inc. (now JPYC Inc.) and launched \"JPYC Prepaid,\" a Japanese yen-denominated prepaid token, in 2021, driving the adoption of stablecoins in Japan.\n\nHe also serves as a visiting professor at iU Professional University of Information and Management for Innovation, Chair of the BCCC Stablecoin Promotion Division, Director of the Japan Crypto Asset Business Association (JCBA), and Vice Representative Director of the Blockchain Collaborative Consortium (BCCC), contributing broadly to the industry's development.",
+      "image": "https://www.xrp-tokyo.io/speakers/Noritaka Okabe.png",
+      "twitter": "https://x.com/noritaka_okabe",
+      "linkedin": "",
+      "website": "https://corporate.jpyc.co.jp/",
+      "nameJa": "岡部 憲孝",
+      "roleJa": "創業者兼CEO",
+      "companyJa": "JPYC株式会社"
+    },
+    {
+      "name": "Ryo Kato",
+      "role": "CEO",
+      "company": "HashHub Inc.",
+      "bio": "Ryo Kato氏は、株式会社HashHub 代表取締役CEO。慶應義塾大学法学部卒、Northwestern University LL.M.取得後、野村HD法務部・野村證券を経てSBI証券戦略事業推進部次長に就任。\nWeb3・暗号資産領域のM&Aを多数実行。現在はHashHub CEOを務め、SBIデジタルハブ取締役、CoinPost取締役なども兼任しています。\n\n株式会社HashHubは、2018年創業のブロックチェーン企業で、現在はSBIグループの連結子会社。\n「パブリックブロックチェーンの恩恵をより多くの人に。」をパーパスに、暗号資産・Web3専門のリサーチサービス、コンサルティング、プロダクト開発などを展開。法人・個人向けに高品質な業界情報とインサイトを提供する国内有数のWeb3リサーチファームです。",
+      "bio_en": "Ryo Kato is the Representative Director and CEO of HashHub Inc. After graduating from the Faculty of Law at Keio University and obtaining an LL.M. from Northwestern University, he worked at Nomura Holdings' legal department and Nomura Securities before becoming Deputy General Manager of SBI Securities' Strategic Business Promotion Department. He has executed numerous M&A transactions in the Web3 and crypto asset space. He currently serves as CEO of HashHub while holding concurrent positions as Director of SBI Digital Hub and Director of CoinPost, among others.\n\nHashHub Inc. is a blockchain company founded in 2018, currently a consolidated subsidiary of SBI Group. With the purpose of \"bringing the benefits of public blockchain to more people,\" the company offers crypto asset and Web3 research services, consulting, and product development. It is one of Japan's leading Web3 research firms, providing high-quality industry insights to both institutional and individual clients.",
+      "image": "https://www.xrp-tokyo.io/speakers/Ryo Kato.png",
+      "twitter": "https://x.com/kitaro_sskr",
+      "linkedin": "",
+      "website": "https://hashhub.tokyo/",
+      "nameJa": "加藤 亮",
+      "roleJa": "代表取締役CEO",
+      "companyJa": "HashHub株式会社"
+    },
+    {
+      "name": "Fumihiro Arasawa",
+      "role": "CEO, XWIN Group Chair, DeFi Committee",
+      "company": "Blockchain Collaborative Consortium",
+      "bio": "荒澤 文博氏は、XWIN Group Ltd. Co-Founder 兼 CEO（FUMI Arasawa）。グローバルビジネス開発の専門家としてDeFi・暗号資産分野で活躍し、日本・マレーシア・シンガポールを拠点に事業をリード。\nブロックチェーン推進協会 DeFi部会長も務めています。\n\nXWIN Group Ltd.は2020年創業のWeb3企業で、DeFiプラットフォーム「xWIN.Finance」の開発・運営を中心に、NFTアプリ、Web3コンサルティング、資産運用ソリューションを提供。\n日本・アジア市場でDeFiアクセシビリティ向上と革新的金融サービスの普及を推進しています。",
+      "bio_en": "Fumihiro Arasawa is the Co-Founder and CEO of XWIN Group Ltd. As a global business development expert, he is active in the DeFi and crypto asset space, leading operations from bases in Japan, Malaysia, and Singapore. He also serves as Chair of the DeFi Division at the Blockchain Collaborative Consortium.\n\nXWIN Group Ltd. is a Web3 company founded in 2020, focused on the development and operation of the DeFi platform \"xWIN.Finance,\" along with NFT applications, Web3 consulting, and asset management solutions. The company promotes DeFi accessibility and innovative financial services across Japan and Asian markets.",
+      "image": "https://www.xrp-tokyo.io/speakers/Fumihiro Arasawa.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://bccc.global/",
+      "nameJa": "荒澤 文弘",
+      "roleJa": "XWIN Group 代表、DeFi委員会 議長",
+      "companyJa": "ブロックチェーン協同組合"
+    },
+    {
+      "name": "Nathaniel T. Bradley",
+      "role": "CEO",
+      "company": "Datavault AI",
+      "bio": "Datavault AIのCEOを務めるNathaniel T. Bradley氏は、AI、ブロックチェーン、データサイエンス領域における起業家兼テクノロジーリーダーです。\n\nこれまでに複数のテクノロジー企業を創業し、インターネットアクセシビリティやモバイルマーケティング、データモネタイゼーション分野において多数の特許を保有する発明家としても知られています。\n\n現在はDatavault AIのCEOとして、AIとブロックチェーンを活用したデータの価値化およびトークン化による新たなデータ経済の構築を推進しています。",
+      "bio_en": "Nathaniel T. Bradley is CEO of Datavault AI, an entrepreneur and technology leader in AI, blockchain, and data science.\n\nHe has founded multiple technology companies and is known as an inventor holding numerous patents in internet accessibility, mobile marketing, and data monetization.\n\nAs CEO of Datavault AI, he is driving the creation of a new data economy through data valorization and tokenization powered by AI and blockchain.",
+      "image": "https://www.xrp-tokyo.io/speakers/Nathaniel.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/natlink/",
+      "website": "https://datavaultsite.com/",
+      "nameJa": "Nathaniel T. Bradley",
+      "roleJa": "CEO",
+      "companyJa": "Datavault AI"
+    },
+    {
+      "name": "Steven Zeiler",
+      "role": "Developer Evangelist",
+      "company": "Yellow",
+      "bio": "YellowにてDeveloper Evangelistを務めるSteven Zeiler氏は、開発者とともにリアルタイムかつノンカストディアルな取引インフラの構築を推進しています。\n\nプログラマー、テクノロジスト、起業家としてのバックグラウンドを持ち、過去にはRippleの初期メンバーとして、P2Pインターバンク決済プロトタイプの設計や、XRP Ledgerの分散化に貢献するコンセンサス関連ソフトウェアの開発に関与しました。\n\nまた、ウォレットの暗号技術やUX設計などにも携わり、現在はYellowにおいてクロスチェーンかつリアルタイム金融アプリケーションを構築する開発者エコシステムの拡大に取り組んでいます。",
+      "bio_en": "Steven Zeiler is a Developer Evangelist at Yellow, working with developers to build real-time, non-custodial trading infrastructure.\n\nWith a background as a programmer, technologist, and entrepreneur, he was an early member of Ripple, where he contributed to designing P2P interbank payment prototypes and developing consensus-related software that helped decentralize the XRP Ledger.\n\nHe has also worked on wallet cryptography and UX design, and currently focuses on expanding the developer ecosystem at Yellow for building cross-chain, real-time financial applications.",
+      "image": "https://www.xrp-tokyo.io/speakers/Steven Zeiler.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/stevenzeiler/",
+      "website": "https://yellow.com/",
+      "nameJa": "Steven Zeiler",
+      "roleJa": "Developer Evangelist",
+      "companyJa": "Yellow"
+    },
+    {
+      "name": "Go Makino",
+      "role": "Regional Director",
+      "company": "Fireblocks Japan",
+      "bio": "Go Makino氏は、Fireblocks Sales Directorとして、日本におけるデジタルアセット事業拡大をリードしています。\n\nFireblocksは世界トップのデジタルアセットインフラプロバイダーで、1,800社以上に採用されています。",
+      "bio_en": "Go Makino serves as Sales Director at Fireblocks, leading the expansion of digital asset operations in Japan. \n\nFireblocks is a world-leading digital asset infrastructure provider, trusted by over 1,800 companies.",
+      "image": "https://www.xrp-tokyo.io/speakers/Go Makino.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/gou-makino-b362854b/",
+      "website": "",
+      "nameJa": "牧野 豪",
+      "roleJa": "リージョナルディレクター",
+      "companyJa": "Fireblocks Japan"
+    },
+    {
+      "name": "Taisuke Isono",
+      "role": "Head of Nikko Innovation Lab",
+      "company": "SMBC Nikko Securities Inc.",
+      "bio": "SMBC日興証券株式会社にてNikko Innovation LabのHeadを務める磯野泰輔氏は、金融とテクノロジーを融合したオープンイノベーションの推進に取り組んでいます。\n\n2012年に同社へ入社後、約8年間にわたり投資銀行部門にて国内外のM&Aおよび資金調達案件に従事。その後、社長直轄の社内公募プロジェクト「Nikko Ventures」に採択され、オープンイノベーションチーム「Funder Storm」を立ち上げました。\n\n証券会社のリソースを活用しながら、日本の未来を変革するエコシステムの構築を推進。次世代イノベーター育成プログラム「高専インカレチャレンジ」、寄附型クラウドファンディングの新スキーム、Web3とアートを活用した「NEO KYOTO NFT ARTs」、Proof of Japan株式会社の立ち上げなど、多様なプロジェクトを主導してきました。\n\nさらに、国立高専機構との連携協定の締結や、Web3特化型VC「Hashed」への出資、グローバルハッカソン「Protocol Camp」の開催など、国内外のイノベーション創出にも貢献しています。\n\n「日本の価値の最大化」をビジョンに掲げ、新規事業開発および事業環境の整備を通じて、オープンイノベーションの実現をリードしています。",
+      "bio_en": "Taisuke Isono is the Head of Nikko Innovation Lab at SMBC Nikko Securities Inc., driving the advancement of open innovation through the fusion of finance and technology.\n\nAfter joining the firm in 2012, he spent approximately eight years in the investment banking division, working on domestic and international M&A and capital-raising transactions. He was subsequently selected for \"Nikko Ventures,\" a company-wide internal pitch project reporting directly to the CEO, where he launched the open innovation team \"Funder Storm.\"\n\nLeveraging the resources of a securities firm, he has led diverse projects to build ecosystems transforming Japan's future, including the next-generation innovator development program \"Kosen Inter-College Challenge,\" a new donation-based crowdfunding scheme, \"NEO KYOTO NFT ARTs\" combining Web3 and art, and the establishment of Proof of Japan Inc.\n\nHe has also contributed to innovation domestically and internationally through a partnership agreement with the National Institute of Technology, investment in Web3-focused VC \"Hashed,\" and the global hackathon \"Protocol Camp.\"\n\nWith a vision of \"Maximizing Japan's Value,\" he leads the realization of open innovation through new business development and supportive business environments.",
+      "image": "https://www.xrp-tokyo.io/speakers/Taisuke Isono.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://www.smbcnikko.co.jp/",
+      "nameJa": "磯野 泰介",
+      "roleJa": "日興イノベーションラボ 所長",
+      "companyJa": "SMBC日興証券株式会社"
+    },
+    {
+      "name": "Eiji Kobayashi",
+      "role": "Director & Country Head",
+      "company": "Securitize Japan",
+      "bio": "小林 英至氏は、Securitize Japan株式会社 Country Head Japan（日本責任者）。2020年2月就任。ウォール街（Merrill Lynch、Goldman Sachs）や東京の投資銀行、American Express、Mastercard、Western Unionでの豊富な金融・Fintech経験を活かし、日本におけるデジタル証券事業をリード。日本セキュリティトークン協会（JSTA）理事も務めています。\n\nSecuritize Japan株式会社は、2018年設立のSecuritize, Inc.（米国）の完全子会社。ブロックチェーンを活用したデジタル証券（セキュリティトークン/STO）の発行・管理プラットフォームを提供し、日本市場での資産トークン化と資本市場の近代化を推進しています。",
+      "bio_en": "Eiji Kobayashi is the Country Head Japan at Securitize Japan Inc., having assumed the role in February 2020. Drawing on extensive finance and fintech experience from Wall Street (Merrill Lynch, Goldman Sachs), Tokyo investment banks, American Express, Mastercard, and Western Union, he leads the digital securities business in Japan. He also serves as a Director of the Japan Security Token Association (JSTA).\n\nSecuritize Japan Inc. is a wholly-owned subsidiary of Securitize, Inc. (U.S.), established in 2018. The company provides a blockchain-based platform for the issuance and management of digital securities (Security Tokens/STO), driving asset tokenization and capital market modernization in the Japanese market.",
+      "image": "https://www.xrp-tokyo.io/speakers/Eiji Kobayashi.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://securitize.co.jp/",
+      "nameJa": "小林 英司",
+      "roleJa": "ディレクター兼日本代表",
+      "companyJa": "Securitize Japan"
+    },
+    {
+      "name": "Ken Kawai",
+      "role": "Advisor Partner Lawyer",
+      "company": "Anderson Mori & Tomotsune",
+      "bio": "Anderson Mori & Tomotsuneのパートナーを務めるKen Kawai氏は、フィンテックおよび金融規制分野における日本を代表する弁護士の一人です。\n\n金融機関、フィンテック企業、投資家などに対し、暗号資産やブロックチェーン、デジタル証券を含む複雑な金融規制に関する法務アドバイスを提供しており、グローバルに高い評価を受けています。\n\n特にフィンテック領域を専門とし、暗号資産、NFT、セキュリティトークン、クロスボーダー決済など幅広い分野における法制度対応をリード。政策提言や政府関連プロジェクトにも関与し、業界と規制当局の橋渡し役を担っています。\n\nまた、三菱UFJ銀行での長年の実務経験を背景に、金融とテクノロジーの双方に精通した実務家として、Web3およびデジタル資産分野の発展に貢献しています。",
+      "bio_en": "Ken Kawai is a partner at Anderson Mori & Tomotsune and one of Japan's leading attorneys in the field of fintech and financial regulation.\n\nHe provides legal advice on complex financial regulations, including crypto assets, blockchain, and digital securities, to financial institutions, fintech companies, and investors, and is highly regarded globally.\n\nSpecializing in fintech, he leads legal and regulatory responses across areas including crypto assets, NFTs, security tokens, and cross-border payments. He also engages in policy advocacy and government-related projects, serving as a bridge between the industry and regulatory authorities.\n\nWith extensive practical experience at Mitsubishi UFJ Bank, he contributes to the advancement of Web3 and digital assets as a practitioner well-versed in both finance and technology.",
+      "image": "https://www.xrp-tokyo.io/speakers/Ken Kawai.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://www.amt-law.com/",
+      "nameJa": "川合 健",
+      "roleJa": "アドバイザーパートナー弁護士",
+      "companyJa": "アンダーソン・毛利・友常法律事務所"
+    },
+    {
+      "name": "Seiichi Kawamura",
+      "role": "Strategic Planning Dept",
+      "company": "Blockchain Group Toyota Blockchain Lab",
+      "bio": "TOYOTA Blockchain Labのメンバーであり、トヨタファイナンシャルサービス（TFS）ブロックチェーングループに所属する川村誠一氏は、金融およびブロックチェーン領域において多様な経験を有しています。\n\nメガバンクにて中堅・中小企業向けの事業戦略策定に従事した後、シンガポールのブロックチェーンプロジェクトにてトークン戦略および経営企画をリード。さらに起業を経て、2023年12月にトヨタファイナンシャルサービスへ参画しました。\n\n現在は、TOYOTA Blockchain Labの一員として、STOをはじめとした金融領域のブロックチェーンプロジェクトを主導しています。",
+      "bio_en": "Seiichi Kawamura is a member of the TOYOTA Blockchain Lab, belonging to the Toyota Financial Services (TFS) Blockchain Group, with diverse experience in finance and blockchain.\n\nAfter working on business strategy development for mid-size and small enterprises at a major bank, he led token strategy and business planning at a blockchain project in Singapore. Following an entrepreneurial venture, he joined Toyota Financial Services in December 2023.\n\nHe currently leads blockchain projects in the financial domain, including STOs, as a member of the TOYOTA Blockchain Lab.",
+      "image": "https://www.xrp-tokyo.io/speakers/Seiichi Kawamura.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://www.toyota-blockchain-lab.org/",
+      "nameJa": "川村 誠一",
+      "roleJa": "戦略企画部",
+      "companyJa": "トヨタ ブロックチェーンラボ"
+    },
+    {
+      "name": "Tatsuya Kohrogi",
+      "role": "Senior Ecosystem Growth Manager",
+      "company": "Ripple",
+      "bio": "Rippleにてシニアエコシステム成長マネージャーを務めるTatsuya Kohrogi氏は、XRP Ledgerエコシステムの拡大と発展を推進する役割を担っています。\n\nこれまでにWeb3 Ventures、Meta、SoftBankにてキャリアを重ね、グローバルな視点からテクノロジーおよびエコシステムの成長に貢献してきました。\n\nブロックチェーン、フィンテック、デジタルイノベーション領域において幅広い経験を有し、戦略的な取り組みやパートナーシップを通じて、Web3エコシステムの発展をリードするグローバルなテックオペレーター兼エコシステムビルダーです。",
+      "bio_en": "Tatsuya Kohrogi serves as Senior Ecosystem Growth Manager at Ripple, driving the expansion and development of the XRP Ledger ecosystem.\n\nHe has built his career at Web3 Ventures, Meta, and SoftBank, contributing to technology and ecosystem growth from a global perspective.\n\nWith extensive experience across blockchain, fintech, and digital innovation, he is a global tech operator and ecosystem builder leading the development of the Web3 ecosystem through strategic initiatives and partnerships.",
+      "image": "https://www.xrp-tokyo.io/speakers/Tatsuya Kohrogi.png",
+      "twitter": "https://x.com/tatsuya_kohrogi",
+      "linkedin": "https://sg.linkedin.com/in/tatsuya-kohrogi",
+      "website": "https://ripple.com/",
+      "nameJa": "Tatsuya Kohrogi",
+      "roleJa": "シニア エコシステム成長マネージャー",
+      "companyJa": "Ripple"
+    },
+    {
+      "name": "Yoshimasa Satoh",
+      "role": "CFA Representative Director and CEO, Japan",
+      "company": "Alpaca",
+      "bio": "Alpacaは、金融サービスをすべての人に開放することを使命に掲げる、グローバルな証券インフラのリーディングカンパニーです。\n\nYoshimasa Satoh氏は、グローバルなマルチアセット取引やポートフォリオ運用、テクノロジーおよびデータサイエンス領域の開発、事業開発、顧客対応に至るまで、幅広い分野で豊富な経験を有しています。\n\nこれまでにIG証券のCOOとして経営を支えたほか、BloombergやNasdaqにてアジア太平洋地域の顧客対応を担当。Goldman Sachs Asset Managementではクオンツ運用のポートフォリオマネージャーを務めました。\n\nキャリア初期には野村総合研究所にて、野村證券の株式トレーディングおよび運用システムの開発をリード。\n\nまた、2018年から2022年までCFA Society Japanの理事および事務局長を務め、筑波大学にて工学の学士・修士号を取得。CFA InstituteのESG Investing Certificateも保有しています。",
+      "bio_en": "Alpaca is a leading global securities infrastructure company with a mission of opening financial services to everyone.\n\nYoshimasa Satoh brings extensive experience across global multi-asset trading, portfolio management, technology and data science development, business development, and client relations.\n\nHe previously served as COO of IG Securities and held client-facing roles covering the Asia-Pacific region at Bloomberg and Nasdaq. At Goldman Sachs Asset Management, he served as a quantitative portfolio manager.\n\nEarly in his career, he led the development of equity trading and portfolio management systems for Nomura Securities at Nomura Research Institute.\n\nHe served as Director and Secretary General of CFA Society Japan from 2018 to 2022. He holds bachelor's and master's degrees in engineering from the University of Tsukuba and the ESG Investing Certificate from CFA Institute.",
+      "image": "https://www.xrp-tokyo.io/speakers/Yoshimasa Satoh.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/yoshimasa-satoh-cfa-84b6b92b/",
+      "website": "https://alpaca.markets/",
+      "nameJa": "佐藤 義正",
+      "roleJa": "日本代表取締役兼CEO（CFA）",
+      "companyJa": "Alpaca"
+    },
+    {
+      "name": "Masa Kikuchi",
+      "role": "Founder & CEO",
+      "company": "Secured Finance",
+      "bio": "Secured Finance AGの創業者兼CEOを務めるMasa Kikuchi氏は、伝統金融とブロックチェーンの双方に精通したフィンテック領域のリーダーです。\n\nHSBCにて金利・為替デリバティブのストラクチャリング責任者を務めるなど、17年以上にわたりトラディショナル金融の最前線で経験を積んだ後、テクノロジー領域へと転身。現在は、デジタル資産向けのインターバンク級P2P資本市場プロトコルを開発するSecured Financeを率いています。\n\nまた、日本政府のTrusted Web関連タスクフォースにも参画し、金融とWeb3の融合による次世代金融インフラの構築を推進。DeFiとTradFiの橋渡しをミッションに、グローバルな金融市場の革新に取り組んでいます。",
+      "bio_en": "Masa Kikuchi is the Founder and CEO of Secured Finance AG, a fintech leader with deep expertise spanning traditional finance and blockchain.\n\nAfter more than 17 years at the forefront of traditional finance, including serving as Head of Interest Rate and FX Derivatives Structuring at HSBC, he transitioned to the technology sector. He now leads Secured Finance, developing an interbank-grade P2P capital markets protocol for digital assets.\n\nHe also participates in the Japanese government's Trusted Web task force, driving the construction of next-generation financial infrastructure through the convergence of finance and Web3. With a mission to bridge DeFi and TradFi, he works to innovate global financial markets.",
+      "image": "https://www.xrp-tokyo.io/speakers/Masa Kikuchi.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/masa-senshi-kikuchi-55185a23/",
+      "website": "https://secured.finance/",
+      "nameJa": "菊池 雅",
+      "roleJa": "創業者兼CEO",
+      "companyJa": "Secured Finance"
+    },
+    {
+      "name": "Yusuke Takezawa",
+      "role": "Independent Advisor on Cross-Border Finance and Institutional Design, Former VP at Progmat",
+      "company": "",
+      "bio": "三井住友銀行で約6年間勤務した後、2018年にボストン・コンサルティング・グループに入社。プロジェクトリーダーとして主に金融・パブリックセクターを担当し、中期経営計画の策定、デジタル施策を通じた業務改革・高度化、政策立案、政府プロジェクトの推進等に従事。\n\n2023年、創業メンバー兼最高戦略責任者（CSO）としてProgmat株式会社に参画。その後、SWIFTと共同でProject Paxを立ち上げ、ステーブルコイン決済インフラおよび法域間インターオペラビリティに関するグローバルイニシアチブを主導。\n\n2026年4月より、越境金融・制度設計に関する独立アドバイザーとして活動。国際連携における構造的課題への取り組みや、日本とグローバル市場をつなぐ越境エコシステム構築の新たなフレームワークの推進に注力している。",
+      "bio_en": "After six years at SMBC, I joined Boston Consulting Group in 2018. As a Project Leader, I worked primarily in the financial and public sectors, supporting clients on mid-term business planning, business and operational transformation through digital initiatives, policy design, and public-sector project management.\n\nIn 2023, I joined Progmat Co., Ltd. as a founding member and Chief Strategy Officer. I later launched Project Pax with SWIFT and led global initiatives focused on stablecoin settlement infrastructure and interoperability across jurisdictions.\n\nSince April 2026, I have been working as an Independent Advisor on Cross-Border Finance and Institutional Design, focusing on addressing structural challenges in international collaboration and advancing new frameworks for cross-border ecosystem development, particularly between Japan and global markets.",
+      "image": "https://www.xrp-tokyo.io/speakers/Yusuke Takezawa.jpg",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/yusuke-takezawa-327720156/",
+      "website": "",
+      "nameJa": "竹澤 祐介",
+      "roleJa": "クロスボーダー金融・制度設計 独立アドバイザー（元Progmat VP）",
+      "companyJa": ""
+    },
+    {
+      "name": "Noriaki Yagi",
+      "role": "Editor-in-chief",
+      "company": "Iolite Magazine",
+      "bio": "八木 紀彰氏は、Iolite Magazine（アイオライト）編集長。大学在学中に飲食コンサルティング事業を立ち上げ、2021年J-CAM入社後、2022年より編集長に就任。\n2023年3月に同誌を創刊し、Web3領域の情報発信をリードしています。\n\nIoliteは国内唯一のWeb3.0特化型ビジネス誌。ブロックチェーン・NFT・AIなど次世代技術を深掘りし、日本企業の国際競争力向上とリテラシー向上を目指す隔月刊誌です。",
+      "bio_en": "Noriaki Yagi is the Editor-in-Chief of Iolite Magazine. He launched a food consulting business while still in university, joined J-CAM in 2021, and was appointed Editor-in-Chief in 2022. He launched the magazine in March 2023 and leads information dissemination in the Web3 space.\n\nIolite is Japan's only business magazine specializing in Web3.0. It is a bimonthly publication that deep-dives into next-generation technologies such as blockchain, NFTs, and AI, aiming to enhance the international competitiveness and literacy of Japanese businesses.",
+      "image": "https://www.xrp-tokyo.io/speakers/Noriaki Yagi.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://iolite.net/magazine",
+      "nameJa": "八木 憲明",
+      "roleJa": "編集長",
+      "companyJa": "Iolite Magazine"
+    },
+    {
+      "name": "Ryo Sakai",
+      "role": "Head of Business Development & CEO",
+      "company": "CoinPost, WebX",
+      "bio": "Ryo Sakai氏は、株式会社CoinPost Head of Business Developmentを務め、WebX（アジア最大級のWeb3カンファレンス）CEOも兼任。日本最大級の暗号資産メディアの事業開発とグローバル展開をリードしています。\n\n株式会社CoinPostは、2018年設立の国内最大級暗号資産・ブロックチェーン専門メディアです。ニュース配信のほか、Web3イベント「WebX」の企画・運営を通じて、業界情報発信とエコシステム構築を推進しています。",
+      "bio_en": "Ryo Sakai serves as Head of Business Development at CoinPost Inc. and concurrently as CEO of WebX, one of Asia's largest Web3 conferences. He leads business development and global expansion for one of Japan's largest crypto asset media outlets.\n\nCoinPost Inc., established in 2018, is one of Japan's largest crypto asset and blockchain media companies. In addition to news distribution, the company promotes industry information dissemination and ecosystem development through the planning and operation of the Web3 event WebX.",
+      "image": "https://www.xrp-tokyo.io/speakers/Ryo Sakai.png",
+      "twitter": "https://x.com/RyosCoinPost",
+      "linkedin": "",
+      "website": "",
+      "nameJa": "坂井 亮",
+      "roleJa": "事業開発責任者兼CEO",
+      "companyJa": "CoinPost / WebX"
+    },
+    {
+      "name": "Cyrus Cruz",
+      "role": "APAC Head",
+      "company": "Tenity",
+      "bio": "Cyrus Cruz氏は、Tenity Group AG Head of APAC（APAC Strategic Growth and Head of Insurance）を務めています。\nInsurTechやフィンテック領域での豊富な経験を活かし、アジア太平洋地域での事業拡大とイノベーションをリードしています。\n\nTenity Group AGは、スイス拠点のグローバルイノベーション企業で、フィンテック・InsurTechスタートアップのアクセラレーターと早期投資を展開。\n欧州・アジアにハブを持ち、スタートアップとコーポレートをつなぐプログラムを提供し、金融テクノロジーの未来を形作っています。",
+      "bio_en": "Cyrus Cruz serves as Head of APAC (APAC Strategic Growth and Head of Insurance) at Tenity Group AG. Drawing on extensive experience in InsurTech and fintech, he leads business expansion and innovation across the Asia-Pacific region.\n\nTenity Group AG is a Switzerland-based global innovation company that operates accelerator programs and early-stage investments for fintech and InsurTech startups. With hubs across Europe and Asia, it provides programs connecting startups with corporates, shaping the future of financial technology.",
+      "image": "https://www.xrp-tokyo.io/speakers/Cyrus Cruz.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/cyruscruz8/",
+      "website": "https://www.tenity.com/",
+      "nameJa": "Cyrus Cruz",
+      "roleJa": "APAC 責任者",
+      "companyJa": "Tenity"
+    },
+    {
+      "name": "Sojun Katsura",
+      "role": "Director",
+      "company": "Papi Code",
+      "bio": "桂 宗潤氏は、Papi Code Directorを務めています。Web3・ブロックチェーン分野で技術開発やプロジェクト推進に携わり、国内の暗号資産・分散型技術関連の取り組みをリードしています。\n\nPapi Codeは、ブロックチェーン技術を活用したコード開発・ソリューション提供を行う企業です。スマートコントラクトや分散型アプリケーションの構築支援を中心に、Web3プロジェクトの技術基盤整備を支援しています。",
+      "bio_en": "Sojun Katsura serves as Director of Papi Code. He is involved in technology development and project management in the Web3 and blockchain space, leading domestic initiatives related to crypto assets and decentralized technologies.\n\nPapi Code is a company that provides code development and solutions leveraging blockchain technology. Focused on smart contract and decentralized application development, the company helps build the technical foundations for Web3 projects.",
+      "image": "https://www.xrp-tokyo.io/speakers/Sojun Katsura.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "",
+      "nameJa": "桂 宗純",
+      "roleJa": "ディレクター",
+      "companyJa": "Papi Code"
+    },
+    {
+      "name": "Ai Kosuke",
+      "role": "Founder",
+      "company": "SuzuPay",
+      "bio": "藍 光祐（Ai Kosuke）氏は、SuzuPay Founder。GustoDevelopment株式会社代表取締役も務め、AIとブロックチェーンの社会実装に強みを持つハッカソン受賞歴豊富なエンジニア起業家です。Web3決済の普及をリードしています。\n\nSuzuPayは、Solana基盤のQRコード決済サービスです。USDC/USDTなどのステーブルコインで「いつでもどこでも」支払い可能。手数料0.1%と低コスト、即時決済を実現し、観光地や店舗での暗号資産決済を簡素化。観光客向けクロスボーダー決済の革新を目指しています。",
+      "bio_en": "Ai Kosuke is the Founder of SuzuPay and CEO of GustoDevelopment Inc. He is an engineer-entrepreneur with numerous hackathon awards and expertise in the social implementation of AI and blockchain, leading the adoption of Web3 payments.\n\nSuzuPay is a QR code payment service built on Solana. It enables payments anytime, anywhere using stablecoins such as USDC and USDT. With fees as low as 0.1% and instant settlement, it simplifies crypto asset payments at tourist destinations and retail locations, aiming to revolutionize cross-border payments for tourists.",
+      "image": "https://www.xrp-tokyo.io/speakers/Ai Kosuke.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://suzupay.com/",
+      "nameJa": "Ai Kosuke",
+      "roleJa": "創業者",
+      "companyJa": "SuzuPay"
+    },
+    {
+      "name": "Ikkei Matsuda",
+      "role": "Representative Director & CEO",
+      "company": "Digital Platformer Co., Ltd.",
+      "bio": "松田 一敬氏は、株式会社Digital Platformerの代表取締役CEOを務めています。ブロックチェーンを活用したデジタル通貨・分散型ID分野で事業をリードしています。\n\n株式会社Digital Platformerは、2020年設立のFintech企業です。ブロックチェーン技術により、地方自治体・金融機関向けにデジタル地域通貨発行プラットフォームや分散型ID（DID）発行サービス「SHIKI」を提供。\nプライバシーを守りながらデータ連携を実現し、社会実装型のデジタルインフラ構築を推進しています。",
+      "bio_en": "Ikkei Matsuda is the CEO of Digital Platformer Co., Ltd., leading business initiatives in blockchain-based digital currency and decentralized identity.\n\nDigital Platformer Co., Ltd. is a fintech company founded in 2020. Utilizing blockchain technology, it provides digital regional currency issuance platforms and decentralized identity (DID) issuance services (\"SHIKI\") for local governments and financial institutions. The company drives the construction of socially-implemented digital infrastructure while enabling data collaboration with privacy protection.",
+      "image": "https://www.xrp-tokyo.io/speakers/Matsuda Ikkei.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/ikkei-matsuda-74549735/",
+      "website": "https://digitalplatformer.co.jp/",
+      "nameJa": "松田 一慧",
+      "roleJa": "代表取締役兼CEO",
+      "companyJa": "デジタルプラットフォーマー株式会社"
+    },
+    {
+      "name": "Jean Zhu",
+      "role": "Co Founder",
+      "company": "Nexbridge",
+      "bio": "Jean Zhu氏は、NexBridge Inc. Co-Founder。Amazonやシリコンバレーでのプロダクトマネージャー経験、Kellogg School of ManagementでのMBAを活かし、伝統金融とブロックチェーンの橋渡しを推進しています。\n\nNexBridge Inc.は2023年にエルサルバドルで設立された規制準拠のデジタル資産発行会社。\nBitcoinのLiquid Networkを活用し、U.S. Treasury Billsなどの実物資産（RWA）をトークン化。\n伝統金融の透明性・規制遵守を保ちつつ、ブロックチェーン上の効率的な資産発行を実現するBitcoin-Fiインフラを構築しています。",
+      "bio_en": "Jean Zhu is the Co-Founder of NexBridge Inc. Drawing on product management experience at Amazon and in Silicon Valley, along with an MBA from the Kellogg School of Management, she bridges traditional finance and blockchain.\n\nNexBridge Inc. was founded in El Salvador in 2023 as a regulation-compliant digital asset issuer. Leveraging Bitcoin's Liquid Network, it tokenizes real-world assets (RWA) such as U.S. Treasury Bills. The company builds Bitcoin-Fi infrastructure that enables efficient asset issuance on blockchain while maintaining the transparency and regulatory compliance of traditional finance.",
+      "image": "https://www.xrp-tokyo.io/speakers/Jean Zhu.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/jean-zhu-966b7754/",
+      "website": "",
+      "nameJa": "Jean Zhu",
+      "roleJa": "共同創業者",
+      "companyJa": "Nexbridge"
+    },
+    {
+      "name": "Yusuke Hirota",
+      "role": "Founder",
+      "company": "Laplace",
+      "bio": "廣田 裕介氏は、株式会社Laplace（NEURON X）Founder & CEO。Amazonでの約7年間の経験を経て起業し、ブロックチェーンを活用した実物資産（RWA）トークン化事業を推進。\nラグジュアリー不動産などの高級資産を小口投資可能にし、流動性向上と民主化を目指しています。\n\n株式会社Laplaceは、不動産などの実物資産をトークン化し、誰でも小口で所有・投資できるプラットフォームを展開するWeb3スタートアップ。\n現在、数億ドル規模のトークン化プロジェクトを進行中です。",
+      "bio_en": "Yusuke Hirota is the Founder & CEO of Laplace (NEURON X). After approximately seven years at Amazon, he launched his venture to advance the tokenization of real-world assets (RWA) using blockchain. The company aims to make luxury real estate and other high-value assets accessible through fractional investment, improving liquidity and democratizing ownership.\n\nLaplace is a Web3 startup that tokenizes real-world assets such as real estate, enabling anyone to own and invest in fractional shares through its platform. The company currently has tokenization projects worth several hundred million dollars in progress.",
+      "image": "https://www.xrp-tokyo.io/speakers/Yusuke Hirota.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "",
+      "nameJa": "廣田 祐介",
+      "roleJa": "創業者",
+      "companyJa": "Laplace"
+    },
+    {
+      "name": "Eri Ishiyama",
+      "role": "Blockchain Advocate",
+      "company": "",
+      "bio": "Cryptoインフルエンサーとして知られるEri Ishiyama（Crypto Eri）氏は、デジタル資産およびブロックチェーン分野における情報発信者としてグローバルに活動しています。\n\n2018年よりブロックチェーンリサーチの分析・解説に取り組み、金融とAIの交差領域に関する探求を続けています。\n\nYouTubeチャンネル「Crypto Eri」を通じて、暗号資産やデジタル経済に関する教育的コンテンツを発信するほか、Onami Pressおよび3 Big Waves Mediaの共同創業者として、メディア・リサーチ領域でも活動しています。\n\nXRP LedgerをはじめとするWeb3領域に精通し、グローバルな視点から幅広い層に向けて情報発信を行っています。",
+      "bio_en": "Eri Ishiyama, known as Crypto Eri, is a globally active crypto influencer and educator in the digital asset and blockchain space.\n\nSince 2018, she has been analyzing and explaining blockchain research, with a continued focus on the intersection of finance and AI.\n\nThrough her YouTube channel \"Crypto Eri,\" she produces educational content on crypto assets and the digital economy. She is also a co-founder of Onami Press and 3 Big Waves Media, contributing to the media and research space.\n\nWith deep expertise in XRP Ledger and the broader Web3 landscape, she delivers insights to a wide global audience.",
+      "image": "https://www.xrp-tokyo.io/speakers/Carpe Diem.png",
+      "twitter": "https://x.com/sentosumosaba",
+      "linkedin": "",
+      "website": "",
+      "nameJa": "Eri Ishiyama",
+      "roleJa": "ブロックチェーンアドボケート",
+      "companyJa": ""
+    },
+    {
+      "name": "Sebastian Valdez",
+      "role": "Co-Founder",
+      "company": "xrp.cafe",
+      "bio": "Sebastian Valdez氏は、xrp.cafeのCo-Founderとして、NFTマーケットプレイスの開発と普及をリードしています。\n\nxrp.cafeは2022年創業のXRPLネイティブNFTマーケットプレイスで、#1の地位を誇ります。誰でも簡単にNFTの作成・ミント・取引が可能で、クリエイター向けツール提供とユーザー体験の向上により、XRPL上のNFT大衆化を推進しています。",
+      "bio_en": "Sebastian Valdez is the Co-Founder of xrp.cafe, leading the development and adoption of NFT marketplaces.\n\nFounded in 2022, xrp.cafe is the #1 XRPL-native NFT marketplace. It allows anyone to easily create, mint, and trade NFTs, and advances the mass adoption of NFTs on XRP Ledger (XRPL) through tools for creators and a refined user experience.",
+      "image": "https://www.xrp-tokyo.io/speakers/Sebastian Valdez.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://xrp.cafe/",
+      "nameJa": "Sebastian Valdez",
+      "roleJa": "共同創業者",
+      "companyJa": "xrp.cafe"
+    },
+    {
+      "name": "Kyohei Shibano",
+      "role": "Project Researcher",
+      "company": "The University of Tokyo",
+      "bio": "東京工業大学大学院修士課程修了後、複数のスタートアップ企業にてソフトウェア開発に従事。2018年に東京大学にて博士（工学）を取得。\n東京大学ブロックチェーンイノベーション寄付講座の特任研究員として、教育・研究・起業支援を横断した活動を展開している。\nブロックチェーン学生起業家支援プログラムおよび公開講座の企画立案から立ち上げ・運営までを主導し、人材育成や起業創出に貢献。\nZK技術を中心としたブロックチェーン応用研究にも取り組んでいる。",
+      "bio_en": "After completing his master's degree at Tokyo Institute of Technology, he worked in software development at multiple startups. As a Project Researcher at the University of Tokyo's Endowed Chair for Blockchain Innovation, he conducts activities spanning education, research, and entrepreneurship support. He has led the planning, launch, and operation of the Blockchain Student Entrepreneur Support Program and public lectures, contributing to talent development and startup creation. He also conducts applied blockchain research with a focus on Zero-Knowledge (ZK) technology.",
+      "image": "https://www.xrp-tokyo.io/speakers/Tokyo University.png",
+      "twitter": "",
+      "linkedin": "https://www.linkedin.com/in/kyohei-shibano-0a5165251",
+      "website": "https://www.blockchain.t.u-tokyo.ac.jp/",
+      "nameJa": "柴野 恭平",
+      "roleJa": "プロジェクト研究員",
+      "companyJa": "東京大学"
+    },
+    {
+      "name": "Rox Park",
+      "role": "Head of Institutions",
+      "company": "Doppler Finance",
+      "bio": "Doppler FinanceのHead of Institutionsを務めるRox Park氏は、同社の共同創業者として、機関投資家向け戦略およびパートナーシップを統括しています。\n\nXRP Ledger（XRPL）上におけるネイティブな利回りインフラの構築を推進し、機関資本とDeFiをつなぐ重要な役割を担っています。\n\nブロックチェーンおよびビジネス開発における豊富な経験を活かし、XRPLエコシステムの新たな可能性を切り拓くエコシステムビルダーとして活躍しています。",
+      "bio_en": "Rox Park is the Head of Institutions and Co-Founder of Doppler Finance, overseeing institutional investor strategy and partnerships.\n\nHe drives the construction of native yield infrastructure on XRP Ledger (XRPL), playing a key role in connecting institutional capital with DeFi.\n\nDrawing on extensive experience in blockchain and business development, he is an ecosystem builder pioneering new possibilities within the XRPL ecosystem.",
+      "image": "https://www.xrp-tokyo.io/speakers/Doppler.png",
+      "twitter": "",
+      "linkedin": "",
+      "website": "https://doppler.finance/",
+      "nameJa": "Rox Park",
+      "roleJa": "機関投資家担当 Head",
+      "companyJa": "Doppler Finance"
+    },
+    {
+      "name": "Panos Mekras",
+      "role": "Co-Founder & CEO",
+      "company": "Anodos Labs",
+      "bio": "Anodos Labsの共同創業者兼CEOを務めるPanos Mekras氏は、金融および会計のバックグラウンドを持ち、暗号資産業界で10年以上の経験を有するフィンテック分野のリーダーです。\n\n著書『Understanding the Crypto Economy』の著者としても知られ、これまで数多くの暗号資産スタートアップに対してアドバイザリーを提供してきました。\n\nグローバルな視点と豊富な経験をもとに、ブロックチェーンによる金融領域のイノベーションを推進しています。",
+      "bio_en": "Panos Mekras is the Co-Founder and CEO of Anodos Labs, a fintech leader with a background in finance and accounting and over 10 years of experience in the crypto asset industry.\n\nKnown as the author of \"Understanding the Crypto Economy,\" he has provided advisory services to numerous crypto asset startups.\n\nHe drives innovation in the financial sector through blockchain, bringing a global perspective and wealth of experience.",
+      "image": "https://www.xrp-tokyo.io/speakers/Anodos Finance.png",
+      "twitter": "https://x.com/panosmek",
+      "linkedin": "https://www.linkedin.com/in/panos-mekras/",
+      "website": "https://anodos.finance/",
+      "nameJa": "Panos Mekras",
+      "roleJa": "共同創業者兼CEO",
+      "companyJa": "Anodos Labs"
+    },
+    {
+      "name": "J. Ayo Akinyele",
+      "role": "Head of Engineering",
+      "company": "RippleX",
+      "bio": "J. Ayo Akinyele氏は、RippleXのHead of Engineeringとして、XRP Ledgerのインフラおよび開発者向けツールを手がけるビルダーチームを率いています。\n\nこれまでに、MPCを活用したウォレットを開発するセキュリティ・プライバシースタートアップ「Bolt Labs」のCEO兼共同創業者を務めたほか、Bitcoin CoreやHandshakeを含むブロックチェーンプロジェクトに対し、暗号技術およびセキュリティ監査を提供する「YeleTech Security」を共同創業しています。",
+      "bio_en": "J. Ayo Akinyele is the Head of Engineering at RippleX, leading a builder team that develops XRP Ledger infrastructure and developer tools.\n\nHe previously served as CEO and Co-Founder of Bolt Labs, a security and privacy startup that developed MPC-based wallets. He also co-founded YeleTech Security, which provided cryptographic and security audits for blockchain projects including Bitcoin Core and Handshake.",
+      "image": "https://www.xrp-tokyo.io/speakers/Ayo Akinyele.png",
+      "twitter": "https://x.com/ja_akinyele",
+      "linkedin": "",
+      "website": "https://ripple.com/",
+      "nameJa": "J. Ayo Akinyele",
+      "roleJa": "Head of Engineering",
+      "companyJa": "RippleX"
+    },
+    {
+      "name": "Robert Kiuru",
+      "role": "COO",
+      "company": "Xaman",
+      "bio": "XRPL Labsの最高執行責任者（COO）を務めるRobert Kiuru氏は、XRP Ledger（XRPL）の代表的な自己管理型ウォレット「Xaman」を開発する同社において、事業運営の中核を担っています。\n\n「Xaman」は世界中で数百万のユーザーに利用され、XRPLエコシステムにおける数十億ドル規模の取引を支える主要なインフラの一つとなっています。\n\nRobert氏は現在、オペレーション、パートナーシップ、グロースを統括しながら、XRPLエコシステムの拡大およびインフラ・統合の強化を推進しています。",
+      "bio_en": "Robert Kiuru serves as Chief Operating Officer (COO) of XRPL Labs, playing a central role in the operations of the company that develops \"Xaman,\" the leading self-custodial wallet for XRP Ledger (XRPL).\n\n\"Xaman\" is used by millions of users worldwide and serves as key infrastructure supporting billions of dollars in transactions within the XRPL ecosystem.\n\nHe currently oversees operations, partnerships, and growth while driving the expansion of the XRPL ecosystem and strengthening its infrastructure and integrations.",
+      "image": "https://www.xrp-tokyo.io/speakers/Xaman.png",
+      "twitter": "https://x.com/robertkiuru",
+      "linkedin": "https://www.linkedin.com/in/kiuru1/",
+      "website": "https://xaman.app/",
+      "nameJa": "Robert Kiuru",
+      "roleJa": "COO",
+      "companyJa": "Xaman"
+    },
+    {
+      "name": "Alexis Sirkia",
+      "role": "Executive Chairman & Founder",
+      "company": "Yellow",
+      "bio": "Alexis Sirkia氏は、Yellow Network Co-Founder 兼 Chairman（通称 “Captain”）。DeFiのパイオニアで、GSR共同創業者の経験を活かし、ブロックチェーン流動性統一とクロスチェーン取引の課題解決をリードしています。\n\nYellow Networkは、Layer 3メッシュネットワークとSDKを提供するWeb3インフラ企業です。\nstate channel技術を活用した分散型クリアリング・決済により、チェーンを超えたリアルタイム取引と流動性統合を実現し、dApp開発の簡素化とユーザー体験向上を目指しています。",
+      "bio_en": "Alexis Sirkia is the Co-Founder and Chairman (\"Captain\") of Yellow Network. A DeFi pioneer, he leverages his experience as a co-founder of GSR to lead the unification of blockchain liquidity and the resolution of cross-chain trading challenges.\n\nYellow Network is a Web3 infrastructure company providing Layer 3 mesh network and SDK solutions. Through decentralized clearing and settlement using state channel technology, it enables real-time cross-chain trading and liquidity aggregation, aiming to simplify dApp development and enhance user experience.",
+      "image": "https://www.xrp-tokyo.io/speakers/Alexis Sirkia.png",
+      "twitter": "https://x.com/AlexisYellow",
+      "linkedin": "https://www.linkedin.com/in/sirkia/",
+      "website": "https://yellow.com/",
+      "nameJa": "Alexis Sirkia",
+      "roleJa": "エグゼクティブチェアマン兼創業者",
+      "companyJa": "Yellow"
+    }
+  ],
+  "sponsors": [
+    {
+      "name": "Ripple",
+      "tier": "Title",
+      "logo": "https://www.xrp-tokyo.io/sponsors/title/ripple1.png",
+      "website": "https://ripple.com/"
+    },
+    {
+      "name": "SBI Group",
+      "tier": "Platinum",
+      "logo": "https://www.xrp-tokyo.io/sponsors/platinum/sbi-group.png",
+      "website": "https://www.sbigroup.co.jp/",
+      "whiteLogo": true
+    },
+    {
+      "name": "Doppler Finance",
+      "tier": "Platinum",
+      "logo": "https://www.xrp-tokyo.io/sponsors/platinum/doppler-finance1.png",
+      "website": "https://doppler.finance/"
+    },
+    {
+      "name": "SBI Ripple Asia",
+      "tier": "Gold",
+      "logo": "https://www.xrp-tokyo.io/sponsors/gold/sbi-ripple-asia.png",
+      "website": "https://www.sbigroup.co.jp/company/group/sbirippleasia.html",
+      "whiteLogo": true
+    },
+    {
+      "name": "BITPoint",
+      "tier": "Gold",
+      "logo": "https://www.xrp-tokyo.io/sponsors/gold/bitpoint.png",
+      "website": "https://www.bitpoint.co.jp/",
+      "whiteLogo": true
+    },
+    {
+      "name": "anodos",
+      "tier": "Gold",
+      "logo": "https://www.xrp-tokyo.io/sponsors/gold/anodos1.png",
+      "website": "https://anodos.finance/"
+    },
+    {
+      "name": "Datavault AI",
+      "tier": "Gold",
+      "logo": "https://www.xrp-tokyo.io/sponsors/gold/datavault-ai-white.png",
+      "website": "https://datavaultsite.com/"
+    },
+    {
+      "name": "楽天ウォレット",
+      "tier": "Silver",
+      "logo": "https://www.xrp-tokyo.io/sponsors/silver/rakuten-wallet.png",
+      "website": "https://www.rakuten-wallet.co.jp/"
+    },
+    {
+      "name": "yellow",
+      "tier": "Silver",
+      "logo": "https://www.xrp-tokyo.io/sponsors/silver/yellow.png",
+      "website": "https://yellow.com/"
+    },
+    {
+      "name": "RedotPay",
+      "tier": "Silver",
+      "logo": "https://www.xrp-tokyo.io/sponsors/silver/redotpay.png",
+      "website": "https://www.redotpay.com/"
+    },
+    {
+      "name": "XRPCafe",
+      "tier": "Silver",
+      "logo": "https://www.xrp-tokyo.io/sponsors/silver/xrpcafe1.png",
+      "website": "https://xrp.cafe"
+    },
+    {
+      "name": "Xaman",
+      "tier": "Silver",
+      "logo": "https://www.xrp-tokyo.io/sponsors/silver/xaman2.png",
+      "website": "https://xaman.app/"
+    },
+    {
+      "name": "Levtech",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/sponsors/bronze/levtech_wh_2.png",
+      "website": "https://levtech.jp/",
+      "type": "corporate"
+    },
+    {
+      "name": "XRP Cloud",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/sponsors/bronze/xrp-cloud-3.png",
+      "website": "https://xrp-cloud.xyz/en",
+      "type": "corporate"
+    },
+    {
+      "name": "Giant Gox",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/sponsors/bronze/giantgox2.png",
+      "website": "https://x.com/GiantGox",
+      "type": "individual"
+    },
+    {
+      "name": "メイフラちゃん",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/sponsors/bronze/mayflower3096.jpg",
+      "website": "https://x.com/mayflower3096",
+      "type": "individual"
+    },
+    {
+      "name": "Daikoku",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/partners/community/daikoku.png",
+      "website": "https://x.com/daikokunet009",
+      "type": "individual"
+    },
+    {
+      "name": "Hotei",
+      "tier": "Bronze",
+      "logo": "https://www.xrp-tokyo.io/sponsors/bronze/hotei.png",
+      "website": "https://x.com/5porter5",
+      "type": "individual"
+    },
+    {
+      "name": "CoinPost",
+      "tier": "Media",
+      "logo": "https://www.xrp-tokyo.io/partners/media/coinpost.png",
+      "website": "https://coinpost.jp/"
+    },
+    {
+      "name": "あたらしい経済",
+      "tier": "Media",
+      "logo": "https://www.xrp-tokyo.io/partners/media/neweconomy1.png",
+      "website": "https://www.neweconomy.jp/"
+    },
+    {
+      "name": "NADA NEWS",
+      "tier": "Media",
+      "logo": "https://www.xrp-tokyo.io/partners/media/nadanews.png",
+      "website": "https://www.nadanews.com/"
+    },
+    {
+      "name": "IOLITE",
+      "tier": "Media",
+      "logo": "https://www.xrp-tokyo.io/partners/media/iolite.png",
+      "website": "https://iolite.net/",
+      "whiteLogo": true
+    },
+    {
+      "name": "HashHub",
+      "tier": "Research Partner",
+      "logo": "https://www.xrp-tokyo.io/partners/supporter/hashhub_logo_white.png",
+      "website": "https://hashhub.tokyo/",
+      "whiteLogo": true
+    },
+    {
+      "name": "TDC",
+      "tier": "Supporter",
+      "logo": "https://www.xrp-tokyo.io/partners/supporter/TDCLogo-PosWhite.png",
+      "website": "https://digitalchamber.org/",
+      "whiteLogo": true
+    },
+    {
+      "name": "ECCC",
+      "tier": "Supporter",
+      "logo": "https://www.xrp-tokyo.io/partners/supporter/ecccc.png",
+      "website": "https://bccc.global/",
+      "whiteLogo": false
+    },
+    {
+      "name": "JBA",
+      "tier": "Supporter",
+      "logo": "https://www.xrp-tokyo.io/partners/supporter/jba.png",
+      "website": "https://jba-web.jp/",
+      "whiteLogo": false
+    },
+    {
+      "name": "東大公開講座",
+      "tier": "Education",
+      "logo": "https://www.xrp-tokyo.io/partners/education/東大公開講座.png",
+      "website": "https://www.blockchain.t.u-tokyo.ac.jp/"
+    },
+    {
+      "name": " AKINDO",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/akindo_logo_white.png",
+      "website": "https://x.com/akindo_io/"
+    },
+    {
+      "name": "OffChain Tokyo",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/offchain-tokyo.png",
+      "website": "https://luma.com/web3tokyo"
+    },
+    {
+      "name": "Web3 Salon",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/web3-salon1.png",
+      "website": "https://web3salon.or.jp/"
+    },
+    {
+      "name": "渋谷Web3大学",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/渋谷Web3大学横.jpg",
+      "website": "https://www.shibuyaweb3univ.com/"
+    },
+    {
+      "name": "Wave of Innovation",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/wave-of-innovation.png",
+      "website": "https://www.waveofinnovation.com/"
+    },
+    {
+      "name": "XRPL Korea",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xkorea.png",
+      "website": "https://xrplkorea.org/"
+    },
+    {
+      "name": "XRPL Africa",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xrpl-africa.jpg",
+      "website": "https://x.com/XRPL_AF"
+    },
+    {
+      "name": "XRPL Canada",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xrpl-canada.jpeg",
+      "website": "https://www.xrplcanada.org/"
+    },
+    {
+      "name": "XRPL Malaysia",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xrpl-malaysia.jpg",
+      "website": "https://x.com/xrplmalaysia"
+    },
+    {
+      "name": "OP Market",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/opmarket.jpg",
+      "website": "https://opmarket.ai/"
+    },
+    {
+      "name": "YTTLINKS",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/YTTLINKS_logo_square.png",
+      "website": "https://www.yttlinks.co.jp/"
+    },
+    {
+      "name": "Found",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/Found.jpg",
+      "website": "https://www.dotfound.co.jp/"
+    },
+    {
+      "name": "0xConsultingGroup",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/0xConsultingGroup_square_white.png",
+      "website": "https://zero-x.com/en/home-en/"
+    },
+    {
+      "name": "ciana",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/ciana_logo_dark.png",
+      "website": "https://x.com/coinciana"
+    },
+    {
+      "name": "collection logo",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/collection logo.png",
+      "website": "https://x.com/pokemaru06"
+    },
+    {
+      "name": "piyoneko",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/piyoko_piyoneko(D) - piyoneko.png",
+      "website": "https://x.com/jewelrycherry"
+    },
+    {
+      "name": "Crunk Cat collection",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/crunk_cat_collection_light.png",
+      "website": "https://x.com/Hammmnft"
+    },
+    {
+      "name": "OHAGI",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/ohagi.jpg",
+      "website": "https://x.com/IKEMEN_KITA_san"
+    },
+    {
+      "name": "AI Agent Run",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/ai-agent-run1.png",
+      "website": "https://aigent.run/",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "TextRP",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/text-rp.jpg",
+      "website": "https://textrp.io/",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "Wavee",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/wavee-bg-white.png",
+      "website": "https://wavee.world/",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "Terry Toto",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/terry-toto.svg",
+      "website": "https://terrytoto.com/",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "jupyter.org",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/jupyter_logo_100kb.jpg",
+      "website": "https://www.jupyter.co.jp/",
+      "whiteBackground": true
+    },
+    {
+      "name": "Trust Authy",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/trust-authy.jpg",
+      "website": "https://trustauthy.jp/",
+      "whiteBackground": true
+    },
+    {
+      "name": "TBV",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/TBV_logo.svg",
+      "website": "https://www.tbv.xyz/",
+      "whiteBackground": true
+    },
+    {
+      "name": "TAKUMI",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/chain-block-summit.png",
+      "website": "https://chainofblockssummit.com/",
+      "whiteBackground": true
+    },
+    {
+      "name": "xSPECTAR",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xspectar-logo.svg",
+      "website": "https://www.xspectar.com/",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "Rabbitflower",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/rabbitflower.png",
+      "website": "https://x.com/RabiHouse"
+    },
+    {
+      "name": "Yukki",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/yukki.png",
+      "website": "https://x.com/YukilovePenguin",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "hayai-akachan",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/hayai-akachan.png",
+      "website": "https://x.com/hayaiakachan",
+      "forceWhiteBackground": true
+    },
+    {
+      "name": "We Create 3",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/we-create-3.png",
+      "website": "https://x.com/We_Create_3",
+      "forceWhiteBackground": true,
+      "logoInset": true
+    },
+    {
+      "name": "XRP Army JP",
+      "tier": "Community",
+      "logo": "https://www.xrp-tokyo.io/partners/community/xrp-army-jp.jpeg",
+      "website": "https://x.com/i/communities/2026168382178132057"
+    }
+  ]
+}

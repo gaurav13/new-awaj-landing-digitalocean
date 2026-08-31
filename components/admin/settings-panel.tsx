@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
 import { ChangePassword } from "./change-password"
+import { DeployButton } from "./deploy-button"
 import { updateSiteSettings, type SiteSettings } from "@/app/actions/settings"
 
 type ImageField = { key: keyof SiteSettings; label: string; help: string }
@@ -153,7 +154,9 @@ export function SettingsPanel({ settings }: { settings: SiteSettings }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <DeployButton />
+
+      <div className="mt-10 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="font-serif text-2xl font-bold text-navy-text">Branding & SEO</h2>
           <p className="mt-1 text-sm text-navy-text/60">

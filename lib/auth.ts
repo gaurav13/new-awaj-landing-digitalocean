@@ -4,6 +4,7 @@ import { createAccessControl } from "better-auth/plugins/access"
 import { defaultStatements, adminAc } from "better-auth/plugins/admin/access"
 import { pool } from "@/lib/db"
 import { sendEmail, resetPasswordEmailHtml } from "@/lib/email"
+import { getAuthBaseUrlConfig, getDynamicTrustedOrigins } from "@/lib/auth-url"
 
 // Access control: a "superadmin" can manage other admins; a regular "admin"
 // can only manage content (no user-management permissions).
@@ -11,22 +12,11 @@ const ac = createAccessControl(defaultStatements)
 const adminRole = ac.newRole({})
 const superadminRole = ac.newRole(adminAc.statements)
 
-function getAuthBaseUrl() {
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  if (process.env.V0_RUNTIME_URL) return process.env.V0_RUNTIME_URL
-  if (process.env.NODE_ENV === "development") return "http://localhost:3000"
-  return undefined
-}
-
 export const auth = betterAuth({
   database: pool,
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: getAuthBaseUrl(),
+  // Resolve base URL from incoming request host (DigitalOcean IP/domain, Vercel, localhost).
+  baseURL: getAuthBaseUrlConfig(),
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -38,27 +28,15 @@ export const auth = betterAuth({
       })
     },
   },
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    // v0 preview + sandbox domains (rendered inside a cross-site iframe)
-    "*.vusercontent.net",
-    "*.v0.app",
-    "*.v0.dev",
-    ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
-    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
-      : []),
-  ],
+  // Accept the current request origin dynamically (trustHost-style behavior).
+  trustedOrigins: async (request) => getDynamicTrustedOrigins(request),
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
-  // The v0 preview renders the app inside a cross-site HTTPS iframe, so the
-  // session cookie must always be SameSite=None; Secure or the browser drops it.
-  // This must apply in all environments, not just development.
   advanced: {
+    // Trust x-forwarded-host / x-forwarded-proto from nginx on DigitalOcean.
+    trustedProxyHeaders: true,
     defaultCookieAttributes: {
       sameSite: "none" as const,
       secure: true,
